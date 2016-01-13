@@ -361,7 +361,7 @@ function osuClass.loadSkin(self, name)
 	skin.sprites.maniaStageLeft = love.graphics.newImage(name .. "/mania-stage-left.png")
 	--skin.sprites.scorebarColour = love.graphics.newImage(name .. "/scorebar-colour.png")
 	--skin.sprites.scorebarBG = love.graphics.newImage(name .. "/scorebar-bg.png")
-	skin.sprites.background = love.graphics.newImage(name .. "/menu-background.jpg")
+	skin.sprites.background = love.graphics.newImage(name .. "/menu-background.png")
 
 	offset.x = 0
 end

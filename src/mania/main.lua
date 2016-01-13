@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 --]]
 function love.load()
-	pathprefix = "mania/"
+	pathprefix = "src/mania/"
 	mappathprefix = ""
 	require(pathprefix .. "osu")
 	data = {
@@ -81,28 +81,29 @@ function love.load()
 				},
 			},
 			sprite = nil,
-		}
+		},
+		cache = require "res.Songs.cache",
+		currentmapset = 1,
+		currentbeatmap = 1,
 	}
 	osu = osuClass.new(data)
-	------------------------
-	-- Functions
-	------------------------
-	explode = require(pathprefix .. "include/explode")
-	------------------------
 	
 	
-	osu:loadSkin(pathprefix .. "data/Skins/skin")
-	data.menu.sprite = love.graphics.newImage(pathprefix .. "data/menu.png")
-	data.menu.backsprite = love.graphics.newImage(pathprefix .. "data/back.png")
+	osu:loadSkin("res/Skins/skin")
+	data.menu.sprite = love.graphics.newImage("res/mania-menu.png")
+	data.menu.backsprite = love.graphics.newImage("res/back.png")
 	if love.system.getOS() == "Windows" then
 		mappathprefix = ""
-	else
+	elseif love.system.getOS() == "Android" then
 		mappathprefix = "/sdcard/lovegame/"
+	else
+		mappathprefix = ""
 	end
-	osu:loadBeatmap(mappathprefix .. "mania/data/Songs/Geometry_Dash_dj-Nate_-_12._Theory_of_Everything_(iPlayer.fm)", "DJ Nate - Theory of Everything (semyon422) [4K Normal].osu")
+	
+osu:loadBeatmap(mappathprefix .. "res/Songs/" .. data.cache[data.currentmapset].folder, data.cache[data.currentmapset].maps[data.currentbeatmap])
 	
 	
-	data.beatmap.audio = love.audio.newSource(pathprefix .. "data/Songs/Geometry_Dash_dj-Nate_-_12._Theory_of_Everything_(iPlayer.fm)/DJ Nate - Theory of Everything.mp3")
+	data.beatmap.audio = love.audio.newSource("res/Songs/" .. data.cache[data.currentmapset].folder .. "/" .. data.cache[data.currentmapset].audio)
 	--beatmap.files.mp3:play()
 	--beatmap.files.mp3:pause()
 	
