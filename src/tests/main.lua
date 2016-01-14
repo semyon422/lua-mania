@@ -38,11 +38,8 @@ function love.load()
 		py = 0,
 		axis1 = "axis1\n",
 		axis2 = "axis2\n",
-		axis3 = "axis3\n",
 	}
 	data.audio = love.audio.newSource("res/click.wav")
-	--data.joysticks = love.joystick.getJoysticks()
-	--data.joystick = joysticks[1]
 	
 	data.cursor = love.graphics.newImage("res/cursor1.png")
 	data.star = love.graphics.newImage("res/cursor2.png")
@@ -63,7 +60,6 @@ function love.update(dt)
 	end
 	data.isDown = data.isDown .. "\n"
 	data.keyspressed = data.keyspressed .. "\n"
-	--if joystick then data.axisDir1, data.axisDir2, data.axisDir3 = joystick:getAxes() end
 end
 
 function love.draw()
@@ -83,7 +79,6 @@ function love.draw()
 	data.keyspressed ..
 	data.axis1 ..
 	data.axis2 ..
-	data.axis3 ..
 	data.seconds,
 	0, 0)
 	love.graphics.draw(data.cursor, data.mx, data.my, 0, 1, 1, data.cursor:getWidth()/2, data.cursor:getHeight()/2)
@@ -148,9 +143,6 @@ function love.joystickaxis( joystick, axis, value )
 	end
 	if axis == 2 then
 		data.axis2 = "axis2 value=" .. value .. "\n"
-	end
-	if axis == 3 then
-		data.axis3 = "axis3 value=" .. value .. "\n"
 	end
 end
 

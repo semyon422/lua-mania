@@ -34,7 +34,6 @@ function love.load()
 		
 		play = 0,
 		offset = {
-		--	x = skin.config.Mania[tonumber(Map.General["CircleSize"]) .. "K"].Column.Start,
 			x = 100,
 			y = 0
 		},
@@ -104,8 +103,6 @@ osu:loadBeatmap(mappathprefix .. "res/Songs/" .. data.cache[data.currentmapset].
 	
 	
 	data.beatmap.audio = love.audio.newSource("res/Songs/" .. data.cache[data.currentmapset].folder .. "/" .. data.cache[data.currentmapset].audio)
-	--beatmap.files.mp3:play()
-	--beatmap.files.mp3:pause()
 	
 	loaded = true
 end
@@ -117,15 +114,10 @@ end
 function love.update(dt)
 	if loaded ~= true then love.load() end
 	data.dt = dt
-	--data.update.truedt = dt
-
-	osu:keyboard()
 	
-
-	osu:updateHUD()
+	osu:keyboard()
 end
 function love.draw()
-	--data.ui.bg(menu_background, darkness)
 	love.graphics.rotate(-math.pi/2)
 	love.graphics.translate(-love.graphics.getHeight(), 0)
 	osu:drawBackground()

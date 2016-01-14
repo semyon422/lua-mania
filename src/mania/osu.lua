@@ -24,70 +24,18 @@ function osuClass.new(init)
 	return self
 end
 
-function osuClass.updateHUD(self)
-	--local dt = self.data.dt
-	--local hud = self.data.hud
-	
-	--if hud.frame >= 30 then
-	--	hud.fps = math.floor(1/dt)
-	--	hud.frame = 0
-	--end
-end
-
 function osuClass.drawHUD(self)
 	local hud = self.data.hud
 	local dt = self.data.dt
 	
-	
-	local hudx = 0
-	local hudy = 0
-	--love.graphics.setColor(150, 150, 150, 0)
-	--love.graphics.rectangle("fill", hudx, hudy, 100, 40)
 	love.graphics.setColor(255, 255, 255, 255)
-	if hud.mode == "normal" then
-		love.graphics.print(
-			"FPS: "..love.timer.getFPS().."\n"..
-			"beatmap ms1: "..math.floor(self.data.scroll).."\n"..
-			"beatmap ms2: " .. beatmap.audio:tell() * 1000 .. "\n"..
-			--"system seconds: "..os.date("%S").."\n"..
-			"state: "..self.data.menustatename.."\n"..
-			"nextstate: "..self.data.menunextstatename.."\n"
-		, hudx, hudy, 0, 1, 1)
-	elseif hud.mode == "soft debug" then
-		love.graphics.print(
-			"FPS: ".. hud.fps.."\n"..
-			"camera coords x|y|z: "..camera.coords.x.."|"..camera.coords.y.."|"..camera.coords.z.."\n"..
-			"camera scale: "..camera.scale.."\n"..
-			"dt|truedt: "..dt.."|"..truedt.."\n"..
-			"player coords x|y|z: "..player.coords.x.."|"..player.coords.y.."|"..player.coords.z
-		, hudx, hudy, 0, 1*camera.scale, 1*camera.scale)
-	elseif hud.mode == "hard debug" then
-		love.graphics.print(
-			"hud.fps = ".. hud.fps.."\n"..
-			"camera.coords.x = "..camera.coords.x.."\n"..
-			"camera.coords.y = "..camera.coords.y.."\n"..
-			"camera.coords.y = "..camera.coords.z.."\n"..
-			"camera.scale = "..camera.scale.."\n"..
-			"dt = "..dt.."\n"..
-			"truedt = "..truedt.."\n"..
-			"player.coords.x = "..player.coords.x.."\n"..
-			"player.coords.y = "..player.coords.y.."\n"..
-			"player.coords.z = "..player.coords.z
-		, hudx, hudy + hud_string, 0, 1*camera.scale, 1*camera.scale)
-	end
+	love.graphics.print(
+		"FPS: "..love.timer.getFPS().."\n"..
+		--"beatmap ms1: "..math.floor(self.data.scroll).."\n"..
+		"time: " .. math.ceil(beatmap.audio:tell()*1000)/1000 .. "\n"
+	, 0, 0, 0, 1, 1)
 	
-	--love.graphics.print("Scale: ".. camera.scale, coords.x - (self.data.width/2)*camera.scale, coords.y - (self.data.height/2)*camera.scale + 20*camera.scale, 0, 1*camera.scale, 1*camera.scale)
-	--love.window.setTitle("SuperMegaosuClass".." FPS="..hud.fps)
-	--hud.frame = hud.frame + 1
 	love.graphics.setColor(255, 255, 255, 255)
-end
-
-function osuClass.timesync(self)
-	--self.data.startsystemtime = os.date("%S")
-	--while self.data.startsystemtime == os.date("%S") do
-		--wait
-	--end
-	self.data.startsystemtime = os.date("%S")
 end
 
 function osuClass.drawMenu(self)
@@ -101,9 +49,8 @@ function osuClass.start(self)
 	beatmap.audio:stop()
 	beatmap.audio:play()
 	beatmap.audio:pause()
-	--self:timesync()
 	self.data.starttime = love.timer.getTime() * 1000
-	self.data.scroll = love.timer.getTime() * 1000 - self.data.starttime
+	self.data.scroll = 0
 	self.data.play = 1
 	self.data.state = "started"
 	beatmap.audio:play()
@@ -116,7 +63,6 @@ function osuClass.stop(self)
 end
 function osuClass.play(self)
 	if self.data.state == "paused" then
-		--self:timesync()
 		self.data.play = 1
 		self.data.state = "started"
 		beatmap.audio:play()
@@ -152,58 +98,14 @@ function osuClass.keyboard(self)
 		self:pause()
 	end
 	
-	
-	--------------------------------
-	-- Hud
-	--------------------------------
-	
-	if love.keyboard.isDown("~") then
-		if hud.switch_lock == 0 then
-			if hud.mode == "normal" then
-				hud.mode = "soft debug"
-			elseif hud.mode == "soft debug" then
-				hud.mode = "hard debug"
-			elseif hud.mode == "hard debug" then
-				hud.mode = "normal"
-			end
-			hud.switch_lock = 1
-		end
-	else
-		--hud.switch_lock = 0
-	end
 
 	if self.data.play == 1 then
-		--if self.data.startsystemtime ~= os.date("%S") then
-		--	self.data.scroll = self.data.starttime + 1000 * (os.date("%S") - self.data.starttime)
-		--	self.data.startsystemtime = os.date("%S")
-		--end
 		self.data.scroll = beatmap.audio:tell() * 1000
 		--self.data.scroll = love.timer.getTime() * 1000 - self.data.starttime
 	elseif self.data.play == 2 then
 		self.data.scroll = beatmap.audio:tell() * 1000
 		self.data.starttime = love.timer.getTime() * 1000 - self.data.scroll
 	end
-	--[[ MENU key
-	if love.keyboard.isDown("menu", "f") then
-		if self.data.menukeystate == 0 then
-			if self.data.menustate == 0 then
-				self:stop()
-			elseif self.data.menustate == 1 then
-				self:start()
-			elseif self.data.menustate == 2 then
-				self:pause()
-			elseif self.data.menustate == 3 then
-				self:play()
-			end
-		end
-		self.data.menukeystate = 1
-	else
-		self.data.menukeystate = 0
-	end
-	]]--
-
-	
-
 end
 
 
@@ -213,7 +115,7 @@ function osuClass.drawBackground(self)
 	local skin = self.data.skin
 	
 	love.graphics.setBackgroundColor(0, 0, 0)
-		if skin.config.background.draw then
+	if skin.config.background.draw then
 		scale = 1
 		if self.data.width < background:getWidth() * scale then
 			-- nothing
@@ -239,33 +141,32 @@ function osuClass.drawBackground(self)
 end
 
 function osuClass.drawNotes(self)
-	beatmap = self.data.beatmap
-	scroll = self.data.scroll
-	speed = self.data.speed
-	skin = self.data.skin
-	offset = self.data.offset
-	globalscale = self.data.globalscale
+	local beatmap = self.data.beatmap
+	local scroll = self.data.scroll
+	local speed = self.data.speed
+	local skin = self.data.skin
+	local offset = self.data.offset
+	local globalscale = self.data.globalscale
 	
-	currentMania = {  -- d on tonumber(beatmap.General["CircleSize"])
-				key = skin.config.ManiaColours[tonumber(beatmap.General["CircleSize"])],
-				background = skin.config.ManiaColours[tonumber(beatmap.General["CircleSize"])],
-				width = skin.config.ColumnWidth[tonumber(beatmap.General["CircleSize"])],
-				width2 = skin.config.ColumnLineWidth[tonumber(beatmap.General["CircleSize"])]
-	}
+	keymode = tonumber(beatmap.General["CircleSize"])
+	
+	ColumnColours = skin.config.ManiaColours[keymode]
+	ColumnWidth = skin.config.ColumnWidth[keymode]
+	ColumnLineWidth = skin.config.ColumnLineWidth[keymode]
 	drawable = {}
 	scale = {}
 	function update(note)
-		drawable.note = skin.sprites.mania.note[currentMania.key[note[1]]]
-		drawable.slider = skin.sprites.mania.sustain[currentMania.key[note[1]]]
-		scale.x = globalscale * currentMania.width[note[1]] / drawable.note:getWidth()
-		x = currentMania.width2[1]
+		drawable.note = skin.sprites.mania.note[ColumnColours[note[1]]]
+		drawable.slider = skin.sprites.mania.sustain[ColumnColours[note[1]]]
+		scale.x = globalscale * ColumnWidth[note[1]] / drawable.note:getWidth()
+		x = ColumnLineWidth[1]
 		for j = 1, note[1] - 1 do
-			x = x + currentMania.width[j] + currentMania.width2[j + 1]
+			x = x + ColumnWidth[j] + ColumnLineWidth[j + 1]
 		end
 		x = x * globalscale
 	end
 	update(beatmap.HitObjects[1])
-	scale.y = globalscale * currentMania.width[1] / drawable.note:getWidth()
+	scale.y = globalscale * ColumnWidth[1] / drawable.note:getWidth()
 	function isslider(note) if note[3] == nil then return false else return true end end
 	for i = 1, #beatmap.HitObjects do
 		note = beatmap.HitObjects[i]
@@ -296,33 +197,35 @@ function osuClass.drawUI(self)
 	skin = self.data.skin
 	offset = self.data.offset
 	globalscale = self.data.globalscale
-	currentMania = {  -- d on tonumber(beatmap.General["CircleSize"])
-				key = skin.config.ManiaColours[tonumber(beatmap.General["CircleSize"])],
-				background = skin.config.ManiaColours[tonumber(beatmap.General["CircleSize"])],
-				width = skin.config.ColumnWidth[tonumber(beatmap.General["CircleSize"])],
-				width2 = skin.config.ColumnLineWidth[tonumber(beatmap.General["CircleSize"])]
-	}
-	coveerWidth = currentMania.width2[1]
-	for i = 1, tonumber(beatmap.General["CircleSize"]) do
-		x = currentMania.width2[1]
+	
+	
+	keymode = tonumber(beatmap.General["CircleSize"])
+	
+	ColumnColours = skin.config.ManiaColours[keymode]
+	ColumnWidth = skin.config.ColumnWidth[keymode]
+	ColumnLineWidth = skin.config.ColumnLineWidth[keymode]
+	
+	coveerWidth = ColumnLineWidth[1]
+	for i = 1, keymode do
+		x = ColumnLineWidth[1]
 		for j = 1, i - 1 do
-			x = x + currentMania.width[j] + currentMania.width2[j + 1]
+			x = x + ColumnWidth[j] + ColumnLineWidth[j + 1]
 		end
-		coveerWidth = coveerWidth + currentMania.width[i] + currentMania.width2[i + 1]
-		colourBG = skin.config.Colours[skin.config.ManiaColours[tonumber(beatmap.General["CircleSize"])][i]].Colour
+		coveerWidth = coveerWidth + ColumnWidth[i] + ColumnLineWidth[i + 1]
+		colourBG = skin.config.Colours[ColumnColours[i]].Colour
 		love.graphics.setColor(colourBG[1],
 								colourBG[2],
 								colourBG[3],
 								colourBG[4])
-		love.graphics.rectangle("fill", globalscale * x + offset.x, 0, globalscale * currentMania.width[i], self.data.height)
+		love.graphics.rectangle("fill", globalscale * x + offset.x, 0, globalscale * ColumnWidth[i], self.data.height)
 		colourLine = skin.config.ColourColumnLine
 		love.graphics.setColor(colourLine[1],
 								colourLine[2],
 								colourLine[3],
 								colourLine[4])
-		love.graphics.rectangle("fill", globalscale * (x - currentMania.width2[1]) + offset.x, 0, globalscale * currentMania.width2[i], self.data.height)
+		love.graphics.rectangle("fill", globalscale * (x - ColumnLineWidth[1]) + offset.x, 0, globalscale * ColumnLineWidth[i], self.data.height)
 	end
-	love.graphics.rectangle("fill", globalscale * (coveerWidth - currentMania.width2[1]) + offset.x, 0, globalscale * currentMania.width2[#currentMania.width2], self.data.height)
+	love.graphics.rectangle("fill", globalscale * (coveerWidth - ColumnLineWidth[1]) + offset.x, 0, globalscale * ColumnLineWidth[#ColumnLineWidth], self.data.height)
 	
 
 	love.graphics.setColor(255, 255, 255, 192)
