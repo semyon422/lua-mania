@@ -37,7 +37,7 @@ local menu = {
 		},
 		[2] = {
 			text = "speed down",
-			action = function() if data.speed > 0 then data.speed = data.speed - 0.1 end end
+			action = function() if data.speed > 0.2 then data.speed = data.speed - 0.1 end end
 		},
 		[3] = {
 			text = "back",
@@ -126,13 +126,13 @@ local menu = {
 			end
 		},
 		[5] = {
+			text = "main menu",
+			action = function() data.ui.currentMenu = "mainMenu" end
+		},
+		[6] = {
 			text = "back <-",
 			action = function() data.ui.currentMenu = "songs1" end
 		},
-		[6] = {
-			text = "exit",
-			action = function() love.event.quit() end
-		}
 	},
 	
 }

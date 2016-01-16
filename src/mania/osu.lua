@@ -31,8 +31,7 @@ function osuClass.drawHUD(self)
 	love.graphics.setColor(255, 255, 255, 255)
 	love.graphics.print(
 		"FPS: "..love.timer.getFPS().."\n"..
-		--"beatmap ms1: "..math.floor(self.data.scroll).."\n"..
-		"time: " .. math.ceil(beatmap.audio:tell()*1000)/1000 .. "\n" ..
+		"time: " .. math.floor(beatmap.audio:tell()*10)/10 .. "\n" ..
 		"speed: " .. self.data.speed
 	, 0, 0, 0, 1, 1)
 	
@@ -101,11 +100,11 @@ function osuClass.keyboard(self)
 	
 
 	if self.data.play == 1 then
-		self.data.scroll = beatmap.audio:tell() * 1000
-		--self.data.scroll = love.timer.getTime() * 1000 - self.data.starttime
+		self.data.scroll =  math.floor(beatmap.audio:tell() * 1000)
+		--self.data.scroll = math.floor(love.timer.getTime() * 1000 - self.data.starttime)
 	elseif self.data.play == 2 then
-		self.data.scroll = beatmap.audio:tell() * 1000
-		self.data.starttime = love.timer.getTime() * 1000 - self.data.scroll
+		self.data.scroll = math.floor(beatmap.audio:tell() * 1000)
+		self.data.starttime = math.floor(love.timer.getTime() * 1000 - self.data.scroll)
 	end
 end
 
@@ -166,28 +165,29 @@ function osuClass.drawNotes(self) --330fps
 		end
 		x = x * globalscale
 	end
-	update(beatmap.HitObjects[1])
+	update(beatmap.HitObjects[beatmap.HitObjects.firstnote])
 	scale.y = globalscale * ColumnWidth[1] / drawable.note:getWidth()
-	function isslider(note) if note[3] == nil then return false else return true end end
-	for i = 1, #beatmap.HitObjects do
+	function isslider(note) if i == nil then return false else return true end end
+	for i = scroll, scroll + love.graphics.getWidth() / speed do
 		note = beatmap.HitObjects[i]
-
-		onscreen = false
-		update(note)
-		if (((note[2] - scroll) * speed >= offset.y) and
-			((note[2] - scroll) * speed <= self.data.height + offset.y)) then
-			love.graphics.draw(drawable.note, offset.x + x, offset.y + self.data.height - (note[2] - scroll) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
-			onscreen = true
-		end
-		if isslider(note) then
-			if (((note[3] - scroll) * speed >= offset.y) and
-				((note[3] - scroll) * speed <= self.data.height + offset.y)) then
-				love.graphics.draw(drawable.note, offset.x + x, offset.y + self.data.height - (note[3] - scroll) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+		if note ~= nil then
+			onscreen = false
+			update(note)
+			--if (((i - scroll) * speed >= offset.y) and
+			if ((i - scroll) * speed <= self.data.height + offset.y) then
+				love.graphics.draw(drawable.note, offset.x + x, offset.y + self.data.height - (i - scroll) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
 				onscreen = true
 			end
-			if ((((note[3] - scroll) * speed >= self.data.height + offset.y) and
-				(((note[2] - scroll) * speed <= offset.y)))) or onscreen then
-				love.graphics.draw(drawable.slider, offset.x + x, offset.y + self.data.height - (note[3] - scroll) * speed, 0, scale.x, (note[3] - note[2] - drawable.note:getHeight())/drawable.slider:getHeight() * speed)
+			if isslider(note) then
+				if (((note[2] - scroll) * speed >= offset.y) and
+					((note[2] - scroll) * speed <= self.data.height + offset.y)) then
+					love.graphics.draw(drawable.note, offset.x + x, offset.y + self.data.height - (note[2] - scroll) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+					onscreen = true
+				end
+				if ((((note[2] - scroll) * speed >= self.data.height + offset.y) and
+					(((i - scroll) * speed <= offset.y)))) or onscreen then
+					love.graphics.draw(drawable.slider, offset.x + x, offset.y + self.data.height - (note[2] - scroll) * speed, 0, scale.x, (note[2] - i - drawable.note:getHeight())/drawable.slider:getHeight() * speed)
+				end
 			end
 		end
 	end
@@ -301,6 +301,7 @@ function osuClass.convertBeatmap(self)
 			end
 		end
 		if #explode("HitObjects", beatmap.raw.array[globalLine]) == 2 then
+			--[[
 			for offset = globalLine + 1, #beatmap.raw.array - globalLine do
 				localLine = offset - globalLine
 				beatmap.raw.HitObjects[localLine] = explode(",", beatmap.raw.array[offset])
@@ -316,6 +317,27 @@ function osuClass.convertBeatmap(self)
 				beatmap.HitObjects[localLine][2] = beatmap.raw.HitObjects[localLine][3]
 				if beatmap.raw.HitObjects[localLine][4] == "128" then
 					beatmap.HitObjects[localLine][3] = explode(":", beatmap.raw.HitObjects[localLine][6])[1]
+				end
+				if string.find(beatmap.raw.array[offset], "[", 1, true) then
+					break
+				end
+			end
+			--]]
+			beatmap.HitObjects.firstnote = tonumber(explode(",", beatmap.raw.array[globalLine + 1])[3])
+			for offset = globalLine + 1, #beatmap.raw.array - globalLine do
+				localLine = offset - globalLine
+				beatmap.raw.HitObjects[localLine] = explode(",", beatmap.raw.array[offset])
+				beatmap.HitObjects[tonumber(beatmap.raw.HitObjects[localLine][3])] = {}
+				keymode = tonumber(beatmap.General["CircleSize"])
+				interval = 512/keymode
+				beatmap.raw.HitObjects[localLine][1] = tonumber(beatmap.raw.HitObjects[localLine][1])
+				for key = 1, keymode do
+					if beatmap.raw.HitObjects[localLine][1] >= key * interval - interval and beatmap.raw.HitObjects[localLine][1] < key * interval then
+						beatmap.HitObjects[tonumber(beatmap.raw.HitObjects[localLine][3])][1] = tonumber(key)
+					end
+				end
+				if beatmap.raw.HitObjects[localLine][4] == "128" then
+					beatmap.HitObjects[tonumber(beatmap.raw.HitObjects[localLine][3])][2] = tonumber(explode(":", beatmap.raw.HitObjects[localLine][6])[1])
 				end
 				if string.find(beatmap.raw.array[offset], "[", 1, true) then
 					break

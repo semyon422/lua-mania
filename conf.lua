@@ -18,7 +18,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 function love.conf(t)
 	t.identity = nil
 	t.version = "0.10.0"
-	t.console = false
+	t.console = true
 	t.accelerometerjoystick = true
 	t.gammacorrect = false
 	

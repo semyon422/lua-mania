@@ -53,7 +53,7 @@ function love.load()
 		width = love.graphics.getHeight(),
 		
 		cache = require "res.Songs.cache",
-		currentmapset = 1,
+		currentmapset = 2,
 		currentbeatmap = 1,
 		font = love.graphics.newFont("res/OpenSansLight.ttf", love.graphics.getWidth()/16),
 	}
