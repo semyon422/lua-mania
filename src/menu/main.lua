@@ -1,6 +1,6 @@
 --[[
-semyon422's tools and games based on love2d - useful tools and game ports
-Copyright (C) 2016 Semyon Jolnirov
+lua-mania
+Copyright (C) 2016 Semyon Jolnirov (semyon422)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

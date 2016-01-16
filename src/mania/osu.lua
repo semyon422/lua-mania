@@ -1,6 +1,6 @@
 --[[
-semyon422's tools and games based on love2d - useful tools and game ports
-Copyright (C) 2016 Semyon Jolnirov
+lua-mania
+Copyright (C) 2016 Semyon Jolnirov (semyon422)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -32,7 +32,8 @@ function osuClass.drawHUD(self)
 	love.graphics.print(
 		"FPS: "..love.timer.getFPS().."\n"..
 		--"beatmap ms1: "..math.floor(self.data.scroll).."\n"..
-		"time: " .. math.ceil(beatmap.audio:tell()*1000)/1000 .. "\n"
+		"time: " .. math.ceil(beatmap.audio:tell()*1000)/1000 .. "\n" ..
+		"speed: " .. self.data.speed
 	, 0, 0, 0, 1, 1)
 	
 	love.graphics.setColor(255, 255, 255, 255)
@@ -140,7 +141,7 @@ function osuClass.drawBackground(self)
 	
 end
 
-function osuClass.drawNotes(self)
+function osuClass.drawNotes(self) --330fps
 	local beatmap = self.data.beatmap
 	local scroll = self.data.scroll
 	local speed = self.data.speed
@@ -186,13 +187,13 @@ function osuClass.drawNotes(self)
 			end
 			if ((((note[3] - scroll) * speed >= self.data.height + offset.y) and
 				(((note[2] - scroll) * speed <= offset.y)))) or onscreen then
-				love.graphics.draw(drawable.slider, offset.x + x, offset.y + self.data.height - (note[3] - scroll) * speed, 0, scale.x, (note[3] - note[2] - drawable.note:getHeight() * scale.y)/drawable.slider:getHeight() * speed)
+				love.graphics.draw(drawable.slider, offset.x + x, offset.y + self.data.height - (note[3] - scroll) * speed, 0, scale.x, (note[3] - note[2] - drawable.note:getHeight())/drawable.slider:getHeight() * speed)
 			end
 		end
 	end
 end
 
-function osuClass.drawUI(self)
+function osuClass.drawUI(self) --12fps
 	beatmap = self.data.beatmap
 	skin = self.data.skin
 	offset = self.data.offset
@@ -331,4 +332,9 @@ function osuClass.loadBeatmap(self, path, file)
 	beatmap.audio = nil
 	beatmap.raw = nil
 	self:convertBeatmap()
+end
+
+function osuClass.reloadBeatmap(self, mapset, map)
+	self:loadBeatmap(mappathprefix .. "res/Songs/" .. data.cache[mapset].folder, data.cache[mapset].maps[map])
+	self.data.beatmap.audio = love.audio.newSource("res/Songs/" .. data.cache[mapset].folder .. "/" .. data.cache[mapset].audio)
 end

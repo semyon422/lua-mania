@@ -1,6 +1,6 @@
 --[[
-semyon422's tools and games based on love2d - useful tools and game ports
-Copyright (C) 2016 Semyon Jolnirov
+lua-mania
+Copyright (C) 2016 Semyon Jolnirov (semyon422)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -19,19 +19,25 @@ function love.load()
 	pathprefix = "src/mania/"
 	mappathprefix = ""
 	require(pathprefix .. "osu")
+	require(pathprefix .. "ui")
 	data = {
 		mania = {},
-		ui = {},
+		ui = {
+			menu = require(pathprefix .. "menu"),
+			currentMenu = "mainMenu",
+			mode = "portrait",
+			buttoncount = 6,
+			offset = 1/16,
+			menuState = true,
+		},
 		skin = {},
 		keyboard = require(pathprefix .. "keyboard"),
 		darkness = 60,
 		beatmap = {},
 		scroll = 0,
 		speed = 1,
-		offset = 0,
-		--globalscale = 1.56,
 		globalscale = love.graphics.getHeight()/(36*4),
-		
+		mode = "smartphone",
 		play = 0,
 		offset = {
 			x = 100,
@@ -45,52 +51,20 @@ function love.load()
 		},
 		height = love.graphics.getWidth(),
 		width = love.graphics.getHeight(),
-		menukeystate = 0,
-		menustate = 0,
-		menustatename = "rotation: stop start pause play",
-		menunextstatename = "stop",
-		menu = {
-			state = "hidden",
-			control = "touch", --or "button",
-			buttons = {
-				{
-					name = "stop",
-					coords = {{1/8*love.graphics.getHeight(), 1/8*love.graphics.getHeight()}, {4/8*love.graphics.getHeight(), 4/8*love.graphics.getHeight()}},
-					action = function() osu:stop() end 
-				},
-				{
-					name = "pause",
-					coords = {{4/8*love.graphics.getHeight(), 1/8*love.graphics.getHeight()}, {7/8*love.graphics.getHeight(), 4/8*love.graphics.getHeight()}},
-					action = function() osu:pause() end 
-				},
-				{
-					name = "start",
-					coords = {{1/8*love.graphics.getHeight(), 4/8*love.graphics.getHeight()}, {4/8*love.graphics.getHeight(), 7/8*love.graphics.getHeight()}},
-					action = function() osu:start() end 
-				},
-				{
-					name = "play",
-					coords = {{4/8*love.graphics.getHeight(), 4/8*love.graphics.getHeight()}, {7/8*love.graphics.getHeight(), 7/8*love.graphics.getHeight()}},
-					action = function() osu:play() end 
-				},
-				{
-					name = "back",
-					coords = {{love.graphics.getHeight(), 0}, {love.graphics.getWidth(), love.graphics.getHeight()}},
-					action = function() data.menu.state = "hidden" end 
-				},
-			},
-			sprite = nil,
-		},
+		
 		cache = require "res.Songs.cache",
 		currentmapset = 1,
 		currentbeatmap = 1,
+		font = love.graphics.newFont("res/OpenSansLight.ttf", love.graphics.getWidth()/16),
 	}
+	love.graphics.setFont(data.font)
 	osu = osuClass.new(data)
+	ui = uiClass.new(data.ui)
 	
 	
 	osu:loadSkin("res/Skins/skin")
-	data.menu.sprite = love.graphics.newImage("res/mania-menu.png")
-	data.menu.backsprite = love.graphics.newImage("res/back.png")
+	--data.menu.sprite = love.graphics.newImage("res/mania-menu.png")
+	--data.menu.backsprite = love.graphics.newImage("res/back.png")
 	if love.system.getOS() == "Windows" then
 		mappathprefix = ""
 	elseif love.system.getOS() == "Android" then
@@ -99,8 +73,7 @@ function love.load()
 		mappathprefix = ""
 	end
 	
-osu:loadBeatmap(mappathprefix .. "res/Songs/" .. data.cache[data.currentmapset].folder, data.cache[data.currentmapset].maps[data.currentbeatmap])
-	
+	osu:loadBeatmap(mappathprefix .. "res/Songs/" .. data.cache[data.currentmapset].folder, data.cache[data.currentmapset].maps[data.currentbeatmap])
 	
 	data.beatmap.audio = love.audio.newSource("res/Songs/" .. data.cache[data.currentmapset].folder .. "/" .. data.cache[data.currentmapset].audio)
 	
@@ -124,20 +97,6 @@ function love.draw()
 	osu:drawUI()
 	osu:drawNotes()
 	osu:drawHUD()
-	osu:drawMenu()
-end
-function love.mousepressed(x, y, button, istouch)
-	if data.menu.control == "touch" then
-		if data.menu.state == "hidden" then
-			data.menu.state = "onscreen"
-		elseif data.menu.state == "onscreen" then
-			for index,button in pairs(data.menu.buttons) do
-				if x > button.coords[1][1] and y > button.coords[1][2] and x < button.coords[2][1] and y < button.coords[2][2] then
-					button.action()
-				end
-			end
-		elseif data.menu.state == "minimized" then
-		
-		end
-	end
+	--osu:drawMenu()
+	ui:menu()
 end
