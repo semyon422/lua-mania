@@ -30,6 +30,8 @@ function love.load()
 			offset = 1/16,
 			menuState = true,
 		},
+		debug = false,
+		drawedNotes = 0,
 		skin = {},
 		keyboard = require(pathprefix .. "keyboard"),
 		darkness = 60,
@@ -56,15 +58,16 @@ function love.load()
 		cache = require "res.Songs.cache",
 		currentmapset = 2,
 		currentbeatmap = 1,
-		font = love.graphics.newFont("res/OpenSansLight.ttf", love.graphics.getWidth()/16),
-		
+		fontsize = love.graphics.getWidth()/16,
+		debugscale = 1,
 	}
+	data.font = love.graphics.newFont("res/OpenSansLight.ttf", love.graphics.getWidth()/16)
 	love.graphics.setFont(data.font)
 	osu = osuClass.new(data)
 	ui = uiClass.new(data.ui)
 	
 	
-	osu:loadSkin("res/Skins/skin")
+	osu:loadSkin("res/Skins/skin-1")
 	--data.menu.sprite = love.graphics.newImage("res/mania-menu.png")
 	--data.menu.backsprite = love.graphics.newImage("res/back.png")
 	if love.system.getOS() == "Windows" then

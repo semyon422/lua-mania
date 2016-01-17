@@ -26,11 +26,30 @@ local menu = {
 		},
 		[3] = {
 			text = "back to menu",
-			action = function() osu:stop(); data.ui.currentMenu = "songs1"; data.ui.menuState = true end
+			action = function() osu:stop(); data.ui.currentMenu = "songs1" end
 		}
 	},
 	["options"] = {
-		title = "pause",
+		title = "options",
+		[1] = {
+			text = "speed",
+			action = function() data.ui.currentMenu = "speed"; end
+		},
+		[2] = {
+			text = "debug",
+			action = function() data.ui.currentMenu = "debug" end
+		},
+		[3] = {
+			text = "skin",
+			action = function() data.ui.currentMenu = "skin" end
+		},
+		[4] = {
+			text = "back",
+			action = function() data.ui.currentMenu = "mainMenu" end
+		}
+	},
+	["speed"] = {
+		title = "speed",
 		[1] = {
 			text = "speed up",
 			action = function() data.speed = data.speed + 0.1 end
@@ -41,7 +60,37 @@ local menu = {
 		},
 		[3] = {
 			text = "back",
-			action = function() data.ui.currentMenu = "mainMenu"; data.ui.menuState = true end
+			action = function() data.ui.currentMenu = "options" end
+		}
+	},
+	["debug"] = {
+		title = "speed",
+		[1] = {
+			text = "enable",
+			action = function() data.debug = true end
+		},
+		[2] = {
+			text = "disable",
+			action = function() data.debug = false end
+		},
+		[3] = {
+			text = "back",
+			action = function() data.ui.currentMenu = "options" end
+		}
+	},
+	["skin"] = {
+		title = "skin",
+		[1] = {
+			text = "skin 1",
+			action = function() osu:loadSkin("res/Skins/skin-1") end
+		},
+		[2] = {
+			text = "skin 2",
+			action = function() osu:loadSkin("res/Skins/skin-2") end
+		},
+		[3] = {
+			text = "back",
+			action = function() data.ui.currentMenu = "options" end
 		}
 	},
 	["songs1"] = {

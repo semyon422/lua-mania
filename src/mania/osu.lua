@@ -29,20 +29,30 @@ function osuClass.drawHUD(self)
 	local dt = self.data.dt
 	
 	love.graphics.setColor(255, 255, 255, 255)
-	love.graphics.print(
-		"FPS: "..love.timer.getFPS().."\n"..
-		"time: " .. math.floor(beatmap.audio:tell()*10)/10 .. "\n" ..
-		"speed: " .. self.data.speed
-	, 0, 0, 0, 1, 1)
-	
+	if self.data.debug == false then
+		love.graphics.print(
+			"FPS: "..love.timer.getFPS().."\n"..
+			"time: " .. math.floor(beatmap.audio:tell()*10)/10 .. "\n" ..
+			"speed: " .. self.data.speed
+		, 0, 0, 0, 1, 1)
+	else
+		love.graphics.print(
+			"FPS: "..love.timer.getFPS().."\n"..
+			"scroll: " .. self.data.scroll .. "\n" ..
+			"speed: " .. self.data.speed .. "\n" ..
+			"notes: " .. self.data.drawedNotes .. "\n"
+		, 0, 0, 0, self.data.debugscale, self.data.debugscale)
+	end
 	love.graphics.setColor(255, 255, 255, 255)
 end
 
-function osuClass.drawMenu(self)
-	if self.data.menu.state == "onscreen" then
-		love.graphics.draw(self.data.menu.sprite, 0, 0, 0, love.graphics.getHeight() / self.data.menu.sprite:getWidth(), love.graphics.getHeight() / self.data.menu.sprite:getHeight())
-		love.graphics.draw(self.data.menu.backsprite, 0, love.graphics.getWidth() - self.data.menu.backsprite:getHeight() * (love.graphics.getHeight() / self.data.menu.backsprite:getWidth()), 0, love.graphics.getHeight() / self.data.menu.backsprite:getWidth(), love.graphics.getHeight() / self.data.menu.backsprite:getWidth())
+function osuClass.beat(self, state)
+	if state == 1 then
+		self.data.debugscale = 0.85
+	elseif state == 0 then
+		if self.data.debugscale < 1 then self.data.debugscale = self.data.debugscale + 0.002 end
 	end
+	
 end
 
 function osuClass.start(self)
@@ -141,6 +151,7 @@ function osuClass.drawBackground(self)
 end
 
 function osuClass.drawNotes(self) --330fps
+	self:beat(0)
 	local beatmap = self.data.beatmap
 	local scroll = self.data.scroll
 	local speed = self.data.speed
@@ -174,14 +185,15 @@ function osuClass.drawNotes(self) --330fps
 	update({[1] = true})
 	scale.y = globalscale * ColumnWidth[1] / drawable.note:getWidth()
 	function isslider(note, key) if note[key] ~= nil and note[key] ~= true then return true else return false end end
+	self.data.drawedNotes = 0
 	for notetime = scroll-100, scroll + love.graphics.getWidth() / speed do
 		note = beatmap.HitObjects[notetime]
 		for j = 1, keymode do 
 			if note ~= nil then
 				if note[j] ~= nil then
-					if notetime <= scroll and (note[j] == nil or note[j] == true) then note[j] = nil end
-					onscreen = false
+					if notetime <= scroll and (note[j] == nil or note[j] == true) then note[j] = nil; self:beat(1) end
 					update(note, j)
+					self.data.drawedNotes = self.data.drawedNotes + 1
 					love.graphics.draw(drawable.note, offset.x + x, offset.y + self.data.height - (notetime - scroll) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
 					if isslider(note, j) then
 						if notetime < scroll then
