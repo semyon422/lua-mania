@@ -34,6 +34,7 @@ function love.load()
 		keyboard = require(pathprefix .. "keyboard"),
 		darkness = 60,
 		beatmap = {},
+		currentsliders = {},
 		scroll = 0,
 		speed = 1,
 		globalscale = love.graphics.getHeight()/(36*4),
@@ -56,6 +57,7 @@ function love.load()
 		currentmapset = 2,
 		currentbeatmap = 1,
 		font = love.graphics.newFont("res/OpenSansLight.ttf", love.graphics.getWidth()/16),
+		
 	}
 	love.graphics.setFont(data.font)
 	osu = osuClass.new(data)

@@ -147,6 +147,7 @@ function osuClass.drawNotes(self) --330fps
 	local skin = self.data.skin
 	local offset = self.data.offset
 	local globalscale = self.data.globalscale
+	local currentsliders = self.data.currentsliders
 	
 	keymode = tonumber(beatmap.General["CircleSize"])
 	
@@ -155,38 +156,47 @@ function osuClass.drawNotes(self) --330fps
 	ColumnLineWidth = skin.config.ColumnLineWidth[keymode]
 	drawable = {}
 	scale = {}
-	function update(note)
-		drawable.note = skin.sprites.mania.note[ColumnColours[note[1]]]
-		drawable.slider = skin.sprites.mania.sustain[ColumnColours[note[1]]]
-		scale.x = globalscale * ColumnWidth[note[1]] / drawable.note:getWidth()
+	function update(note, key)
+		if key == nil then
+			for i = 1, keymode do
+				if note[i] ~= nil then key = i end
+			end
+		end
+		drawable.note = skin.sprites.mania.note[ColumnColours[key]]
+		drawable.slider = skin.sprites.mania.sustain[ColumnColours[key]]
+		scale.x = globalscale * ColumnWidth[key] / drawable.note:getWidth()
 		x = ColumnLineWidth[1]
-		for j = 1, note[1] - 1 do
+		for j = 1, key - 1 do
 			x = x + ColumnWidth[j] + ColumnLineWidth[j + 1]
 		end
 		x = x * globalscale
 	end
-	update(beatmap.HitObjects[beatmap.HitObjects.firstnote])
+	update({[1] = true})
 	scale.y = globalscale * ColumnWidth[1] / drawable.note:getWidth()
-	function isslider(note) if i == nil then return false else return true end end
-	for i = scroll, scroll + love.graphics.getWidth() / speed do
-		note = beatmap.HitObjects[i]
-		if note ~= nil then
-			onscreen = false
-			update(note)
-			--if (((i - scroll) * speed >= offset.y) and
-			if ((i - scroll) * speed <= self.data.height + offset.y) then
-				love.graphics.draw(drawable.note, offset.x + x, offset.y + self.data.height - (i - scroll) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
-				onscreen = true
-			end
-			if isslider(note) then
-				if (((note[2] - scroll) * speed >= offset.y) and
-					((note[2] - scroll) * speed <= self.data.height + offset.y)) then
-					love.graphics.draw(drawable.note, offset.x + x, offset.y + self.data.height - (note[2] - scroll) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
-					onscreen = true
-				end
-				if ((((note[2] - scroll) * speed >= self.data.height + offset.y) and
-					(((i - scroll) * speed <= offset.y)))) or onscreen then
-					love.graphics.draw(drawable.slider, offset.x + x, offset.y + self.data.height - (note[2] - scroll) * speed, 0, scale.x, (note[2] - i - drawable.note:getHeight())/drawable.slider:getHeight() * speed)
+	function isslider(note, key) if note[key] ~= nil and note[key] ~= true then return true else return false end end
+	for notetime = scroll-100, scroll + love.graphics.getWidth() / speed do
+		note = beatmap.HitObjects[notetime]
+		for j = 1, keymode do 
+			if note ~= nil then
+				if note[j] ~= nil then
+					if notetime <= scroll and (note[j] == nil or note[j] == true) then note[j] = nil end
+					onscreen = false
+					update(note, j)
+					love.graphics.draw(drawable.note, offset.x + x, offset.y + self.data.height - (notetime - scroll) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+					if isslider(note, j) then
+						if notetime < scroll then
+							if beatmap.HitObjects[scroll] == nil then beatmap.HitObjects[scroll] = {} end
+							beatmap.HitObjects[scroll][j] = note[j]
+							beatmap.HitObjects[notetime][j] = nil
+							if beatmap.HitObjects[scroll][j] <= scroll then
+								beatmap.HitObjects[scroll][j] = nil
+							end
+						end
+						if isslider(note, j) then
+						love.graphics.draw(drawable.note, offset.x + x, offset.y + self.data.height - (note[j] - scroll) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+						love.graphics.draw(drawable.slider, offset.x + x, offset.y + self.data.height - (note[j] - scroll) * speed, 0, scale.x, (note[j] - notetime - drawable.note:getHeight())/drawable.slider:getHeight() * speed)
+						end
+					end
 				end
 			end
 		end
@@ -288,7 +298,6 @@ function osuClass.convertBeatmap(self)
 		#explode("Editor", beatmap.raw.array[globalLine]) == 2 or
 		#explode("Metadata", beatmap.raw.array[globalLine]) == 2 or
 		#explode("Difficulty", beatmap.raw.array[globalLine]) == 2 or
-		#explode("General", beatmap.raw.array[globalLine]) == 2 or
 		#explode("General", beatmap.raw.array[globalLine]) == 2 then
 			for offset = globalLine + 1, #beatmap.raw.array - globalLine do
 				localLine = offset - globalLine
@@ -300,6 +309,7 @@ function osuClass.convertBeatmap(self)
 				end
 			end
 		end
+		beatmap.General["CircleSize"] = 4
 		if #explode("HitObjects", beatmap.raw.array[globalLine]) == 2 then
 			--[[
 			for offset = globalLine + 1, #beatmap.raw.array - globalLine do
@@ -327,17 +337,21 @@ function osuClass.convertBeatmap(self)
 			for offset = globalLine + 1, #beatmap.raw.array - globalLine do
 				localLine = offset - globalLine
 				beatmap.raw.HitObjects[localLine] = explode(",", beatmap.raw.array[offset])
-				beatmap.HitObjects[tonumber(beatmap.raw.HitObjects[localLine][3])] = {}
+				time = tonumber(beatmap.raw.HitObjects[localLine][3])
+				if beatmap.HitObjects[time] == nil then
+					beatmap.HitObjects[time] = {test = 1}
+				end
 				keymode = tonumber(beatmap.General["CircleSize"])
 				interval = 512/keymode
 				beatmap.raw.HitObjects[localLine][1] = tonumber(beatmap.raw.HitObjects[localLine][1])
 				for key = 1, keymode do
 					if beatmap.raw.HitObjects[localLine][1] >= key * interval - interval and beatmap.raw.HitObjects[localLine][1] < key * interval then
-						beatmap.HitObjects[tonumber(beatmap.raw.HitObjects[localLine][3])][1] = tonumber(key)
+						curkey = tonumber(key)
 					end
 				end
+				beatmap.HitObjects[time][curkey] = true
 				if beatmap.raw.HitObjects[localLine][4] == "128" then
-					beatmap.HitObjects[tonumber(beatmap.raw.HitObjects[localLine][3])][2] = tonumber(explode(":", beatmap.raw.HitObjects[localLine][6])[1])
+					beatmap.HitObjects[time][curkey] = tonumber(explode(":", beatmap.raw.HitObjects[localLine][6])[1])
 				end
 				if string.find(beatmap.raw.array[offset], "[", 1, true) then
 					break
