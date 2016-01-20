@@ -33,7 +33,15 @@ function osuClass.drawHUD(self)
 		love.graphics.print(
 			"FPS: "..love.timer.getFPS().."\n"..
 			"time: " .. math.floor(beatmap.audio:tell()*10)/10 .. "\n" ..
-			"speed: " .. self.data.speed
+			"speed: " .. self.data.speed .. "\n" ..
+			"mark: " .. self.data.mark .. "\n" ..
+			"miss: " .. self.data.marks[6] .. "\n" ..
+			"50: " .. self.data.marks[5] .. "\n" ..
+			"100: " .. self.data.marks[4] .. "\n" ..
+			"200: " .. self.data.marks[3] .. "\n" ..
+			"300: " .. self.data.marks[2] .. "\n" ..
+			"MAX: " .. self.data.marks[1] .. "\n" ..
+			"Combo: " .. self.data.combo
 		, 0, 0, 0, 1, 1)
 	else
 		love.graphics.print(
@@ -86,6 +94,33 @@ function osuClass.pause(self)
 	beatmap.audio:pause()
 end
 
+function osuClass.hit(self, ms, key)
+	if math.abs(self.data.currentnotes[key][1] - self.data.scroll) <= 16 then 
+		self.data.mark = "MAX"
+		self.data.marks[1] = self.data.marks[1] + 1
+	elseif math.abs(self.data.currentnotes[key][1] - self.data.scroll) <= 64 then 
+		self.data.mark = "300"
+		self.data.marks[2] = self.data.marks[2] + 1
+	elseif math.abs(self.data.currentnotes[key][1] - self.data.scroll) <= 97 then 
+		self.data.mark = "200"
+		self.data.marks[3] = self.data.marks[3] + 1
+	elseif math.abs(self.data.currentnotes[key][1] - self.data.scroll) <= 127 then 
+		self.data.mark = "100"
+		self.data.marks[4] = self.data.marks[4] + 1
+	elseif math.abs(self.data.currentnotes[key][1] - self.data.scroll) <= 151 then 
+		self.data.mark = "50"
+		self.data.marks[5] = self.data.marks[5] + 1
+	elseif math.abs(self.data.currentnotes[key][1] - self.data.scroll) <= 188 then 
+		self.data.mark = "miss"
+		self.data.marks[6] = self.data.marks[6] + 1
+		self.data.combo = 0
+	end
+	if math.abs(self.data.currentnotes[key][1] - self.data.scroll) <= 188 then 
+		self.data.combo = self.data.combo + 1
+		self.data.beatmap.HitObjects[self.data.currentnotes[key][1]] = nil
+		self.data.currentnotes[key][1] = nil
+	end
+end
 
 function osuClass.keyboard(self)
 	local dt = self.data.dt
@@ -95,18 +130,20 @@ function osuClass.keyboard(self)
 	local keyboard = self.data.keyboard
 
 	
-	if love.keyboard.isDown(keyboard.key.start) then
-		self:start()
+	
+	for keynumber,key in pairs(keyboard.maniaLayouts[4]) do
+		if love.keyboard.isDown(key) then
+			if self.data.keylocks[keynumber] == 0 then
+				if self.data.currentnotes[keynumber][1] ~= nil then
+					self:hit(self.data.currentnotes[keynumber][1] - self.data.scroll, keynumber)
+				end
+			end
+			self.data.keylocks[keynumber] = 1
+		else
+			self.data.keylocks[keynumber] = 0
+		end
 	end
-	if love.keyboard.isDown(keyboard.key.stop) then
-		self:stop()
-	end
-	if love.keyboard.isDown(keyboard.key.play) then
-		self:play()
-	end
-	if love.keyboard.isDown(keyboard.key.pause) then
-		self:pause()
-	end
+	
 	
 
 	if self.data.play == 1 then
@@ -117,6 +154,7 @@ function osuClass.keyboard(self)
 		self.data.starttime = math.floor(love.timer.getTime() * 1000 - self.data.scroll)
 	end
 end
+
 
 
 function osuClass.drawBackground(self)
@@ -150,8 +188,7 @@ function osuClass.drawBackground(self)
 	
 end
 
-function osuClass.drawNotes(self) --330fps
-	self:beat(0)
+function osuClass.drawNotes(self)
 	local beatmap = self.data.beatmap
 	local scroll = self.data.scroll
 	local speed = self.data.speed
@@ -159,6 +196,7 @@ function osuClass.drawNotes(self) --330fps
 	local offset = self.data.offset
 	local globalscale = self.data.globalscale
 	local currentsliders = self.data.currentsliders
+	
 	
 	keymode = tonumber(beatmap.General["CircleSize"])
 	
@@ -186,12 +224,20 @@ function osuClass.drawNotes(self) --330fps
 	scale.y = globalscale * ColumnWidth[1] / drawable.note:getWidth()
 	function isslider(note, key) if note[key] ~= nil and note[key] ~= true then return true else return false end end
 	self.data.drawedNotes = 0
-	for notetime = scroll-100, scroll + love.graphics.getWidth() / speed do
+	for notetime = scroll-200, scroll + self.data.height / speed do
 		note = beatmap.HitObjects[notetime]
 		for j = 1, keymode do 
 			if note ~= nil then
 				if note[j] ~= nil then
-					if notetime <= scroll and (note[j] == nil or note[j] == true) then note[j] = nil; self:beat(1) end
+					--if notetime <= scroll and (note[j] == nil or note[j] == true) then note[j] = nil; self:beat(1) end
+					if notetime <= scroll-151 then note[j] = nil; self.data.combo = 0; self.data.marks[6] = self.data.marks[6] + 1 end
+					
+					if self.data.currentnotes[j][1] ~= nil then
+						if self.data.currentnotes[j][1] > notetime then self.data.currentnotes[j] = {notetime, note[j]} end
+						if self.data.currentnotes[j][1] + 188 < scroll then self.data.currentnotes[j][1] = nil end
+					else
+						self.data.currentnotes[j] = {notetime, note[j]}
+					end
 					update(note, j)
 					self.data.drawedNotes = self.data.drawedNotes + 1
 					love.graphics.draw(drawable.note, offset.x + x, offset.y + self.data.height - (notetime - scroll) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
@@ -215,7 +261,7 @@ function osuClass.drawNotes(self) --330fps
 	end
 end
 
-function osuClass.drawUI(self) --12fps
+function osuClass.drawUI(self)
 	beatmap = self.data.beatmap
 	skin = self.data.skin
 	offset = self.data.offset

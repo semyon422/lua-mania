@@ -25,7 +25,7 @@ function love.load()
 		ui = {
 			menu = require(pathprefix .. "menu"),
 			currentMenu = "mainMenu",
-			mode = "portrait",
+			mode = 0,
 			buttoncount = 6,
 			offset = 1/16,
 			menuState = true,
@@ -36,11 +36,12 @@ function love.load()
 		keyboard = require(pathprefix .. "keyboard"),
 		darkness = 60,
 		beatmap = {},
+		currentnotes = {{},{},{},{}},
 		currentsliders = {},
 		scroll = 0,
 		speed = 1,
 		globalscale = love.graphics.getHeight()/(36*4),
-		mode = "smartphone",
+		mode = "pc",
 		play = 0,
 		offset = {
 			x = 100,
@@ -60,8 +61,12 @@ function love.load()
 		currentbeatmap = 1,
 		fontsize = love.graphics.getWidth()/16,
 		debugscale = 1,
+		mark = 0,
+		marks = {0,0,0,0,0,0},
+		combo = 0,
+		keylocks = {}
 	}
-	data.font = love.graphics.newFont("res/OpenSansLight.ttf", love.graphics.getWidth()/16)
+	data.font = love.graphics.newFont("res/OpenSansLight.ttf", love.graphics.getWidth()/24)
 	love.graphics.setFont(data.font)
 	osu = osuClass.new(data)
 	ui = uiClass.new(data.ui)
@@ -72,8 +77,10 @@ function love.load()
 	--data.menu.backsprite = love.graphics.newImage("res/back.png")
 	if love.system.getOS() == "Windows" then
 		mappathprefix = ""
+		data.ui.mode = 0
 	elseif love.system.getOS() == "Android" then
 		mappathprefix = "/sdcard/lovegame/"
+		data.ui.mode = 1
 	else
 		mappathprefix = ""
 	end
@@ -84,20 +91,25 @@ function love.load()
 	
 	loaded = true
 end
-function love.keypressed(key)
-	if key == "escape" then
-		love.event.quit()
-	end
-end
 function love.update(dt)
 	if loaded ~= true then love.load() end
 	data.dt = dt
-	
 	osu:keyboard()
+	osu:beat(0)
+	
 end
 function love.draw()
-	love.graphics.rotate(-math.pi/2)
-	love.graphics.translate(-love.graphics.getHeight(), 0)
+	if data.ui.mode == 1 then
+		data.height = love.graphics.getWidth()
+		data.width = love.graphics.getHeight()
+		data.globalscale = love.graphics.getHeight()/(36*4)
+		love.graphics.rotate(-math.pi/2)
+		love.graphics.translate(-love.graphics.getHeight(), 0)
+	else
+		data.height = love.graphics.getHeight()
+		data.width = love.graphics.getWidth()
+		data.globalscale = love.graphics.getWidth()/(36*4)
+	end
 	osu:drawBackground()
 	osu:drawUI()
 	osu:drawNotes()
