@@ -24,11 +24,13 @@ function love.load()
 		mania = {},
 		ui = {
 			menu = require(pathprefix .. "menu"),
+			circlemenu = require(pathprefix .. "circlemenu"),
 			currentMenu = "mainMenu",
 			mode = 0,
 			buttoncount = 6,
 			offset = 1/16,
-			menuState = true,
+			menuState = false,
+			currentcircleMenu = "mainmenu1"
 		},
 		debug = false,
 		drawedNotes = 0,
@@ -64,7 +66,27 @@ function love.load()
 		mark = 0,
 		marks = {0,0,0,0,0,0},
 		combo = 0,
-		keylocks = {}
+		keylocks = {},
+		stage = 1, --1-mm, 2-sl, 3-p
+		mainmenu = {
+			logoradius = 1/3*love.graphics.getHeight(),
+			logofontsize = love.graphics.getHeight()/18,
+			logofont = love.graphics.newFont("res/fonts/OpenSans/OpenSansLight/OpenSansLight.ttf", love.graphics.getHeight()/18),
+			logoscale = 1,
+			coordX = love.graphics.getWidth()/2,
+			coordY = love.graphics.getHeight()/2,
+			buttonradius = 1/9*love.graphics.getHeight(),
+		}
+	}
+	data.mainmenu.buttoncoords = {
+		[1] = {love.graphics.getWidth()/2 + 1.1 * data.mainmenu.buttonradius, love.graphics.getHeight()/2 - 1.1 * data.mainmenu.buttonradius},
+		[2] = {love.graphics.getWidth()/2 + 1.1 * love.graphics.getHeight()/3, love.graphics.getHeight()/2 - 1.1 * data.mainmenu.buttonradius},
+		[3] = {love.graphics.getWidth()/2 + 1.1 * data.mainmenu.buttonradius, love.graphics.getHeight()/2 + 1.1 * data.mainmenu.buttonradius},
+	}
+	data.mainmenu.buttonactions = {
+		[1] = function() data.ui.currentMenu = "songs1"; data.ui.menuState = true; data.stage = 2 end,
+		[2] = function() data.ui.currentMenu = "options"; data.ui.menuState = true end,
+		[3] = function() love.event.quit() end,
 	}
 	data.font = love.graphics.newFont("res/OpenSansLight.ttf", love.graphics.getWidth()/24)
 	love.graphics.setFont(data.font)
@@ -85,10 +107,12 @@ function love.load()
 		mappathprefix = ""
 	end
 	
-	osu:loadBeatmap(mappathprefix .. "res/Songs/" .. data.cache[data.currentmapset].folder, data.cache[data.currentmapset].maps[data.currentbeatmap])
+	--osu:loadBeatmap(mappathprefix .. "res/Songs/" .. data.cache[data.currentmapset].folder, data.cache[data.currentmapset].maps[data.currentbeatmap])
 	
-	data.beatmap.audio = love.audio.newSource("res/Songs/" .. data.cache[data.currentmapset].folder .. "/" .. data.cache[data.currentmapset].audio)
+	--data.beatmap.audio = love.audio.newSource("res/Songs/" .. data.cache[data.currentmapset].folder .. "/" .. data.cache[data.currentmapset].audio)
 	
+	love.graphics.setBackgroundColor(63,63,63)
+	love.graphics.setColor(255,255,255,255)
 	loaded = true
 end
 function love.update(dt)
@@ -110,10 +134,18 @@ function love.draw()
 		data.width = love.graphics.getWidth()
 		data.globalscale = love.graphics.getWidth()/(36*4)
 	end
-	osu:drawBackground()
+	--osu:drawBackground()
+	if data.stage == 1 then
+	ui:mainMenu()
+	ui:menu()
+	elseif data.stage == 2 then
+	ui:songs()
+	
+	elseif data.stage == 3 then
 	osu:drawUI()
 	osu:drawNotes()
 	osu:drawHUD()
-	--osu:drawMenu()
 	ui:menu()
+	
+	end
 end

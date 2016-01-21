@@ -29,7 +29,8 @@ function uiClass.welcome(self)
 end
 
 function uiClass.mainMenu(self)
-
+	self.data.circlemenu[self.data.currentcircleMenu].action()
+	--self:menu()
 end
 
 function uiClass.options(self)
@@ -37,7 +38,7 @@ function uiClass.options(self)
 end
 
 function uiClass.songs(self)
-
+	self:menu()
 end
 
 function uiClass.play(self)
@@ -65,11 +66,11 @@ function uiClass.menu(self)
 	
 	if self.data.menuState then
 		buttonheight = (data.height - offset * data.width) / buttoncount - offset * data.width
-		love.graphics.setColor(34, 39, 43, 128)
-		love.graphics.rectangle("fill", 0, 0, data.width, data.height)
+		--love.graphics.setColor(220, 220, 206, 128)
+		--love.graphics.rectangle("fill", 0, 0, data.width, data.height)
 		
 		for i = 1, buttoncount do
-			love.graphics.setColor(40, 44, 53, 128)
+			love.graphics.setColor(206, 223, 153, 128)
 			love.graphics.rectangle("fill", offset * data.width, offset * data.width + (i - 1) * (offset * data.width + buttonheight), data.width - 2 * offset * data.width, buttonheight)
 			love.graphics.setColor(255,255,255,255)
 			centreX = data.width / 2
@@ -101,7 +102,7 @@ function uiClass.menu(self)
 			end
 		end
 	end
-	if self.data.menuState == false then
+	if self.data.menuState == false and data.beatmap.audio then
 		function love.mousepressed(x, y, button, istouch)
 			self.data.menuState = true
 			self.data.currentMenu = "pause"
@@ -109,9 +110,3 @@ function uiClass.menu(self)
 		end
 	end
 end
-
-
-
-
-
-

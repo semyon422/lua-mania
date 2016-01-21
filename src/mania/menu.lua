@@ -26,7 +26,7 @@ local menu = {
 		},
 		[3] = {
 			text = "back to menu",
-			action = function() osu:stop(); data.ui.currentMenu = "songs1" end
+			action = function() osu:stop(); data.ui.currentMenu = "songs1"; data.stage = 2 end
 		}
 	},
 	["options"] = {
@@ -45,7 +45,7 @@ local menu = {
 		},
 		[4] = {
 			text = "back",
-			action = function() data.ui.currentMenu = "mainMenu" end
+			action = function() data.ui.currentMenu = "mainMenu"; data.ui.menuState = false end
 		}
 	},
 	["speed"] = {
@@ -101,6 +101,7 @@ local menu = {
 				data.ui.menuState = false
 				osu:reloadBeatmap(1,1)
 				osu:play()
+				data.stage = 3
 			end
 		},
 		[2] = {
@@ -109,6 +110,7 @@ local menu = {
 				data.ui.menuState = false
 				osu:reloadBeatmap(2,1)
 				osu:play()
+				data.stage = 3
 			end
 		},
 		[3] = {
@@ -117,6 +119,7 @@ local menu = {
 				data.ui.menuState = false
 				osu:reloadBeatmap(3,1)
 				osu:play()
+				data.stage = 3
 			end
 		},
 		[4] = {
@@ -125,6 +128,7 @@ local menu = {
 				data.ui.menuState = false
 				osu:reloadBeatmap(4,1)
 				osu:play()
+				data.stage = 3
 			end
 		},
 		[5] = {
@@ -133,6 +137,7 @@ local menu = {
 				data.ui.menuState = false
 				osu:reloadBeatmap(5,1)
 				osu:play()
+				data.stage = 3
 			end
 		},
 		[6] = {
@@ -148,6 +153,7 @@ local menu = {
 				data.ui.menuState = false
 				osu:reloadBeatmap(6,1)
 				osu:play()
+				data.stage = 3
 			end
 		},
 		[2] = {
@@ -156,6 +162,7 @@ local menu = {
 				data.ui.menuState = false
 				osu:reloadBeatmap(7,1)
 				osu:play()
+				data.stage = 3
 			end
 		},
 		[3] = {
@@ -164,6 +171,7 @@ local menu = {
 				data.ui.menuState = false
 				osu:reloadBeatmap(8,1)
 				osu:play()
+				data.stage = 3
 			end
 		},
 		[4] = {
@@ -172,11 +180,12 @@ local menu = {
 				data.ui.menuState = false
 				osu:reloadBeatmap(9,1)
 				osu:play()
+				data.stage = 3
 			end
 		},
 		[5] = {
 			text = "main menu",
-			action = function() data.ui.currentMenu = "mainMenu" end
+			action = function() data.ui.currentMenu = "mainMenu"; data.ui.menuState = false; data.stage = 1 end
 		},
 		[6] = {
 			text = "back <-",
