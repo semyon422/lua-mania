@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 --]]
 function love.load()
+	lg = love.graphics
+	lm = love.mouse
 	pathprefix = "src/mania/"
 	mappathprefix = ""
 	require(pathprefix .. "osu")
@@ -42,7 +44,7 @@ function love.load()
 		currentsliders = {},
 		scroll = 0,
 		speed = 1,
-		globalscale = love.graphics.getHeight()/(36*4),
+		globalscale = lg.getHeight()/(36*4),
 		mode = "pc",
 		play = 0,
 		offset = {
@@ -55,13 +57,13 @@ function love.load()
 			fps = 0,
 			mode = "normal"
 		},
-		height = love.graphics.getWidth(),
-		width = love.graphics.getHeight(),
+		height = lg.getWidth(),
+		width = lg.getHeight(),
 		
 		cache = require "res.Songs.cache",
 		currentmapset = 2,
 		currentbeatmap = 1,
-		fontsize = love.graphics.getWidth()/16,
+		fontsize = lg.getWidth()/16,
 		debugscale = 1,
 		mark = 0,
 		marks = {0,0,0,0,0,0},
@@ -69,34 +71,40 @@ function love.load()
 		keylocks = {},
 		stage = 1, --1-mm, 2-sl, 3-p
 		mainmenu = {
-			logoradius = 1/3*love.graphics.getHeight(),
-			logofontsize = love.graphics.getHeight()/18,
-			logofont = love.graphics.newFont("res/fonts/OpenSans/OpenSansLight/OpenSansLight.ttf", love.graphics.getHeight()/18),
+			logoradius = 1/3*lg.getHeight(),
+			logofontsize = lg.getHeight()/18,
+			logofont = lg.newFont("res/fonts/OpenSans/OpenSansLight/OpenSansLight.ttf", lg.getHeight()/18),
 			logoscale = 1,
-			coordX = love.graphics.getWidth()/2,
-			coordY = love.graphics.getHeight()/2,
-			buttonradius = 1/9*love.graphics.getHeight(),
+			coordX = lg.getWidth()/2,
+			coordY = lg.getHeight()/2,
+			buttonradius = 1/9*lg.getHeight(),
+		},
+		cursor = {
+			mx = 0,
+			my = 0,
+			radiusin = 10,
+			radiusout = 20,
 		}
 	}
 	data.mainmenu.buttoncoords = {
-		[1] = {love.graphics.getWidth()/2 + 1.1 * data.mainmenu.buttonradius, love.graphics.getHeight()/2 - 1.1 * data.mainmenu.buttonradius},
-		[2] = {love.graphics.getWidth()/2 + 1.1 * love.graphics.getHeight()/3, love.graphics.getHeight()/2 - 1.1 * data.mainmenu.buttonradius},
-		[3] = {love.graphics.getWidth()/2 + 1.1 * data.mainmenu.buttonradius, love.graphics.getHeight()/2 + 1.1 * data.mainmenu.buttonradius},
+		[1] = {lg.getWidth()/2 + 1.1 * data.mainmenu.buttonradius, lg.getHeight()/2 - 1.1 * data.mainmenu.buttonradius},
+		[2] = {lg.getWidth()/2 + 1.1 * lg.getHeight()/3, lg.getHeight()/2 - 1.1 * data.mainmenu.buttonradius},
+		[3] = {lg.getWidth()/2 + 1.1 * data.mainmenu.buttonradius, lg.getHeight()/2 + 1.1 * data.mainmenu.buttonradius},
 	}
 	data.mainmenu.buttonactions = {
 		[1] = function() data.ui.currentMenu = "songs1"; data.ui.menuState = true; data.stage = 2 end,
 		[2] = function() data.ui.currentMenu = "options"; data.ui.menuState = true end,
 		[3] = function() love.event.quit() end,
 	}
-	data.font = love.graphics.newFont("res/OpenSansLight.ttf", love.graphics.getWidth()/24)
-	love.graphics.setFont(data.font)
+	data.font = lg.newFont("res/OpenSansLight.ttf", lg.getWidth()/24)
+	lg.setFont(data.font)
 	osu = osuClass.new(data)
 	ui = uiClass.new(data.ui)
 	
 	
 	osu:loadSkin("res/Skins/skin-1")
-	--data.menu.sprite = love.graphics.newImage("res/mania-menu.png")
-	--data.menu.backsprite = love.graphics.newImage("res/back.png")
+	--data.menu.sprite = lg.newImage("res/mania-menu.png")
+	--data.menu.backsprite = lg.newImage("res/back.png")
 	if love.system.getOS() == "Windows" then
 		mappathprefix = ""
 		data.ui.mode = 0
@@ -111,12 +119,14 @@ function love.load()
 	
 	--data.beatmap.audio = love.audio.newSource("res/Songs/" .. data.cache[data.currentmapset].folder .. "/" .. data.cache[data.currentmapset].audio)
 	
-	love.graphics.setBackgroundColor(63,63,63)
-	love.graphics.setColor(255,255,255,255)
+	lg.setBackgroundColor(63,63,63)
+	lg.setColor(255,255,255,255)
+	love.mouse.setVisible(false)
 	loaded = true
 end
 function love.update(dt)
 	if loaded ~= true then love.load() end
+	
 	data.dt = dt
 	osu:keyboard()
 	osu:beat(0)
@@ -124,15 +134,15 @@ function love.update(dt)
 end
 function love.draw()
 	if data.ui.mode == 1 then
-		data.height = love.graphics.getWidth()
-		data.width = love.graphics.getHeight()
-		data.globalscale = love.graphics.getHeight()/(36*4)
-		love.graphics.rotate(-math.pi/2)
-		love.graphics.translate(-love.graphics.getHeight(), 0)
+		data.height = lg.getWidth()
+		data.width = lg.getHeight()
+		data.globalscale = lg.getHeight()/(36*4)
+		lg.rotate(-math.pi/2)
+		lg.translate(-lg.getHeight(), 0)
 	else
-		data.height = love.graphics.getHeight()
-		data.width = love.graphics.getWidth()
-		data.globalscale = love.graphics.getWidth()/(36*4)
+		data.height = lg.getHeight()
+		data.width = lg.getWidth()
+		data.globalscale = lg.getWidth()/(36*4)
 	end
 	--osu:drawBackground()
 	if data.stage == 1 then
@@ -148,4 +158,15 @@ function love.draw()
 	ui:menu()
 	
 	end
+	
+	lg.setColor(220,220,204,255)
+	lg.circle("line", data.cursor.mx, data.cursor.my, data.cursor.radiusout, 90)
+	lg.setColor(223, 196, 125, 255)
+	lg.circle("line", data.cursor.mx, data.cursor.my, data.cursor.radiusin, 90)
+	lg.setColor(255,255,255,255)
+end
+
+function love.mousemoved(x, y, dx, dy)
+	data.cursor.mx = x
+	data.cursor.my = y
 end

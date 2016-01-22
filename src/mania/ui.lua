@@ -66,31 +66,31 @@ function uiClass.menu(self)
 	
 	if self.data.menuState then
 		buttonheight = (data.height - offset * data.width) / buttoncount - offset * data.width
-		--love.graphics.setColor(220, 220, 206, 128)
-		--love.graphics.rectangle("fill", 0, 0, data.width, data.height)
+		--lg.setColor(220, 220, 206, 128)
+		--lg.rectangle("fill", 0, 0, data.width, data.height)
 		
 		for i = 1, buttoncount do
-			love.graphics.setColor(206, 223, 153, 128)
-			love.graphics.rectangle("fill", offset * data.width, offset * data.width + (i - 1) * (offset * data.width + buttonheight), data.width - 2 * offset * data.width, buttonheight)
-			love.graphics.setColor(255,255,255,255)
+			lg.setColor(206, 223, 153, 128)
+			lg.rectangle("fill", offset * data.width, offset * data.width + (i - 1) * (offset * data.width + buttonheight), data.width - 2 * offset * data.width, buttonheight)
+			lg.setColor(255,255,255,255)
 			centreX = data.width / 2
 			centreY = offset * data.width + (i - 1) * (offset * data.width + buttonheight) + buttonheight / 2
 			if menuItems[i].picture ~= nil then
 				scale = (data.width - 2 * offset * data.width) / menuItems[i].picture:getWidth()
 				menuItems[i].picture:setFilter("linear","nearest")
-				love.graphics.draw(menuItems[i].picture, centreX, centreY, 0, scale, scale, menuItems[i].picture:getWidth()/2, menuItems[i].picture:getHeight()/2)
+				lg.draw(menuItems[i].picture, centreX, centreY, 0, scale, scale, menuItems[i].picture:getWidth()/2, menuItems[i].picture:getHeight()/2)
 			else
-				love.graphics.print(menuItems[i].text, offset * data.width, offset * data.width + (i - 1) * (offset * data.width + buttonheight))
+				lg.print(menuItems[i].text, offset * data.width, offset * data.width + (i - 1) * (offset * data.width + buttonheight))
 			end
 			if self.data.mode == 1 then
 				self.data.buttoncoords[i] = {
-					{offset * love.graphics.getHeight() + (i - 1) * (offset * love.graphics.getHeight() + buttonheight), offset * love.graphics.getHeight()},
-					{offset * love.graphics.getHeight() + (i - 1) * (offset * love.graphics.getHeight() + buttonheight) + buttonheight, love.graphics.getHeight()*(1 - offset)}
+					{offset * lg.getHeight() + (i - 1) * (offset * lg.getHeight() + buttonheight), offset * lg.getHeight()},
+					{offset * lg.getHeight() + (i - 1) * (offset * lg.getHeight() + buttonheight) + buttonheight, lg.getHeight()*(1 - offset)}
 				}
 			elseif self.data.mode == 0 then
 				self.data.buttoncoords[i] = {
-					{offset * love.graphics.getWidth(), offset * love.graphics.getWidth() + (i - 1) * (offset * love.graphics.getWidth() + buttonheight)},
-					{love.graphics.getWidth()*(1 - offset), offset * love.graphics.getWidth() + (i - 1) * (offset * love.graphics.getWidth() + buttonheight) + buttonheight}
+					{offset * lg.getWidth(), offset * lg.getWidth() + (i - 1) * (offset * lg.getWidth() + buttonheight)},
+					{lg.getWidth()*(1 - offset), offset * lg.getWidth() + (i - 1) * (offset * lg.getWidth() + buttonheight) + buttonheight}
 				}
 			end
 		end
