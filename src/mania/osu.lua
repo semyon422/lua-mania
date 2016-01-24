@@ -95,31 +95,19 @@ function osuClass.pause(self)
 end
 
 function osuClass.hit(self, ms, key, rm)
-	if ms <= 16 then 
-		self.data.mark = "MAX"
-		self.data.marks[1] = self.data.marks[1] + 1
-	elseif ms <= 64 then 
-		self.data.mark = "300"
-		self.data.marks[2] = self.data.marks[2] + 1
-	elseif ms <= 97 then 
-		self.data.mark = "200"
-		self.data.marks[3] = self.data.marks[3] + 1
-	elseif ms <= 127 then 
-		self.data.mark = "100"
-		self.data.marks[4] = self.data.marks[4] + 1
-	elseif ms <= 151 then 
-		self.data.mark = "50"
-		self.data.marks[5] = self.data.marks[5] + 1
-	elseif ms <= 188 then 
-		self.data.mark = "miss"
-		self.data.marks[6] = self.data.marks[6] + 1
-		self.data.combo = 0
+	for i = 1, #self.data.od do
+		if math.abs(ms) <= self.data.od[i] then 
+			self.data.mark = i
+			self.data.marks[i] = self.data.marks[i] + 1
+			if i == #self.data.od then self.data.combo = 0 end
+			break
+		end
 	end
-	if ms <= 188 then 
+	if math.abs(ms) <= self.data.od[#self.data.od - 1] then 
 		self.data.combo = self.data.combo + 1
 		if self.data.currentnotes[key][1] == 2 then
 			self.data.currentnotes[key][1] = 3
-			self.data.currentnotes[key][4] = -ms
+			self.data.currentnotes[key][4] = ms
 		elseif self.data.currentnotes[key][1] == 3 and rm then
 			self.data.currentnotes[key] = {}
 		elseif self.data.currentnotes[key][1] == 3 then
@@ -147,7 +135,7 @@ function osuClass.keyboard(self)
 		if love.keyboard.isDown(key) then
 			if self.data.keylocks[keynumber] == 0 then
 				if self.data.currentnotes[keynumber][1] ~= nil then
-					self:hit(math.abs(self.data.currentnotes[keynumber][2] - self.data.scroll), keynumber)
+					self:hit(self.data.currentnotes[keynumber][2] - self.data.scroll, keynumber)
 				end
 			end
 			self.data.keylocks[keynumber] = 1
@@ -217,19 +205,16 @@ function osuClass.drawNotes(self)
 	drawable = {}
 	scale = {}
 	function update(key)
-		if key == nil then
-			key = 1
-		end
 		drawable.note = skin.sprites.mania.note[ColumnColours[key]]
 		drawable.slider = skin.sprites.mania.sustain[ColumnColours[key]]
 		scale.x = globalscale * ColumnWidth[key] / drawable.note:getWidth()
-		x = ColumnLineWidth[1]
+		x = ColumnLineWidth[1] + skin.config.ColumnStart[keymode]
 		for j = 1, key - 1 do
 			x = x + ColumnWidth[j] + ColumnLineWidth[j + 1]
 		end
 		x = x * globalscale
 	end
-	update()
+	update(1)
 	scale.y = globalscale * ColumnWidth[1] / drawable.note:getWidth()
 	
 	self.data.drawedNotes = 0
@@ -240,12 +225,12 @@ function osuClass.drawNotes(self)
 				if note[j] ~= nil then
 					if note[j][1] == 1 then
 						
-						if notetime < scroll+188 and self.data.currentnotes[j][1] == nil then
+						if notetime <= scroll + self.data.od[#self.data.od] and self.data.currentnotes[j][1] == nil then
 							self.data.currentnotes[j] = {note[j][1], note[j][2], note[j][3], note[j][4]}
 							note[j][1] = 0
 						end
 						
-						if note[j][1] ~= 0 then
+						if note[j][1] == 1 then
 							update(j)
 							lg.draw(drawable.note, offset.x + x, offset.y + self.data.height - (notetime - scroll) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
 							
@@ -254,7 +239,7 @@ function osuClass.drawNotes(self)
 					end
 					if note[j][1] == 2 then
 					
-						if notetime < scroll+188 then
+						if notetime <= scroll + self.data.od[#self.data.od] and self.data.currentnotes[j][1] == nil then
 							self.data.currentnotes[j] = {note[j][1], note[j][2], note[j][3], note[j][4]}
 							note[j][1] = 0
 						end
@@ -275,13 +260,13 @@ function osuClass.drawNotes(self)
 		if self.data.currentnotes[j] ~= nil then
 			if self.data.currentnotes[j][1] == 1 then
 			
-				if self.data.currentnotes[j][2] < scroll-151 then
+				if self.data.currentnotes[j][2] < scroll - self.data.od[#self.data.od - 1] then
 					self.data.combo = 0
 					self.data.marks[6] = self.data.marks[6] + 1
 					self.data.currentnotes[j] = {}
 				end
 				
-				if self.data.currentnotes[j][1] ~= nil then
+				if self.data.currentnotes[j][1] == 1 then
 					update(j)
 					lg.draw(drawable.note, offset.x + x, offset.y + self.data.height - (self.data.currentnotes[j][2] - scroll) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
 					
@@ -290,13 +275,15 @@ function osuClass.drawNotes(self)
 			end
 			if self.data.currentnotes[j][1] == 2 then
 				
-				if self.data.currentnotes[j][3] < scroll-151 then
-					self.data.combo = 0
-					self.data.marks[6] = self.data.marks[6] + 1
-					self.data.currentnotes[j] = {}
+				if self.data.currentnotes[j][2] < scroll - self.data.od[#self.data.od - 1] then
+					if self.data.keylocks[j] == 1 then
+						self.data.combo = 0
+						self.data.marks[6] = self.data.marks[6] + 1
+						self.data.currentnotes[j][1] = 3
+					end
 				end
 				
-				if self.data.currentnotes[j][1] ~= nil then
+				if self.data.currentnotes[j][1] == 2 then
 					update(j)
 					local lnscale = (self.data.currentnotes[j][3] - self.data.currentnotes[j][2] - drawable.note:getHeight()*scale.y)/drawable.slider:getHeight() * speed
 					
@@ -307,43 +294,59 @@ function osuClass.drawNotes(self)
 			end
 			if self.data.currentnotes[j][1] == 3 then
 				
-				if self.data.keylocks[j] == 0 and math.abs(self.data.currentnotes[j][3] - self.data.scroll) >= 188 then
+				if self.data.keylocks[j] == 0 and math.abs(self.data.currentnotes[j][3] - self.data.scroll) > self.data.od[#self.data.od - 1] then
 					self.data.combo = 0
 					self.data.marks[6] = self.data.marks[6] + 1
 					self.data.currentnotes[j][1] = 4
 				end
 				
-				if self.data.keylocks[j] == 0 and math.abs(self.data.currentnotes[j][3] - self.data.scroll) <= 155 then
-					self:hit(math.abs(self.data.currentnotes[j][3] - self.data.scroll), j, 1)
+				if self.data.keylocks[j] == 0 and math.abs(self.data.currentnotes[j][3] - self.data.scroll) <= self.data.od[#self.data.od - 1] then
+					self:hit(self.data.currentnotes[j][3] - self.data.scroll, j, 1)
+				end
+				
+				if self.data.keylocks[j] == 1 and self.data.scroll - self.data.currentnotes[j][3] > self.data.od[#self.data.od - 4] then
+					self:hit(self.data.currentnotes[j][3] - self.data.scroll, j, 1)
 				end
 				
 				if self.data.currentnotes[j][1] == 3 then
 					update(j)
-					local lnscale = (self.data.currentnotes[j][3] - self.data.currentnotes[j][2] -  self.data.currentnotes[j][4] - drawable.note:getHeight()*scale.y)/drawable.slider:getHeight() * speed
-					
-					lg.draw(drawable.slider, offset.x + x, offset.y + self.data.height - (self.data.currentnotes[j][3] - scroll) * speed, 0, scale.x, lnscale)
-					lg.draw(drawable.note, offset.x + x, offset.y + self.data.height - self.data.currentnotes[j][4] * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
-					lg.draw(drawable.note, offset.x + x, offset.y + self.data.height - (self.data.currentnotes[j][3] - scroll) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+					local lnscale = (self.data.currentnotes[j][3] - scroll - self.data.currentnotes[j][4] - drawable.note:getHeight()*scale.y)/drawable.slider:getHeight() * speed
+					--if self.data.currentnotes[j][2] > scroll then
+						--lnscale = (self.data.currentnotes[j][3] - self.data.currentnotes[j][2] - drawable.note:getHeight()*scale.y)/drawable.slider:getHeight() * speed
+						--lg.draw(drawable.slider, offset.x + x, offset.y + self.data.height - (self.data.currentnotes[j][3] - scroll) * speed, 0, scale.x, lnscale)
+						--lg.draw(drawable.note, offset.x + x, offset.y + self.data.height - (self.data.currentnotes[j][2] - scroll) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+						--lg.draw(drawable.note, offset.x + x, offset.y + self.data.height - (self.data.currentnotes[j][3] - scroll) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+					--else
+						lg.draw(drawable.slider, offset.x + x, offset.y + self.data.height - (self.data.currentnotes[j][3] - scroll) * speed, 0, scale.x, lnscale)
+						lg.draw(drawable.note, offset.x + x, offset.y + self.data.height - self.data.currentnotes[j][4] * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+						lg.draw(drawable.note, offset.x + x, offset.y + self.data.height - (self.data.currentnotes[j][3] - scroll) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+					--end
 				end
 			end
 			if self.data.currentnotes[j][1] == 4 then
 			
-				if self.data.keylocks[j] == 0 and math.abs(self.data.currentnotes[j][3] - self.data.scroll) >= 188 then
+				if self.data.keylocks[j] == 0 and math.abs(self.data.currentnotes[j][3] - self.data.scroll) > self.data.od[#self.data.od - 1] then
 					self.data.combo = 0
 				end
 				
-				if self.data.keylocks[j] == 0 and math.abs(self.data.currentnotes[j][3] - self.data.scroll) <= 155 then
+				if self.data.keylocks[j] == 0 and self.data.currentnotes[j][3] - self.data.scroll <= -1 * self.data.od[#self.data.od - 1] then
 					self.data.marks[5] = self.data.marks[5] + 1
 					self.data.currentnotes[j] = {}
 				end
 				
-				if self.data.currentnotes[j][1] ~= nil then
+				if self.data.currentnotes[j][1] == 4 then
+					if self.data.currentnotes[j][3] < scroll - self.data.od[#self.data.od - 1] then
+						self.data.currentnotes[j] = {}
+					end
+				end 
+				
+				if self.data.currentnotes[j][1] == 4 then
 					update(j)
-					local lnscale = (self.data.currentnotes[j][3] - self.data.currentnotes[j][2] -  self.data.currentnotes[j][4] - drawable.note:getHeight()*scale.y)/drawable.slider:getHeight() * speed
+					local lnscale = (self.data.currentnotes[j][3] - scroll)/drawable.slider:getHeight() * speed
 					
-					if self.data.keylocks[j] == 1 then
+					if self.data.keylocks[j] == 1 and self.data.currentnotes[j][2] < scroll then
 						lg.draw(drawable.note, offset.x + x, offset.y + self.data.height - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
-						lnscale = (self.data.currentnotes[j][3] - scroll - drawable.note:getHeight()*scale.y)/drawable.slider:getHeight() * speed
+						--lnscale = (self.data.currentnotes[j][3] - scroll - drawable.note:getHeight()*scale.y)/drawable.slider:getHeight() * speed
 					end
 					lg.draw(drawable.slider, offset.x + x, offset.y + self.data.height - (self.data.currentnotes[j][3] - scroll) * speed, 0, scale.x, lnscale)
 					
@@ -369,7 +372,7 @@ function osuClass.drawUI(self)
 	
 	coveerWidth = ColumnLineWidth[1]
 	for i = 1, keymode do
-		x = ColumnLineWidth[1]
+		x = ColumnLineWidth[1] + skin.config.ColumnStart[keymode]
 		for j = 1, i - 1 do
 			x = x + ColumnWidth[j] + ColumnLineWidth[j + 1]
 		end
@@ -391,8 +394,8 @@ function osuClass.drawUI(self)
 	
 
 	lg.setColor(255, 255, 255, 192)
-	lg.draw(skin.sprites.maniaStageLeft, offset.x - skin.sprites.maniaStageLeft:getWidth(), 0, 0)
-	lg.draw(skin.sprites.maniaStageRight, globalscale * coveerWidth + offset.x, 0, 0)
+	--lg.draw(skin.sprites.maniaStageLeft, offset.x - skin.sprites.maniaStageLeft:getWidth(), 0, 0)
+	--lg.draw(skin.sprites.maniaStageRight, globalscale * coveerWidth + offset.x, 0, 0)
 	--lg.draw(skin.sprites.scorebarBG, globalscale * coveerWidth + offset.x + 2, self.data.height, -math.pi/2, 0.7, 0.7)
 	--lg.draw(skin.sprites.scorebarColour, globalscale * coveerWidth + offset.x + 3 + 0.7*(skin.sprites.scorebarBG:getWidth() - skin.sprites.scorebarColour:getWidth()), self.data.height - 5, -math.pi/2, 0.7, 0.7)
 	lg.setColor(255, 255, 255, 255)

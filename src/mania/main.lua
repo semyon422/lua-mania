@@ -44,12 +44,13 @@ function love.load()
 		currentsliders = {},
 		scroll = 0,
 		speed = 1,
-		globalscale = lg.getHeight()/(36*4),
+		--globalscale = lg.getHeight()/(36*4),
+		globalscale = 1,
 		mode = "pc",
 		play = 0,
 		offset = {
 			x = 100,
-			y = 0
+			y =  0
 		},
 		dt = 0,
 		hud = {
@@ -84,7 +85,8 @@ function love.load()
 			my = 0,
 			radiusin = 10,
 			radiusout = 20,
-		}
+		},
+		od = {16, 64, 97, 127, 151, 188}
 	}
 	data.mainmenu.buttoncoords = {
 		[1] = {lg.getWidth()/2 + 1.1 * data.mainmenu.buttonradius, lg.getHeight()/2 - 1.1 * data.mainmenu.buttonradius},
@@ -142,7 +144,7 @@ function love.draw()
 	else
 		data.height = lg.getHeight()
 		data.width = lg.getWidth()
-		data.globalscale = lg.getWidth()/(36*4)
+		data.globalscale = 2
 	end
 	--osu:drawBackground()
 	if data.stage == 1 then
