@@ -25,16 +25,33 @@ function love.load()
 	data = {
 		mania = {},
 		ui = {
-			menu = require(pathprefix .. "menu"),
-			circlemenu = require(pathprefix .. "circlemenu"),
-			currentMenu = "mainMenu",
+			state = 1,
 			mode = 0,
-			buttoncount = 6,
-			offset = 1/16,
-			menuState = false,
-			currentcircleMenu = "mainmenu1"
+			debug = false,
+			
+			mainmenu = {
+				state = 1,
+				menu = require(pathprefix .. "mainmenu"),
+				logo = {
+					radius = 1/3 * lg.getHeight(),
+					fontsize = lg.getHeight() / 18,
+					font = lg.newFont("res/fonts/OpenSans/OpenSansLight/OpenSansLight.ttf", lg.getHeight() / 18),
+					x = lg.getWidth() / 2,
+					y = lg.getHeight() / 2,
+					scale = 1
+				},
+				button = {
+					radius = 1 / 9 * lg.getHeight(),
+				}
+			},
+			
+			simplemenu = {
+				state = "empty",
+				menu = require(pathprefix .. "simplemenu"),
+				onscreen = false,
+				offset = 1/16,
+			},
 		},
-		debug = false,
 		drawedNotes = 0,
 		skin = {},
 		keyboard = require(pathprefix .. "keyboard"),
@@ -46,18 +63,12 @@ function love.load()
 		speed = 1,
 		--globalscale = lg.getHeight()/(36*4),
 		globalscale = 1,
-		mode = "pc",
 		play = 0,
 		offset = {
 			x = 100,
 			y =  0
 		},
 		dt = 0,
-		hud = {
-			frame = 0,
-			fps = 0,
-			mode = "normal"
-		},
 		height = lg.getWidth(),
 		width = lg.getHeight(),
 		
@@ -70,15 +81,8 @@ function love.load()
 		marks = {0,0,0,0,0,0},
 		combo = 0,
 		keylocks = {},
-		stage = 1, --1-mm, 2-sl, 3-p
 		mainmenu = {
-			logoradius = 1/3*lg.getHeight(),
-			logofontsize = lg.getHeight()/18,
-			logofont = lg.newFont("res/fonts/OpenSans/OpenSansLight/OpenSansLight.ttf", lg.getHeight()/18),
-			logoscale = 1,
-			coordX = lg.getWidth()/2,
-			coordY = lg.getHeight()/2,
-			buttonradius = 1/9*lg.getHeight(),
+			
 		},
 		cursor = {
 			mx = 0,
@@ -87,16 +91,6 @@ function love.load()
 			radiusout = 20,
 		},
 		od = {16, 64, 97, 127, 151, 188}
-	}
-	data.mainmenu.buttoncoords = {
-		[1] = {lg.getWidth()/2 + 1.1 * data.mainmenu.buttonradius, lg.getHeight()/2 - 1.1 * data.mainmenu.buttonradius},
-		[2] = {lg.getWidth()/2 + 1.1 * lg.getHeight()/3, lg.getHeight()/2 - 1.1 * data.mainmenu.buttonradius},
-		[3] = {lg.getWidth()/2 + 1.1 * data.mainmenu.buttonradius, lg.getHeight()/2 + 1.1 * data.mainmenu.buttonradius},
-	}
-	data.mainmenu.buttonactions = {
-		[1] = function() data.ui.currentMenu = "songs1"; data.ui.menuState = true; data.stage = 2 end,
-		[2] = function() data.ui.currentMenu = "options"; data.ui.menuState = true end,
-		[3] = function() love.event.quit() end,
 	}
 	data.font = lg.newFont("res/OpenSansLight.ttf", lg.getWidth()/24)
 	lg.setFont(data.font)
@@ -147,18 +141,16 @@ function love.draw()
 		data.globalscale = 2
 	end
 	--osu:drawBackground()
-	if data.stage == 1 then
-	ui:mainMenu()
-	ui:menu()
-	elseif data.stage == 2 then
-	ui:songs()
-	
-	elseif data.stage == 3 then
-	osu:drawUI()
-	osu:drawNotes()
-	osu:drawHUD()
-	ui:menu()
-	
+	if data.ui.state == 1 then
+		ui:mainmenu()
+		ui:simplemenu()
+	elseif data.ui.state == 2 then
+		ui:songs()
+	elseif data.ui.state == 3 then
+		osu:drawUI()
+		osu:drawNotes()
+		osu:drawHUD()
+		ui:simplemenu()
 	end
 	
 	lg.setColor(220,220,204,255)

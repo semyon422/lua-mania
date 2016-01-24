@@ -29,7 +29,7 @@ function osuClass.drawHUD(self)
 	local dt = self.data.dt
 	
 	lg.setColor(255, 255, 255, 255)
-	if self.data.debug == false then
+	if self.data.ui.debug == false then
 		lg.print(
 			"FPS: "..love.timer.getFPS().."\n"..
 			"time: " .. math.floor(beatmap.audio:tell()*10)/10 .. "\n" ..
@@ -283,6 +283,12 @@ function osuClass.drawNotes(self)
 					end
 				end
 				
+				if self.data.currentnotes[j][3] < scroll - self.data.od[#self.data.od - 1] then
+					self.data.combo = 0
+					self.data.marks[6] = self.data.marks[6] + 1
+					self.data.currentnotes[j] = {}
+				end
+				
 				if self.data.currentnotes[j][1] == 2 then
 					update(j)
 					local lnscale = (self.data.currentnotes[j][3] - self.data.currentnotes[j][2] - drawable.note:getHeight()*scale.y)/drawable.slider:getHeight() * speed
@@ -474,7 +480,7 @@ function osuClass.convertBeatmap(self)
 				local key = nil
 				local type = nil
 				local endtime = nil
-				local timeoffset = nil
+				local timeoffset = 0
 				
 				localLine = offset - globalLine
 				beatmap.raw.HitObjects[localLine] = explode(",", beatmap.raw.array[offset])

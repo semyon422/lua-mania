@@ -28,8 +28,8 @@ function uiClass.welcome(self)
 
 end
 
-function uiClass.mainMenu(self)
-	self.data.circlemenu[self.data.currentcircleMenu].action()
+function uiClass.mainmenu(self)
+	data.ui.mainmenu.menu[data.ui.mainmenu.state].action()
 	--self:menu()
 end
 
@@ -38,7 +38,7 @@ function uiClass.options(self)
 end
 
 function uiClass.songs(self)
-	self:menu()
+	self:simplemenu()
 end
 
 function uiClass.play(self)
@@ -54,17 +54,16 @@ function uiClass.fail(self)
 end
 
 
-function uiClass.menu(self)
+function uiClass.simplemenu(self)
 	local mode = self.data.mode
-	local buttoncount = self.data.buttoncount
-	local buttoncount = #self.data.menu[self.data.currentMenu]
-	local offset = self.data.offset
-	local menuItems = self.data.menu[self.data.currentMenu]
+	local buttoncount = #self.data.simplemenu.menu[self.data.simplemenu.state]
+	local offset = self.data.simplemenu.offset
+	local menuItems = self.data.simplemenu.menu[self.data.simplemenu.state]
 	self.data.buttoncoords = {}
 
 	local buttonheight = nil
 	
-	if self.data.menuState then
+	if data.ui.simplemenu.onscreen then
 		buttonheight = (data.height - offset * data.width) / buttoncount - offset * data.width
 		--lg.setColor(220, 220, 206, 128)
 		--lg.rectangle("fill", 0, 0, data.width, data.height)
@@ -102,10 +101,10 @@ function uiClass.menu(self)
 			end
 		end
 	end
-	if self.data.menuState == false and data.beatmap.audio then
+	if data.ui.simplemenu.onscreen == false and data.beatmap.audio then
 		function love.mousepressed(x, y, button, istouch)
-			self.data.menuState = true
-			self.data.currentMenu = "pause"
+			data.ui.simplemenu.onscreen = true
+			data.ui.simplemenu.state = "pause"
 			osu:pause()
 		end
 	end

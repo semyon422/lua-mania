@@ -1,51 +1,43 @@
 local menu = {
-	["mainMenu"] = {
-		title = "lua-mania",
+	["empty"] = {
+		title = "pause",
 		[1] = {
-			text = "play",
-			action = function() data.ui.currentMenu = "songs1" end
+			text = "",
+			action = function() end
 		},
-		[2] = {
-			text = "options",
-			action = function() data.ui.currentMenu = "options" end
-		},
-		[3] = {
-			text = "exit",
-			action = function() love.event.quit() end
-		}
 	},
 	["pause"] = {
 		title = "pause",
 		[1] = {
 			text = "continue",
-			action = function() osu:play(); data.ui.menuState = false end
+			action = function() osu:play(); data.ui.simplemenu.onscreen = false end
 		},
 		[2] = {
 			text = "retry",
-			action = function() osu:start(); data.ui.menuState = false end
+			action = function() osu:start(); data.ui.simplemenu.onscreen = false end
 		},
 		[3] = {
 			text = "back to menu",
-			action = function() osu:stop(); data.ui.currentMenu = "songs1"; data.stage = 2 end
+			action = function() osu:stop(); data.ui.simplemenu.state = "songs1"; data.ui.state = 2; data.beatmap = {} end
 		}
 	},
 	["options"] = {
 		title = "options",
 		[1] = {
 			text = "speed",
-			action = function() data.ui.currentMenu = "speed"; end
+			action = function() data.ui.simplemenu.state = "speed"; end
 		},
 		[2] = {
 			text = "debug",
-			action = function() data.ui.currentMenu = "debug" end
+			action = function() data.ui.simplemenu.state = "debug" end
 		},
 		[3] = {
 			text = "skin",
-			action = function() data.ui.currentMenu = "skin" end
+			action = function() data.ui.simplemenu.state = "skin" end
 		},
 		[4] = {
 			text = "back",
-			action = function() data.ui.currentMenu = "mainMenu"; data.ui.menuState = false end
+			action = function() data.ui.simplemenu.state = "empty"; data.ui.simplemenu.onscreen = false end
 		}
 	},
 	["speed"] = {
@@ -60,22 +52,22 @@ local menu = {
 		},
 		[3] = {
 			text = "back",
-			action = function() data.ui.currentMenu = "options" end
+			action = function() data.ui.simplemenu.state = "options" end
 		}
 	},
 	["debug"] = {
 		title = "speed",
 		[1] = {
 			text = "enable",
-			action = function() data.debug = true end
+			action = function() data.ui.debug = true end
 		},
 		[2] = {
 			text = "disable",
-			action = function() data.debug = false end
+			action = function() data.ui.debug = false end
 		},
 		[3] = {
 			text = "back",
-			action = function() data.ui.currentMenu = "options" end
+			action = function() data.ui.simplemenu.state = "options" end
 		}
 	},
 	["skin"] = {
@@ -90,7 +82,7 @@ local menu = {
 		},
 		[3] = {
 			text = "back",
-			action = function() data.ui.currentMenu = "options" end
+			action = function() data.ui.simplemenu.state = "options" end
 		}
 	},
 	["songs1"] = {
@@ -98,51 +90,51 @@ local menu = {
 		[1] = {
 			text = "The First Part of Touhou EX Boss Rush!!",
 			action = function() 
-				data.ui.menuState = false
+				data.ui.simplemenu.onscreen = false
 				osu:reloadBeatmap(1,1)
 				osu:play()
-				data.stage = 3
+				data.ui.state = 3
 			end
 		},
 		[2] = {
 			text = "Space Time",
 			action = function() 
-				data.ui.menuState = false
+				data.ui.simplemenu.onscreen = false
 				osu:reloadBeatmap(2,1)
 				osu:play()
-				data.stage = 3
+				data.ui.state = 3
 			end
 		},
 		[3] = {
 			text = "Achromat",
 			action = function() 
-				data.ui.menuState = false
+				data.ui.simplemenu.onscreen = false
 				osu:reloadBeatmap(3,1)
 				osu:play()
-				data.stage = 3
+				data.ui.state = 3
 			end
 		},
 		[4] = {
 			text = "Speedcore 300",
 			action = function() 
-				data.ui.menuState = false
+				data.ui.simplemenu.onscreen = false
 				osu:reloadBeatmap(4,1)
 				osu:play()
-				data.stage = 3
+				data.ui.state = 3
 			end
 		},
 		[5] = {
 			text = "Kanshou no Matenrou",
 			action = function() 
-				data.ui.menuState = false
+				data.ui.simplemenu.onscreen = false
 				osu:reloadBeatmap(5,1)
 				osu:play()
-				data.stage = 3
+				data.ui.state = 3
 			end
 		},
 		[6] = {
 			text = "next ->",
-			action = function() data.ui.currentMenu = "songs2" end
+			action = function() data.ui.simplemenu.state = "songs2" end
 		},
 	},
 	["songs2"] = {
@@ -150,46 +142,46 @@ local menu = {
 		[1] = {
 			text = "C18H27NO3",
 			action = function() 
-				data.ui.menuState = false
+				data.ui.simplemenu.onscreen = false
 				osu:reloadBeatmap(6,1)
 				osu:play()
-				data.stage = 3
+				data.ui.state = 3
 			end
 		},
 		[2] = {
 			text = "Deconstruction Star",
 			action = function() 
-				data.ui.menuState = false
+				data.ui.simplemenu.onscreen = false
 				osu:reloadBeatmap(7,1)
 				osu:play()
-				data.stage = 3
+				data.ui.state = 3
 			end
 		},
 		[3] = {
 			text = "B.B.K.K.B.K.K.",
 			action = function() 
-				data.ui.menuState = false
+				data.ui.simplemenu.onscreen = false
 				osu:reloadBeatmap(8,1)
 				osu:play()
-				data.stage = 3
+				data.ui.state = 3
 			end
 		},
 		[4] = {
 			text = "The Empress",
 			action = function() 
-				data.ui.menuState = false
+				data.ui.simplemenu.onscreen = false
 				osu:reloadBeatmap(9,1)
 				osu:play()
-				data.stage = 3
+				data.ui.state = 3
 			end
 		},
 		[5] = {
 			text = "main menu",
-			action = function() data.ui.currentMenu = "mainMenu"; data.ui.menuState = false; data.stage = 1 end
+			action = function() data.ui.simplemenu.state = "empty"; data.ui.simplemenu.onscreen = false; data.ui.state = 1 end
 		},
 		[6] = {
 			text = "back <-",
-			action = function() data.ui.currentMenu = "songs1" end
+			action = function() data.ui.simplemenu.state = "songs1" end
 		},
 	},
 	
