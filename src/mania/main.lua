@@ -63,10 +63,8 @@ function love.load()
 		speed = 1,
 		globalscale = 1,
 		play = 0,
-		offset = {
-			x = 100,
-			y =  0
-		},
+		offset = 0,
+		hitPosition = 100,
 		dt = 0,
 		height = lg.getWidth(),
 		width = lg.getHeight(),
@@ -78,6 +76,10 @@ function love.load()
 		debugscale = 1,
 		mark = 0,
 		marks = {0,0,0,0,0,0},
+		averageMs = 0,
+		lastMs = 0,
+		mso = 0,
+		hitCount = 0,
 		combo = 0,
 		keylocks = {},
 		mainmenu = {
@@ -145,6 +147,10 @@ function love.draw()
 		osu:drawNotes()
 		osu:drawHUD()
 		ui:simplemenu()
+		lg.setColor(223, 196, 125, 255)
+		lg.line(0, lg.getHeight() - data.hitPosition - data.offset, lg.getWidth(), lg.getHeight() - data.hitPosition - data.offset)
+		lg.setColor(220,220,204,255)
+		lg.line(0, lg.getHeight() - data.hitPosition, lg.getWidth(), lg.getHeight() - data.hitPosition)
 	end
 	
 	lg.setColor(220,220,204,255)
