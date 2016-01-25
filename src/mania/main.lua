@@ -61,7 +61,6 @@ function love.load()
 		currentsliders = {},
 		scroll = 0,
 		speed = 1,
-		--globalscale = lg.getHeight()/(36*4),
 		globalscale = 1,
 		play = 0,
 		offset = {
@@ -99,8 +98,7 @@ function love.load()
 	
 	
 	osu:loadSkin("res/Skins/skin-1")
-	--data.menu.sprite = lg.newImage("res/mania-menu.png")
-	--data.menu.backsprite = lg.newImage("res/back.png")
+	
 	if love.system.getOS() == "Windows" then
 		mappathprefix = ""
 		data.ui.mode = 0
@@ -110,10 +108,6 @@ function love.load()
 	else
 		mappathprefix = ""
 	end
-	
-	--osu:loadBeatmap(mappathprefix .. "res/Songs/" .. data.cache[data.currentmapset].folder, data.cache[data.currentmapset].maps[data.currentbeatmap])
-	
-	--data.beatmap.audio = love.audio.newSource("res/Songs/" .. data.cache[data.currentmapset].folder .. "/" .. data.cache[data.currentmapset].audio)
 	
 	lg.setBackgroundColor(63,63,63)
 	lg.setColor(255,255,255,255)
@@ -140,7 +134,7 @@ function love.draw()
 		data.width = lg.getWidth()
 		data.globalscale = 2
 	end
-	--osu:drawBackground()
+	
 	if data.ui.state == 1 then
 		ui:mainmenu()
 		ui:simplemenu()

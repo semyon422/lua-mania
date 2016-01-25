@@ -33,4 +33,4 @@ function explode(divider, input)
 	return output
 end
 
-require "src.menu.main"
+require "src.mania.main"

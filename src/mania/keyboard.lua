@@ -17,16 +17,12 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 --]]
 local keyboard = {
 	maniaLayouts = {
-		[7] = {"w", "e", "r", "space", "o", "p", "["},
-		[4] = {"e", "r", "o", "p"}
+		[7] = {"s", "d", "f", "space", "j", "k", "l"},
+		[4] = {"d", "f", "j", "k"}
 	},
 	key = {
-	--	start = "q",
-	--	stop = "w",
-	--	play = "e",
-	--	pause = "r",
-		
-		
+		pause = "escape",
+		retry = "`",
 	}
 }
 

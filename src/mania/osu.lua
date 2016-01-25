@@ -317,16 +317,9 @@ function osuClass.drawNotes(self)
 				if self.data.currentnotes[j][1] == 3 then
 					update(j)
 					local lnscale = (self.data.currentnotes[j][3] - scroll - self.data.currentnotes[j][4] - drawable.note:getHeight()*scale.y)/drawable.slider:getHeight() * speed
-					--if self.data.currentnotes[j][2] > scroll then
-						--lnscale = (self.data.currentnotes[j][3] - self.data.currentnotes[j][2] - drawable.note:getHeight()*scale.y)/drawable.slider:getHeight() * speed
-						--lg.draw(drawable.slider, offset.x + x, offset.y + self.data.height - (self.data.currentnotes[j][3] - scroll) * speed, 0, scale.x, lnscale)
-						--lg.draw(drawable.note, offset.x + x, offset.y + self.data.height - (self.data.currentnotes[j][2] - scroll) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
-						--lg.draw(drawable.note, offset.x + x, offset.y + self.data.height - (self.data.currentnotes[j][3] - scroll) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
-					--else
-						lg.draw(drawable.slider, offset.x + x, offset.y + self.data.height - (self.data.currentnotes[j][3] - scroll) * speed, 0, scale.x, lnscale)
-						lg.draw(drawable.note, offset.x + x, offset.y + self.data.height - self.data.currentnotes[j][4] * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
-						lg.draw(drawable.note, offset.x + x, offset.y + self.data.height - (self.data.currentnotes[j][3] - scroll) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
-					--end
+					lg.draw(drawable.slider, offset.x + x, offset.y + self.data.height - (self.data.currentnotes[j][3] - scroll) * speed, 0, scale.x, lnscale)
+					lg.draw(drawable.note, offset.x + x, offset.y + self.data.height - self.data.currentnotes[j][4] * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+					lg.draw(drawable.note, offset.x + x, offset.y + self.data.height - (self.data.currentnotes[j][3] - scroll) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
 				end
 			end
 			if self.data.currentnotes[j][1] == 4 then
@@ -352,7 +345,6 @@ function osuClass.drawNotes(self)
 					
 					if self.data.keylocks[j] == 1 and self.data.currentnotes[j][2] < scroll then
 						lg.draw(drawable.note, offset.x + x, offset.y + self.data.height - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
-						--lnscale = (self.data.currentnotes[j][3] - scroll - drawable.note:getHeight()*scale.y)/drawable.slider:getHeight() * speed
 					end
 					lg.draw(drawable.slider, offset.x + x, offset.y + self.data.height - (self.data.currentnotes[j][3] - scroll) * speed, 0, scale.x, lnscale)
 					
@@ -471,7 +463,6 @@ function osuClass.convertBeatmap(self)
 		end
 		beatmap.General["CircleSize"] = 4
 		if #explode("HitObjects", beatmap.raw.array[globalLine]) == 2 then
-			--[time] = {[key] = {type(0/1) (, endtime, hitsound)}, ...}
 			keymode = tonumber(beatmap.General["CircleSize"])
 			interval = 512/keymode
 			beatmap.HitObjects.firstnote = tonumber(explode(",", beatmap.raw.array[globalLine + 1])[3])

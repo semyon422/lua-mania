@@ -18,7 +18,7 @@ local menu = {
 		},
 		[3] = {
 			text = "back to menu",
-			action = function() osu:stop(); data.ui.simplemenu.state = "songs1"; data.ui.state = 2; data.beatmap = {} end
+			action = function() osu:stop(); data.ui.simplemenu.state = "songs1"; data.ui.state = 2; data.beatmap = {}; data.currentnotes = {{},{},{},{}}; data.marks = {0,0,0,0,0,0} end
 		}
 	},
 	["options"] = {
