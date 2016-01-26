@@ -77,6 +77,8 @@ function love.load()
 		mark = 0,
 		marks = {0,0,0,0,0,0},
 		averageMs = 0,
+		averageOffset = 0,
+		averageOffsetCount = 0,
 		lastMs = 0,
 		mso = 0,
 		hitCount = 0,
@@ -148,7 +150,7 @@ function love.draw()
 		osu:drawHUD()
 		ui:simplemenu()
 		lg.setColor(223, 196, 125, 255)
-		lg.line(0, lg.getHeight() - data.hitPosition - data.offset, lg.getWidth(), lg.getHeight() - data.hitPosition - data.offset)
+		--lg.line(0, lg.getHeight() - data.hitPosition - data.offset, lg.getWidth(), lg.getHeight() - data.hitPosition - data.offset)
 		lg.setColor(220,220,204,255)
 		lg.line(0, lg.getHeight() - data.hitPosition, lg.getWidth(), lg.getHeight() - data.hitPosition)
 	end

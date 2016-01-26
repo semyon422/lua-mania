@@ -45,7 +45,8 @@ function osuClass.drawHUD(self)
 			"AvMs: " .. self.data.averageMs .. "\n" ..
 			"offset: " .. self.data.offset .. "\n" ..
 			"lsMs: " .. self.data.lastMs .. "\n" ..
-			"mso: " .. self.data.mso .. "\n"
+			"mso: " .. self.data.mso .. "\n" ..
+			"averageOffset: " .. self.data.averageOffset .. "\n"
 		, 0, 0, 0, 1, 1)
 	else
 		lg.print(
@@ -106,24 +107,26 @@ function osuClass.hit(self, ms, key, rm)
 			self.data.mark = i
 			self.data.marks[i] = self.data.marks[i] + 1
 			if i == #self.data.od then self.data.combo = 0 end
-			if i == 1 then
-				if self.data.hitCount > 20 then
-					self.data.averageMs =  math.floor((self.data.averageMs * (self.data.hitCount - 1) + ms) / (self.data.hitCount))
-				end
-			end
 			break
 		end
 	end
 	if math.abs(mso) <= self.data.od[#self.data.od - 1] then 
-		if self.data.hitCount <= 1 then
-			self.data.averageMs =  math.floor((self.data.averageMs * self.data.hitCount + ms) / (self.data.hitCount + 1))
+		if self.data.hitCount > 20 then
+			self.data.averageMs =  math.floor((self.data.averageMs * (self.data.hitCount - 1) + ms) / (self.data.hitCount))
+		else
+			self.data.averageMs = math.floor((self.data.averageMs * self.data.hitCount + ms) / (self.data.hitCount + 1))
 			self.data.hitCount = self.data.hitCount + 1
 		end
+		
 		
 		--self.data.offset = -1 * self.data.averageMs
 		--self.data.offset = -1 * ms
 		self.data.offset = 0
 		self.data.lastMs = ms
+		
+		
+		self.data.averageOffset = math.floor((self.data.averageOffset * self.data.averageOffsetCount + self.data.averageMs) / (self.data.averageOffsetCount + 1))
+		self.data.averageOffsetCount = self.data.averageOffsetCount + 1
 		
 		self.data.combo = self.data.combo + 1
 		--self.data.offset = self.data.averageMs
@@ -334,20 +337,21 @@ function osuClass.drawNotes(self)
 					--self.data.currentnotes[j][1] = 0
 				end
 				
-				if self.data.keylocks[j] == 1 and self.data.currentnotes[j][3] + offset - self.data.scroll <= -self.data.od[#self.data.od - 3] then
+				if self.data.keylocks[j] == 1 and self.data.currentnotes[j][3] + offset - self.data.scroll <= -1 * self.data.od[#self.data.od - 3] then
 					self:hit(self.data.currentnotes[j][3] - self.data.scroll, j, 1)
 					--self.data.currentnotes[j][1] = 0
 				end
 				
 				if self.data.currentnotes[j][1] == 3 then
 					update(j)
-					if self.data.currentnotes[j][2] <= scroll then
+					if self.data.currentnotes[j][2] + offset <= scroll and self.data.currentnotes[j][3] + offset > scroll then
 						local lnscale = (self.data.currentnotes[j][3] + offset - scroll - drawable.note:getHeight()*scale.y)/drawable.slider:getHeight() * speed
 						lg.draw(drawable.slider, ColumnLineWidth[1] + skin.config.ColumnStart[keymode] + x, self.data.height - hitPosition - offset * speed - (self.data.currentnotes[j][3] - scroll) * speed, 0, scale.x, lnscale)
 						lg.draw(drawable.note, ColumnLineWidth[1] + skin.config.ColumnStart[keymode] + x, self.data.height - hitPosition - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
 						lg.draw(drawable.note, ColumnLineWidth[1] + skin.config.ColumnStart[keymode] + x, self.data.height - hitPosition - offset * speed - (self.data.currentnotes[j][3] - scroll) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
-						self.data.currentnotes[j][2] = scroll
-					elseif self.data.currentnotes[j][2] > scroll then
+						self.data.currentnotes[j][2] = scroll - offset
+					elseif self.data.currentnotes[j][2] + offset <= scroll and self.data.currentnotes[j][3] + offset <= scroll then
+					elseif self.data.currentnotes[j][2] + offset > scroll then
 						local lnscale = (self.data.currentnotes[j][3] - self.data.currentnotes[j][2] - drawable.note:getHeight()*scale.y)/drawable.slider:getHeight() * speed
 						lg.draw(drawable.slider, ColumnLineWidth[1] + skin.config.ColumnStart[keymode] + x, self.data.height - hitPosition - offset * speed - (self.data.currentnotes[j][3] - scroll) * speed, 0, scale.x, lnscale)
 						lg.draw(drawable.note, ColumnLineWidth[1] + skin.config.ColumnStart[keymode] + x, self.data.height - hitPosition - offset * speed - (self.data.currentnotes[j][2] - scroll) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
