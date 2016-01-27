@@ -467,7 +467,7 @@ end
 function osuClass.convertBeatmap(self)
 	beatmap = self.data.beatmap
 	beatmap.raw = {}
-	beatmap.raw.file = io.open(beatmap.path .. "/" .. beatmap.file, "r")
+	beatmap.raw.file = io.open(beatmap.pathFile, "r")
 	beatmap.raw.array = {}
 	beatmap.raw.HitObjects = {}
 	beatmap.raw.General = {}
@@ -536,16 +536,76 @@ function osuClass.convertBeatmap(self)
 	end
 end
 
-function osuClass.loadBeatmap(self, path, file)
+function osuClass.loadBeatmap(self, cache)
+	self.data.beatmap = {}
 	beatmap = self.data.beatmap
-	beatmap.path = path
-	beatmap.file = file
-	beatmap.audio = nil
-	beatmap.raw = nil
+	beatmap.path = cache.path
+	beatmap.pathFile = cache.pathFile
+	beatmap.pathAudio = cache.pathAudio
+	beatmap.title = cache.title
+	beatmap.artist = cache.artist
+	beatmap.difficulity = cache.difficulity
+	beatmap.audio = love.audio.newSource(cache.pathAudio)
+	
 	self:convertBeatmap()
 end
 
 function osuClass.reloadBeatmap(self)
-	self:loadBeatmap(mappathprefix .. "res/Songs/" .. data.cache[data.currentmapset].folder, data.cache[data.currentmapset].maps[data.currentbeatmap])
-	self.data.beatmap.audio = love.audio.newSource("res/Songs/" .. data.cache[data.currentmapset].folder .. "/" .. data.cache[data.currentmapset].audio)
+	self:loadBeatmap(data.cache[data.currentbeatmap])
 end
+
+
+function osuClass.getBeatmapFileList(self) 
+	local cd = ""
+	for out in io.popen("echo %CD%"):lines() do
+		cd = out
+		break
+	end
+	for file in io.popen("dir /B /S /OD /A-D res\\Songs"):lines() do
+		if #explode(".osu", tostring(file)) == 2 then
+			table.insert(data.BMFList, {tostring(explode("\\", explode(cd .. "\\res\\Songs\\", file)[2])[1]), tostring(explode("\\", explode(cd .. "\\res\\Songs\\", file)[2])[2])})
+		end
+	end
+end
+
+function osuClass.generateBeatmapCache(self)
+	cache = data.cache
+	local BMFList = data.BMFList
+	for index,info in pairs(BMFList) do
+		local raw = io.open("res/Songs/" .. info[1] .. "/" .. info[2], "r")
+		local rawTable = {}
+		for line in raw:lines() do
+			table.insert(rawTable, line)
+		end
+		raw:close()
+		local title = ""
+		local artist = ""
+		local audio = ""
+		local difficulity = ""
+		for gLine = 1, #rawTable do
+			if explode(":", tostring(rawTable[gLine]))[1] == "AudioFilename" then
+				audio = trim(tostring(explode(":", tostring(rawTable[gLine]))[2]))
+			end
+			if explode(":", tostring(rawTable[gLine]))[1] == "Title" then
+				title = trim(tostring(explode(":", tostring(rawTable[gLine]))[2]))
+			end
+			if explode(":", tostring(rawTable[gLine]))[1] == "Artist" then
+				artist = trim(tostring(explode(":", tostring(rawTable[gLine]))[2]))
+			end
+			if explode(":", tostring(rawTable[gLine]))[1] == "Version" then
+				difficulity = trim(tostring(explode(":", tostring(rawTable[gLine]))[2]))
+			end
+		end
+		table.insert(cache, {
+			title = title,
+			artist = artist,
+			difficulity = difficulity,
+			audio = audio,
+			pathAudio = "res/Songs/" .. info[1] .. "/" .. audio,
+			pathFile = "res/Songs/" .. info[1] .. "/" .. info[2],
+			path = "res/Songs/" .. info[1]
+			})
+	end
+end
+
+

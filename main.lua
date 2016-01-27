@@ -33,4 +33,8 @@ function explode(divider, input)
 	return output
 end
 
+function trim(s)
+  return s:match "^%s*(.-)%s*$"
+end
+
 require "src.mania.main"

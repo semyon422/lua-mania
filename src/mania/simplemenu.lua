@@ -107,7 +107,6 @@ local menu = {
 			text = "The First Part of Touhou EX Boss Rush!!",
 			action = function() 
 				data.ui.simplemenu.onscreen = false
-				data.currentmapset = 1
 				data.currentbeatmap = 1
 				osu:reloadBeatmap()
 				osu:play()
@@ -118,8 +117,7 @@ local menu = {
 			text = "Space Time",
 			action = function() 
 				data.ui.simplemenu.onscreen = false
-				data.currentmapset = 2
-				data.currentbeatmap = 1
+				data.currentbeatmap = 2
 				osu:reloadBeatmap()
 				osu:play()
 				data.ui.state = 3
@@ -129,8 +127,7 @@ local menu = {
 			text = "Achromat",
 			action = function() 
 				data.ui.simplemenu.onscreen = false
-				data.currentmapset = 3
-				data.currentbeatmap = 1
+				data.currentbeatmap = 3
 				osu:reloadBeatmap()
 				osu:play()
 				data.ui.state = 3
@@ -140,8 +137,7 @@ local menu = {
 			text = "Speedcore 300",
 			action = function() 
 				data.ui.simplemenu.onscreen = false
-				data.currentmapset = 4
-				data.currentbeatmap = 1
+				data.currentbeatmap = 4
 				osu:reloadBeatmap()
 				osu:play()
 				data.ui.state = 3
@@ -151,8 +147,7 @@ local menu = {
 			text = "Kanshou no Matenrou",
 			action = function() 
 				data.ui.simplemenu.onscreen = false
-				data.currentmapset = 5
-				data.currentbeatmap = 1
+				data.currentbeatmap = 5
 				osu:reloadBeatmap()
 				osu:play()
 				data.ui.state = 3
@@ -169,8 +164,7 @@ local menu = {
 			text = "C18H27NO3",
 			action = function() 
 				data.ui.simplemenu.onscreen = false
-				data.currentmapset = 6
-				data.currentbeatmap = 1
+				data.currentbeatmap = 6
 				osu:reloadBeatmap()
 				osu:play()
 				data.ui.state = 3
@@ -180,8 +174,7 @@ local menu = {
 			text = "Deconstruction Star",
 			action = function() 
 				data.ui.simplemenu.onscreen = false
-				data.currentmapset = 7
-				data.currentbeatmap = 1
+				data.currentbeatmap = 7
 				osu:reloadBeatmap()
 				osu:play()
 				data.ui.state = 3
@@ -191,8 +184,7 @@ local menu = {
 			text = "B.B.K.K.B.K.K.",
 			action = function() 
 				data.ui.simplemenu.onscreen = false
-				data.currentmapset = 8
-				data.currentbeatmap = 1
+				data.currentbeatmap = 8
 				osu:reloadBeatmap()
 				osu:play()
 				data.ui.state = 3
@@ -202,8 +194,7 @@ local menu = {
 			text = "The Empress",
 			action = function() 
 				data.ui.simplemenu.onscreen = false
-				data.currentmapset = 9
-				data.currentbeatmap = 1
+				data.currentbeatmap = 9
 				osu:reloadBeatmap()
 				osu:play()
 				data.ui.state = 3
@@ -213,8 +204,7 @@ local menu = {
 			text = "DJ Nate - Theory of Everything",
 			action = function() 
 				data.ui.simplemenu.onscreen = false
-				data.currentmapset = 10
-				data.currentbeatmap = 1
+				data.currentbeatmap = 10
 				osu:reloadBeatmap()
 				osu:play()
 				data.ui.state = 3

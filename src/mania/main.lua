@@ -69,7 +69,8 @@ function love.load()
 		height = lg.getWidth(),
 		width = lg.getHeight(),
 		
-		cache = require "res.Songs.cache",
+		cache = {},
+		BMFList = {},
 		currentmapset = 2,
 		currentbeatmap = 1,
 		fontsize = lg.getWidth()/16,
@@ -111,6 +112,14 @@ function love.load()
 		data.ui.mode = 1
 	else
 		mappathprefix = ""
+	end
+	
+	osu:getBeatmapFileList()
+	
+	osu:generateBeatmapCache()
+	
+	for q,w in pairs(data.cache) do
+		print(q .. " => " .. w.title .. " | " .. w.difficulity)
 	end
 	
 	lg.setBackgroundColor(63,63,63)
@@ -160,6 +169,8 @@ function love.draw()
 	lg.setColor(223, 196, 125, 255)
 	lg.circle("line", data.cursor.mx, data.cursor.my, data.cursor.radiusin, 90)
 	lg.setColor(255,255,255,255)
+	
+	
 end
 
 function love.mousemoved(x, y, dx, dy)
