@@ -28,6 +28,7 @@ function love.load()
 			state = 1,
 			mode = 0,
 			debug = false,
+			ruler = false,
 			
 			mainmenu = {
 				state = 1,
@@ -57,7 +58,7 @@ function love.load()
 		keyboard = require(pathprefix .. "keyboard"),
 		darkness = 60,
 		beatmap = {},
-		currentnotes = {{},{},{},{}},
+		currentnotes = {{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}},
 		currentsliders = {},
 		scroll = 0,
 		speed = 1,
@@ -85,6 +86,7 @@ function love.load()
 		hitCount = 0,
 		combo = 0,
 		keylocks = {},
+		keylocks2 = {},
 		mainmenu = {
 			
 		},
@@ -162,6 +164,7 @@ function love.draw()
 		--lg.line(0, lg.getHeight() - data.hitPosition - data.offset, lg.getWidth(), lg.getHeight() - data.hitPosition - data.offset)
 		lg.setColor(220,220,204,255)
 		lg.line(0, lg.getHeight() - data.hitPosition, lg.getWidth(), lg.getHeight() - data.hitPosition)
+		
 	end
 	
 	lg.setColor(220,220,204,255)
@@ -170,6 +173,7 @@ function love.draw()
 	lg.circle("line", data.cursor.mx, data.cursor.my, data.cursor.radiusin, 90)
 	lg.setColor(255,255,255,255)
 	
+	if data.ui.ruler then ui:ruler() end
 	
 end
 

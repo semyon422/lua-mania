@@ -53,6 +53,17 @@ function uiClass.fail(self)
 
 end
 
+function uiClass.ruler(self)
+	local step = 100
+	lg.setColor(220,220,204,255)
+	for i = 1, math.ceil(lg.getHeight()/step) do
+		lg.line(0, step * i, lg.getWidth(),  step * i)
+	end
+	for i = 1, math.ceil(lg.getWidth()/step) do
+		lg.line(step * i, 0, step * i, lg.getHeight())
+	end
+end
+
 
 function uiClass.simplemenu(self)
 	local mode = self.data.mode

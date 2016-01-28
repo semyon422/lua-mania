@@ -15,13 +15,9 @@ local menu = {
 		[2] = {
 			text = "retry",
 			action = function()
-				data.beatmap = {}
 				osu:reloadBeatmap()
 				osu:start()
 				data.ui.simplemenu.onscreen = false
-				data.currentnotes = {{},{},{},{}}
-				data.marks = {0,0,0,0,0,0}
-				data.combo = 0
 			end
 		},
 		[3] = {
