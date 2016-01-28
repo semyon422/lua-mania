@@ -201,6 +201,36 @@ function osuClass.keyboard(self)
 		self.data.keylocks[keyboard.key.offsetdown] = nil
 	end
 	
+	if love.keyboard.isDown(keyboard.key.songup) then
+		if self.data.keylocks[keyboard.key.songup] == nil then
+			if data.ui.songlist.scroll < 2 and data.ui.songlist.scroll >= -#data.cache + 3 then data.ui.songlist.scroll = data.ui.songlist.scroll + 1 end
+		end
+		self.data.keylocks[keyboard.key.songup] = 1
+	else
+		self.data.keylocks[keyboard.key.songup] = nil
+	end
+	if love.keyboard.isDown(keyboard.key.songdown) then
+		if self.data.keylocks[keyboard.key.songdown] == nil then
+			if data.ui.songlist.scroll <= 2 and data.ui.songlist.scroll > -#data.cache + 3 then data.ui.songlist.scroll = data.ui.songlist.scroll - 1 end
+		end
+		self.data.keylocks[keyboard.key.songdown] = 1
+	else
+		self.data.keylocks[keyboard.key.songdown] = nil
+	end
+	
+	if love.keyboard.isDown(keyboard.key.enter) then
+		if self.data.keylocks[keyboard.key.enter] == nil then
+			data.ui.simplemenu.onscreen = false
+			data.currentbeatmap = data.ui.songlist.current
+			self:reloadBeatmap()
+			self:play()
+			data.ui.state = 3
+		end
+		self.data.keylocks[keyboard.key.enter] = 1
+	else
+		self.data.keylocks[keyboard.key.enter] = nil
+	end
+	
 	if data.beatmap.General ~= nil then
 		for keynumber,key in pairs(keyboard.maniaLayouts[tonumber(data.beatmap.General["CircleSize"])]) do
 			if love.keyboard.isDown(key) then
@@ -217,13 +247,14 @@ function osuClass.keyboard(self)
 	end
 	
 	
-
-	if self.data.play == 1 then
-		self.data.scroll =  math.floor(beatmap.audio:tell() * 1000)
-		--self.data.scroll = math.floor(love.timer.getTime() * 1000 - self.data.starttime)
-	elseif self.data.play == 2 then
-		self.data.scroll = math.floor(beatmap.audio:tell() * 1000)
-		self.data.starttime = math.floor(love.timer.getTime() * 1000 - self.data.scroll)
+	if beatmap.audio ~= nil then
+		if self.data.play == 1 then
+			self.data.scroll =  math.floor(beatmap.audio:tell() * 1000)
+			--self.data.scroll = math.floor(love.timer.getTime() * 1000 - self.data.starttime)
+		elseif self.data.play == 2 then
+			self.data.scroll = math.floor(beatmap.audio:tell() * 1000)
+			self.data.starttime = math.floor(love.timer.getTime() * 1000 - self.data.scroll)
+		end
 	end
 end
 
@@ -587,7 +618,6 @@ function osuClass.convertBeatmap(self)
 end
 
 function osuClass.loadBeatmap(self, cache)
-	self.data.beatmap = {}
 	beatmap = self.data.beatmap
 	beatmap.path = cache.path
 	beatmap.pathFile = cache.pathFile
@@ -636,6 +666,8 @@ function osuClass.generateBeatmapCache(self)
 		local artist = ""
 		local audio = ""
 		local difficulity = ""
+		local creator = ""
+		local source = ""
 		for gLine = 1, #rawTable do
 			if explode(":", tostring(rawTable[gLine]))[1] == "AudioFilename" then
 				audio = trim(tostring(explode(":", tostring(rawTable[gLine]))[2]))
@@ -649,6 +681,13 @@ function osuClass.generateBeatmapCache(self)
 			if explode(":", tostring(rawTable[gLine]))[1] == "Version" then
 				difficulity = trim(tostring(explode(":", tostring(rawTable[gLine]))[2]))
 			end
+			if explode(":", tostring(rawTable[gLine]))[1] == "Creator" then
+				creator = trim(tostring(explode(":", tostring(rawTable[gLine]))[2]))
+			end
+			if explode(":", tostring(rawTable[gLine]))[1] == "Source" then
+				source = trim(tostring(explode(":", tostring(rawTable[gLine]))[2]))
+				if source == "" then source = "No source" end
+			end
 		end
 		table.insert(cache, {
 			title = title,
@@ -657,7 +696,9 @@ function osuClass.generateBeatmapCache(self)
 			audio = audio,
 			pathAudio = "res/Songs/" .. info[1] .. "/" .. audio,
 			pathFile = "res/Songs/" .. info[1] .. "/" .. info[2],
-			path = "res/Songs/" .. info[1]
+			path = "res/Songs/" .. info[1],
+			creator = creator,
+			source = source
 			})
 	end
 end

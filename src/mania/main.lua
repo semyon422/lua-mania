@@ -52,6 +52,15 @@ function love.load()
 				onscreen = false,
 				offset = 1/16,
 			},
+			songlist = {
+				scroll = 0,
+				height = 1/8,
+				offset = 16,
+				buttonCount = 5,
+				fontsize = lg.getHeight() / 27,
+				font = lg.newFont("res/fonts/OpenSans/OpenSansLight/OpenSansLight.ttf", lg.getHeight() / 27),
+				current = 1,
+			},
 		},
 		drawedNotes = 0,
 		skin = {},
@@ -160,20 +169,21 @@ function love.draw()
 		osu:drawNotes()
 		osu:drawHUD()
 		ui:simplemenu()
-		lg.setColor(223, 196, 125, 255)
-		--lg.line(0, lg.getHeight() - data.hitPosition - data.offset, lg.getWidth(), lg.getHeight() - data.hitPosition - data.offset)
+		keymode = tonumber(beatmap.General["CircleSize"])
+		lg.setColor(223, 196, 125, 128)
+		lg.line(globalscale*(skin.config.ColumnLineWidth[keymode][1] + skin.config.ColumnStart[keymode]), lg.getHeight() - data.hitPosition, globalscale*(skin.config.ColumnLineWidth[keymode][1] + skin.config.ColumnStart[keymode] + keymode*skin.config.ColumnWidth[keymode][1]), lg.getHeight() - data.hitPosition)
 		lg.setColor(220,220,204,255)
-		lg.line(0, lg.getHeight() - data.hitPosition, lg.getWidth(), lg.getHeight() - data.hitPosition)
+		lg.line(globalscale*(skin.config.ColumnLineWidth[keymode][1] + skin.config.ColumnStart[keymode]), lg.getHeight() - data.hitPosition, globalscale*(skin.config.ColumnLineWidth[keymode][1] + skin.config.ColumnStart[keymode] + keymode*skin.config.ColumnWidth[keymode][1]), lg.getHeight() - data.hitPosition)
 		
 	end
 	
+	if data.ui.ruler then ui:ruler() end
 	lg.setColor(220,220,204,255)
 	lg.circle("line", data.cursor.mx, data.cursor.my, data.cursor.radiusout, 90)
 	lg.setColor(223, 196, 125, 255)
 	lg.circle("line", data.cursor.mx, data.cursor.my, data.cursor.radiusin, 90)
 	lg.setColor(255,255,255,255)
 	
-	if data.ui.ruler then ui:ruler() end
 	
 end
 

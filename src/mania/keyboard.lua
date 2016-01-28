@@ -26,7 +26,10 @@ local keyboard = {
 		speedup = "f4",
 		speeddown = "f3",
 		offsetup = "=",
-		offsetdown = "-"
+		offsetdown = "-",
+		songup = "up",
+		songdown = "down",
+		enter = "return",
 	}
 }
 
