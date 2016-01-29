@@ -102,11 +102,11 @@ end
 
 
 function uiClass.simplemenu(self)
-	local mode = self.data.mode
-	local buttoncount = #self.data.simplemenu.menu[self.data.simplemenu.state]
-	local offset = self.data.simplemenu.offset
-	local menuItems = self.data.simplemenu.menu[self.data.simplemenu.state]
-	self.data.buttoncoords = {}
+	local mode = data.ui.mode
+	local buttoncount = 3
+	local offset = data.ui.simplemenu.offset
+	local menuItems = data.ui.simplemenu.menu[data.ui.simplemenu.state]
+	data.ui.buttoncoords = {}
 
 	local buttonheight = nil
 	
@@ -128,13 +128,13 @@ function uiClass.simplemenu(self)
 			else
 				lg.print(menuItems[i].text, offset * data.width, offset * data.width + (i - 1) * (offset * data.width + buttonheight))
 			end
-			if self.data.mode == 1 then
-				self.data.buttoncoords[i] = {
+			if data.ui.mode == 1 then
+				data.ui.buttoncoords[i] = {
 					{offset * lg.getHeight() + (i - 1) * (offset * lg.getHeight() + buttonheight), offset * lg.getHeight()},
 					{offset * lg.getHeight() + (i - 1) * (offset * lg.getHeight() + buttonheight) + buttonheight, lg.getHeight()*(1 - offset)}
 				}
-			elseif self.data.mode == 0 then
-				self.data.buttoncoords[i] = {
+			elseif data.ui.mode == 0 then
+				data.ui.buttoncoords[i] = {
 					{offset * lg.getWidth(), offset * lg.getWidth() + (i - 1) * (offset * lg.getWidth() + buttonheight)},
 					{lg.getWidth()*(1 - offset), offset * lg.getWidth() + (i - 1) * (offset * lg.getWidth() + buttonheight) + buttonheight}
 				}

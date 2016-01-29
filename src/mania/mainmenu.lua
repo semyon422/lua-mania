@@ -135,7 +135,7 @@ local mainmenu = {
 				[1] = {
 					text = {{223, 196, 125, 255}, "+"},
 					action = function()
-						 data.speed = data.speed + 0.1
+						--data.speed = data.speed + 0.1
 					end,
 					x = lg.getWidth()/2 - 1.1 * data.ui.mainmenu.button.radius,
 					y = lg.getHeight()/2 - 1.1 * data.ui.mainmenu.button.radius,
@@ -143,7 +143,7 @@ local mainmenu = {
 				[2] = {
 					text = {{223, 196, 125, 255}, "-"},
 					action = function()
-						data.speed = data.speed - 0.1
+						--data.speed = data.speed - 0.1
 					end,
 					x = lg.getWidth()/2 + 1.1 * data.ui.mainmenu.button.radius,
 					y = lg.getHeight()/2 - 1.1 * data.ui.mainmenu.button.radius,
@@ -176,5 +176,4 @@ local mainmenu = {
 	},
 	
 }
-
 return mainmenu

@@ -23,7 +23,6 @@ function love.load()
 	require(pathprefix .. "osu")
 	require(pathprefix .. "ui")
 	data = {
-		mania = {},
 		ui = {
 			state = 1,
 			mode = 0,
@@ -45,7 +44,6 @@ function love.load()
 					radius = 1 / 9 * lg.getHeight(),
 				}
 			},
-			
 			simplemenu = {
 				state = "empty",
 				menu = require(pathprefix .. "simplemenu"),
@@ -65,53 +63,47 @@ function love.load()
 		drawedNotes = 0,
 		skin = {},
 		keyboard = require(pathprefix .. "keyboard"),
-		darkness = 60,
 		beatmap = {},
-		currentnotes = {{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}},
-		currentsliders = {},
-		scroll = 0,
-		speed = 1,
-		globalscale = 1,
 		play = 0,
-		offset = 0,
-		hitPosition = 100,
 		dt = 0,
 		height = lg.getWidth(),
 		width = lg.getHeight(),
 		
 		cache = {},
 		BMFList = {},
-		currentmapset = 2,
 		currentbeatmap = 1,
-		fontsize = lg.getWidth()/16,
-		debugscale = 1,
-		mark = 0,
-		marks = {0,0,0,0,0,0},
-		averageMs = 0,
-		averageOffset = 0,
-		averageOffsetCount = 0,
-		lastMs = 0,
-		mso = 0,
-		hitCount = 0,
-		combo = 0,
 		keylocks = {},
-		keylocks2 = {},
-		mainmenu = {
-			
+		config = {
+			backgroundDarkness = 60,
+			speed = 1,
+			globalscale = 1,
+			offset = 0,
+			hitPosition = 100
 		},
 		cursor = {
-			mx = 0,
-			my = 0,
+			x = 0,
+			y = 0,
 			radiusin = 10,
 			radiusout = 20,
 		},
-		od = {16, 64, 97, 127, 151, 188}
+		od = {16, 64, 97, 127, 151, 188},
+		stats = {
+			currentTime = 0,
+			hits = {0,0,0,0,0,0},
+			mismatch = {},
+			averageMismatch = {
+				value = 0,
+				count = 0,
+				maxCount = 20
+			},
+			lastHit = 0,
+			combo = 0
+		}
 	}
 	data.font = lg.newFont("res/OpenSansLight.ttf", lg.getWidth()/24)
 	lg.setFont(data.font)
 	osu = osuClass.new(data)
-	ui = uiClass.new(data.ui)
-	
+	ui = uiClass.new(data)
 	
 	osu:loadSkin("res/Skins/skin-1")
 	
@@ -128,10 +120,6 @@ function love.load()
 	osu:getBeatmapFileList()
 	
 	osu:generateBeatmapCache()
-	
-	for q,w in pairs(data.cache) do
-		print(q .. " => " .. w.title .. " | " .. w.difficulity)
-	end
 	
 	lg.setBackgroundColor(63,63,63)
 	lg.setColor(255,255,255,255)
@@ -150,13 +138,13 @@ function love.draw()
 	if data.ui.mode == 1 then
 		data.height = lg.getWidth()
 		data.width = lg.getHeight()
-		data.globalscale = lg.getHeight()/(36*4)
+		data.config.globalscale = lg.getHeight()/(36*4)
 		lg.rotate(-math.pi/2)
 		lg.translate(-lg.getHeight(), 0)
 	else
 		data.height = lg.getHeight()
 		data.width = lg.getWidth()
-		data.globalscale = 2
+		data.config.globalscale = 2
 	end
 	
 	if data.ui.state == 1 then
@@ -171,23 +159,21 @@ function love.draw()
 		ui:simplemenu()
 		keymode = tonumber(beatmap.General["CircleSize"])
 		lg.setColor(223, 196, 125, 128)
-		lg.line(globalscale*(skin.config.ColumnLineWidth[keymode][1] + skin.config.ColumnStart[keymode]), lg.getHeight() - data.hitPosition, globalscale*(skin.config.ColumnLineWidth[keymode][1] + skin.config.ColumnStart[keymode] + keymode*skin.config.ColumnWidth[keymode][1]), lg.getHeight() - data.hitPosition)
+		lg.line(globalscale*(skin.config.ColumnLineWidth[keymode][1] + skin.config.ColumnStart[keymode]), lg.getHeight() - data.config.hitPosition - data.config.offset*data.config.speed, globalscale*(skin.config.ColumnLineWidth[keymode][1] + skin.config.ColumnStart[keymode] + keymode*skin.config.ColumnWidth[keymode][1]), lg.getHeight() - data.config.hitPosition - data.config.offset*data.config.speed)
 		lg.setColor(220,220,204,255)
-		lg.line(globalscale*(skin.config.ColumnLineWidth[keymode][1] + skin.config.ColumnStart[keymode]), lg.getHeight() - data.hitPosition, globalscale*(skin.config.ColumnLineWidth[keymode][1] + skin.config.ColumnStart[keymode] + keymode*skin.config.ColumnWidth[keymode][1]), lg.getHeight() - data.hitPosition)
+		lg.line(globalscale*(skin.config.ColumnLineWidth[keymode][1] + skin.config.ColumnStart[keymode]), lg.getHeight() - data.config.hitPosition, globalscale*(skin.config.ColumnLineWidth[keymode][1] + skin.config.ColumnStart[keymode] + keymode*skin.config.ColumnWidth[keymode][1]), lg.getHeight() - data.config.hitPosition)
 		
 	end
 	
 	if data.ui.ruler then ui:ruler() end
 	lg.setColor(220,220,204,255)
-	lg.circle("line", data.cursor.mx, data.cursor.my, data.cursor.radiusout, 90)
+	lg.circle("line", data.cursor.x, data.cursor.y, data.cursor.radiusout, 90)
 	lg.setColor(223, 196, 125, 255)
-	lg.circle("line", data.cursor.mx, data.cursor.my, data.cursor.radiusin, 90)
+	lg.circle("line", data.cursor.x, data.cursor.y, data.cursor.radiusin, 90)
 	lg.setColor(255,255,255,255)
-	
-	
 end
 
 function love.mousemoved(x, y, dx, dy)
-	data.cursor.mx = x
-	data.cursor.my = y
+	data.cursor.x = x
+	data.cursor.y = y
 end
