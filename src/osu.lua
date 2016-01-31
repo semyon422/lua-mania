@@ -216,6 +216,7 @@ function osuClass.keyboard(self)
 				data.keylocks[keynumber] = 1
 			else
 				data.keylocks[keynumber] = 0
+				data.keyhits[keynumber] = 0
 			end
 		end
 	end
@@ -294,7 +295,7 @@ function osuClass.drawNotes(self)
 	scale.y = globalscale * ColumnWidth[1] / drawable.note:getWidth()
 	
 	data.drawedNotes = 0
-	for notetime = scroll-200-math.ceil(hitPosition/speed), scroll + data.height / speed do
+	for notetime = scroll - 200 - math.ceil(hitPosition/speed) - math.ceil(drawable.note:getHeight()*scale.y/speed), scroll + data.height / speed do
 		note = beatmap.HitObjects[notetime]
 		if note ~= nil then
 			for j = 1, keymode do 
@@ -306,6 +307,7 @@ function osuClass.drawNotes(self)
 								note[j] = nil
 							elseif note[j][1][1] == 1 then
 								update(j)
+								lg.setColor(255,255,255,255)
 								lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (notetime - scroll) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
 							end
 						elseif note[j][1][2] == 2 then
@@ -314,31 +316,65 @@ function osuClass.drawNotes(self)
 							lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (notetime - scroll) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
 							lg.setColor(255,255,255,255)
 						end
-					elseif note[j][1][1] == 2 then --OK
+					elseif note[j][1][1] == 2 then
 						if note[j][1][2] == 0 then
-							if notetime + offset <= scroll + data.od[#data.od] and notetime + offset >= scroll and data.beatmap.currentNote[j] == nil then
+							if notetime + offset <= scroll + data.od[#data.od] and notetime + offset > scroll and data.beatmap.currentNote[j] == nil then
 								data.beatmap.currentNote[j] = {note[j][1], note[j][2], note[j][3], note[j][4]}
+								note[j] = nil
+							elseif notetime + offset <= scroll+data.od[1] then
+								data.keyhits[j] = 0
+								if data.beatmap.currentNote[j] ~= nil then
+									if data.beatmap.currentNote[j][2] < scroll - math.ceil(hitPosition/speed) then
+										if beatmap.HitObjects[scroll - math.ceil(hitPosition/speed)] == nil then
+											beatmap.HitObjects[scroll - math.ceil(hitPosition/speed)] = {}
+										end
+										beatmap.HitObjects[scroll - math.ceil(hitPosition/speed)][j] = data.beatmap.currentNote[j]
+										beatmap.HitObjects[scroll - math.ceil(hitPosition/speed)][j][2] = scroll - math.ceil(hitPosition/speed) - math.ceil(drawable.note:getHeight()*scale.y/speed)
+										beatmap.HitObjects[scroll - math.ceil(hitPosition/speed)][j][1][2] = 2
+									else
+										if beatmap.HitObjects[data.beatmap.currentNote[j][2]] == nil then
+											beatmap.HitObjects[data.beatmap.currentNote[j][2]] = {}
+										end
+										beatmap.HitObjects[data.beatmap.currentNote[j][2]][j] = data.beatmap.currentNote[j]
+										beatmap.HitObjects[data.beatmap.currentNote[j][2]][j][1][2] = 2
+									end
+								end
+								data.beatmap.currentNote[j] = note[j]
 								note[j] = nil
 							else
 								update(j)
+								lg.setColor(255,255,255,255)
 								lg.draw(drawable.slider, x, data.height - hitPosition - offset * speed - (note[j][3] - scroll) * speed, 0, scale.x, (note[j][3] - notetime - drawable.note:getHeight())/drawable.slider:getHeight() * speed)
 								lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (notetime - scroll) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
 								lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (note[j][3] - scroll) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
 							end
 						elseif note[j][1][2] == 2 then
-							note[j][2] = note[j][3]
 							update(j)
 							lg.setColor(255,255,255,128)
-							lg.draw(drawable.slider, x, data.height - hitPosition - offset * speed - (note[j][3] - scroll) * speed, 0, scale.x, (note[j][3] - notetime - drawable.note:getHeight())/drawable.slider:getHeight() * speed)
-							lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (notetime - scroll) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+							lg.draw(drawable.slider, x, data.height - hitPosition - offset * speed - (note[j][3] - scroll) * speed, 0, scale.x, (note[j][3] - note[j][2])/drawable.slider:getHeight() * speed)
+							if note[j][2] > scroll - math.ceil(hitPosition/speed) - math.ceil(drawable.note:getHeight()*scale.y/speed) then
+								lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (note[j][2] - scroll) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+							end
 							lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (note[j][3] - scroll) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
 							lg.setColor(255,255,255,255)
+							if note[j][2] < scroll - math.ceil(hitPosition/speed) - math.ceil(drawable.note:getHeight()*scale.y/speed) then
+								if beatmap.HitObjects[scroll - math.ceil(hitPosition/speed)] == nil then
+									beatmap.HitObjects[scroll - math.ceil(hitPosition/speed)] = {}
+								end
+								beatmap.HitObjects[scroll - math.ceil(hitPosition/speed)][j] = note[j]
+								beatmap.HitObjects[scroll - math.ceil(hitPosition/speed)][j][2] = scroll - math.ceil(hitPosition/speed) - math.ceil(drawable.note:getHeight()*scale.y/speed)
+								if beatmap.HitObjects[scroll - math.ceil(hitPosition/speed)][j][2] - drawable.note:getHeight()*scale.y > beatmap.HitObjects[scroll - math.ceil(hitPosition/speed)][j][3] then
+									beatmap.HitObjects[scroll - math.ceil(hitPosition/speed)][j] = nil
+								end
+								note[j] = nil
+							end
 						end
 					end
 				end
 			end
 		end
 	end
+	lg.setColor(255,255,255,255)
 	for j = 1, keymode do 
 		if data.beatmap.currentNote[j] ~= nil then
 			if data.beatmap.currentNote[j][1][1] == 1 then
@@ -439,15 +475,24 @@ function osuClass.drawNotes(self)
 						data.stats.combo = 0
 						data.keyhits[j] = 0
 					end
-					if data.keylocks[j] == 0 and data.beatmap.currentNote[j][3] + offset - data.stats.currentTime <= -1 * data.od[#data.od - 1] then
-						if beatmap.HitObjects[data.beatmap.currentNote[j][2]] == nil then
-							beatmap.HitObjects[data.beatmap.currentNote[j][2]] = {}
+					if data.keylocks[j] == 0 and data.beatmap.currentNote[j][3] + offset <= scroll - data.od[#data.od - 1] then
+						if data.beatmap.currentNote[j][2] < scroll - math.ceil(hitPosition/speed) then
+							if beatmap.HitObjects[scroll - math.ceil(hitPosition/speed)] == nil then
+								beatmap.HitObjects[scroll - math.ceil(hitPosition/speed)] = {}
+							end
+							beatmap.HitObjects[scroll - math.ceil(hitPosition/speed)][j] = data.beatmap.currentNote[j]
+							beatmap.HitObjects[scroll - math.ceil(hitPosition/speed)][j][2] = scroll - math.ceil(hitPosition/speed) - math.ceil(drawable.note:getHeight()*scale.y/speed)
+						else
+							if beatmap.HitObjects[data.beatmap.currentNote[j][2]] == nil then
+								beatmap.HitObjects[data.beatmap.currentNote[j][2]] = {}
+							end
+							beatmap.HitObjects[data.beatmap.currentNote[j][2]][j] = data.beatmap.currentNote[j]
 						end
-						beatmap.HitObjects[data.beatmap.currentNote[j][2]][j] = data.beatmap.currentNote[j]
 						data.beatmap.currentNote[j] = nil
 						data.keyhits[j] = 0
-					elseif data.beatmap.currentNote[j][3] + offset < scroll - data.od[#data.od - 1] - hitPosition then
+					elseif data.beatmap.currentNote[j][3] + offset <= scroll - hitPosition/speed then
 						data.beatmap.currentNote[j] = nil
+						data.keyhits[j] = 0
 					else
 						update(j)
 						local lnscale = (data.beatmap.currentNote[j][3] - data.beatmap.currentNote[j][2])/drawable.slider:getHeight() * speed

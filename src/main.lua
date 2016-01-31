@@ -102,7 +102,7 @@ function love.load()
 			combo = 0
 		}
 	}
-	data.font = lg.newFont("res/OpenSansLight.ttf", lg.getWidth()/24)
+	data.font = lg.newFont("res/fonts/OpenSans/OpenSansLight/OpenSansLight.ttf", lg.getWidth()/24)
 	lg.setFont(data.font)
 	osu = osuClass.new(data)
 	ui = uiClass.new(data)
@@ -164,6 +164,9 @@ function love.draw()
 		lg.line(globalscale*(skin.config.ColumnLineWidth[keymode][1] + skin.config.ColumnStart[keymode]), lg.getHeight() - data.config.hitPosition - data.config.offset*data.config.speed, globalscale*(skin.config.ColumnLineWidth[keymode][1] + skin.config.ColumnStart[keymode] + keymode*skin.config.ColumnWidth[keymode][1]), lg.getHeight() - data.config.hitPosition - data.config.offset*data.config.speed)
 		lg.setColor(220,220,204,255)
 		lg.line(globalscale*(skin.config.ColumnLineWidth[keymode][1] + skin.config.ColumnStart[keymode]), lg.getHeight() - data.config.hitPosition, globalscale*(skin.config.ColumnLineWidth[keymode][1] + skin.config.ColumnStart[keymode] + keymode*skin.config.ColumnWidth[keymode][1]), lg.getHeight() - data.config.hitPosition)
+		
+		--lg.setColor(255,255,0,255)
+		--lg.line(globalscale*(skin.config.ColumnLineWidth[keymode][1] + skin.config.ColumnStart[keymode]), lg.getHeight() - data.config.hitPosition/data.config.speed, globalscale*(skin.config.ColumnLineWidth[keymode][1] + skin.config.ColumnStart[keymode] + keymode*skin.config.ColumnWidth[keymode][1]), lg.getHeight() - data.config.hitPosition/data.config.speed)
 		
 	end
 	
