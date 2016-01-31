@@ -18,7 +18,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 function love.load()
 	lg = love.graphics
 	lm = love.mouse
-	pathprefix = "src/mania/"
+	pathprefix = "src/"
 	mappathprefix = ""
 	require(pathprefix .. "osu")
 	require(pathprefix .. "ui")

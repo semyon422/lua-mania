@@ -15,26 +15,30 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 --]]
-function love.load()
-	data = nil
-	data = {
-		pathprefix = "template/"
+local keyboard = {
+	maniaLayouts = {
+		[1] = {"space"},
+		[2] = {"r", "o"},
+		[3] = {"r", "space", "o"},
+		[4] = {"e", "r", "o", "p"},
+		[5] = {"e", "r", "space", "o", "p"},
+		[6] = {"w", "e", "r", "o", "p", "["},
+		[7] = {"w", "e", "r", "space", "o", "p", "["},
+		[9] = {"q", "w", "e", "r", "o", "p", "[", "]"},
+		[9] = {"q", "w", "e", "r", "space", "o", "p", "[", "]"},
+		[10] = {"q","w","e","r","lalt","space","o","p","[","]"}
+	},
+	key = {
+		pause = "escape",
+		retry = "`",
+		speedup = "f4",
+		speeddown = "f3",
+		offsetup = "=",
+		offsetdown = "-",
+		songup = "up",
+		songdown = "down",
+		enter = "return",
 	}
-	loaded = true
-end
+}
 
-function love.update(dt)
-	if loaded ~= true then love.load() end
-end
-
-function love.draw()
-
-end
-
-function clean()
-	love.load = nil
-	love.update = nil
-	love.draw = nil
-	loaded = nil
-	clean = nil
-end
+return keyboard

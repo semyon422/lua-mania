@@ -34,6 +34,7 @@ function osuClass.drawHUD(self)
 			"FPS: "..love.timer.getFPS().."\n"..
 			"time: " .. math.floor(beatmap.audio:tell()*10)/10 .. "\n" ..
 			"speed: " .. data.config.speed .. "\n" ..
+			"offset: " .. data.config.offset .. "\n" ..
 			"HitObjects: " .. data.beatmap.HitObjectsCount .. "\n" ..
 			"miss: " .. data.stats.hits[6] .. "\n" ..
 			"50: " .. data.stats.hits[5] .. "\n" ..
