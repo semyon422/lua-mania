@@ -73,6 +73,7 @@ function love.load()
 		BMFList = {},
 		currentbeatmap = 1,
 		keylocks = {},
+		keyhits = {},
 		config = {
 			backgroundDarkness = 60,
 			speed = 1,
@@ -87,6 +88,7 @@ function love.load()
 			radiusout = 20,
 		},
 		od = {16, 64, 97, 127, 151, 188},
+		--od = {1, 2, 3, 4, 5, 200},
 		stats = {
 			currentTime = 0,
 			hits = {0,0,0,0,0,0},

@@ -117,17 +117,7 @@ function osuClass.hit(self, ms, key, rm)
 		table.insert(data.stats.mismatch, trueMs)
 		
 		data.stats.combo = data.stats.combo + 1
-		if data.beatmap.currentNote[key][1] == 2 then
-			data.beatmap.currentNote[key][1] = 3
-		elseif data.beatmap.currentNote[key][1] == 3 and rm then
-			data.beatmap.currentNote[key] = {}
-		elseif data.beatmap.currentNote[key][1] == 3 then
-			data.beatmap.currentNote[key][1] = 4
-		elseif data.beatmap.currentNote[key][1] == 4 then
-			data.beatmap.currentNote[key][1] = 4
-		else
-			data.beatmap.currentNote[key] = {}
-		end
+		data.keyhits[key] = 1
 	end
 end
 
@@ -219,7 +209,7 @@ function osuClass.keyboard(self)
 		for keynumber,key in pairs(keyboard.maniaLayouts[tonumber(data.beatmap.General["CircleSize"])]) do
 			if love.keyboard.isDown(key) then
 				if data.keylocks[keynumber] == 0 then
-					if data.beatmap.currentNote[keynumber][1] ~= nil then
+					if data.beatmap.currentNote[keynumber] ~= nil then
 						self:hit(data.beatmap.currentNote[keynumber][2] - data.stats.currentTime, keynumber)
 					end
 				end
@@ -306,36 +296,43 @@ function osuClass.drawNotes(self)
 	data.drawedNotes = 0
 	for notetime = scroll-200-math.ceil(hitPosition/speed), scroll + data.height / speed do
 		note = beatmap.HitObjects[notetime]
-		for j = 1, keymode do 
-			if note ~= nil then
+		if note ~= nil then
+			for j = 1, keymode do 
 				if note[j] ~= nil then
-					if note[j][1] == 1 then
-						
-						if notetime + offset <= scroll + data.od[#data.od] and notetime + offset >= scroll - data.od[#data.od - 1] and data.beatmap.currentNote[j][1] == nil then
-							data.beatmap.currentNote[j] = {note[j][1], note[j][2], note[j][3], note[j][4]}
-							note[j][1] = 0
-						end
-						
-						if note[j][1] == 1 then
+					if note[j][1][1] == 1 then --OK
+						if note[j][1][2] == 0 then
+							if notetime + offset <= scroll + data.od[#data.od] and notetime + offset >= scroll and data.beatmap.currentNote[j] == nil then
+								data.beatmap.currentNote[j] = {note[j][1], note[j][2], note[j][3], note[j][4]}
+								note[j] = nil
+							elseif note[j][1][1] == 1 then
+								update(j)
+								lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (notetime - scroll) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+							end
+						elseif note[j][1][2] == 2 then
 							update(j)
+							lg.setColor(255,255,255,128)
 							lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (notetime - scroll) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
-							
-							data.drawedNotes = data.drawedNotes + 1
+							lg.setColor(255,255,255,255)
 						end
-					end
-					if note[j][1] == 2 then
-					
-						if notetime + offset <= scroll + data.od[#data.od] and data.beatmap.currentNote[j][1] == nil then
-							data.beatmap.currentNote[j] = {note[j][1], note[j][2], note[j][3], note[j][4]}
-							note[j][1] = 0
-						end
-						
-						if note[j][1] ~= 0 then
+					elseif note[j][1][1] == 2 then --OK
+						if note[j][1][2] == 0 then
+							if notetime + offset <= scroll + data.od[#data.od] and notetime + offset >= scroll and data.beatmap.currentNote[j] == nil then
+								data.beatmap.currentNote[j] = {note[j][1], note[j][2], note[j][3], note[j][4]}
+								note[j] = nil
+							else
+								update(j)
+								lg.draw(drawable.slider, x, data.height - hitPosition - offset * speed - (note[j][3] - scroll) * speed, 0, scale.x, (note[j][3] - notetime - drawable.note:getHeight())/drawable.slider:getHeight() * speed)
+								lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (notetime - scroll) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+								lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (note[j][3] - scroll) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+							end
+						elseif note[j][1][2] == 2 then
+							note[j][2] = note[j][3]
 							update(j)
-							
+							lg.setColor(255,255,255,128)
 							lg.draw(drawable.slider, x, data.height - hitPosition - offset * speed - (note[j][3] - scroll) * speed, 0, scale.x, (note[j][3] - notetime - drawable.note:getHeight())/drawable.slider:getHeight() * speed)
 							lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (notetime - scroll) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
 							lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (note[j][3] - scroll) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+							lg.setColor(255,255,255,255)
 						end
 					end
 				end
@@ -344,105 +341,122 @@ function osuClass.drawNotes(self)
 	end
 	for j = 1, keymode do 
 		if data.beatmap.currentNote[j] ~= nil then
-			if data.beatmap.currentNote[j][1] == 1 then
-			
-				if data.beatmap.currentNote[j][1] == 1 then
-					update(j)
-					lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (data.beatmap.currentNote[j][2] - scroll) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
-					
-					data.drawedNotes = data.drawedNotes + 1
-				end
-				if data.beatmap.currentNote[j][2] + offset < scroll - data.od[#data.od - 1] then
-					data.stats.combo = 0
-					data.stats.hits[6] = data.stats.hits[6] + 1
-					beatmap.HitObjects[data.beatmap.currentNote[j][2]][j][1] = 1
-					data.beatmap.currentNote[j] = {}
-				end
-				
-			end
-			if data.beatmap.currentNote[j][1] == 2 then
-				
-				if data.beatmap.currentNote[j][2] + offset < scroll - data.od[#data.od - 1] then
-					if data.keylocks[j] == 1 then
+			if data.beatmap.currentNote[j][1][1] == 1 then
+				if data.beatmap.currentNote[j][1][2] == 0 then
+					if data.beatmap.currentNote[j][2] + offset < scroll - data.od[#data.od - 1] then
 						data.stats.combo = 0
 						data.stats.hits[6] = data.stats.hits[6] + 1
-						data.beatmap.currentNote[j][1] = 4
+						if beatmap.HitObjects[data.beatmap.currentNote[j][2]] == nil then
+							beatmap.HitObjects[data.beatmap.currentNote[j][2]] = {}
+						end
+						beatmap.HitObjects[data.beatmap.currentNote[j][2]][j] = data.beatmap.currentNote[j]
+						beatmap.HitObjects[data.beatmap.currentNote[j][2]][j][1][2] = 2
+						data.beatmap.currentNote[j] = nil
+					elseif data.keyhits[j] == 1 then
+						if data.beatmap.currentNote[j][2] + offset > scroll + data.od[#data.od - 1] then
+							data.stats.combo = 0
+							data.stats.hits[6] = data.stats.hits[6] + 1
+							data.beatmap.currentNote[j][1][2] = 2
+						else
+							data.beatmap.currentNote[j][1][2] = 1
+						end
+					else
+						update(j)
+						lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (data.beatmap.currentNote[j][2] - scroll) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+					end
+				elseif data.beatmap.currentNote[j][1][2] == 1 then
+					data.beatmap.currentNote[j] = nil
+					data.keyhits[j] = 0
+				elseif data.beatmap.currentNote[j][1][2] == 2 then
+					if data.beatmap.currentNote[j][2] + offset <= scroll then
+						if beatmap.HitObjects[data.beatmap.currentNote[j][2]] == nil then
+							beatmap.HitObjects[data.beatmap.currentNote[j][2]] = {}
+						end
+						beatmap.HitObjects[data.beatmap.currentNote[j][2]][j] = data.beatmap.currentNote[j]
+						beatmap.HitObjects[data.beatmap.currentNote[j][2]][j][1][2] = 2
+						data.beatmap.currentNote[j] = nil
+						data.keyhits[j] = 0
+					else
+						update(j)
+						lg.setColor(255,255,255,128)
+						lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (data.beatmap.currentNote[j][2] - scroll) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+						lg.setColor(255,255,255,255)
 					end
 				end
-				
-				if data.beatmap.currentNote[j][3] + offset < scroll - data.od[#data.od - 1] then
-					data.stats.combo = 0
-					data.stats.hits[6] = data.stats.hits[6] + 1
-					data.beatmap.currentNote[j] = {}
-				end
-				
-				if data.beatmap.currentNote[j][1] == 2 then
-					update(j)
-					local lnscale = (data.beatmap.currentNote[j][3] - data.beatmap.currentNote[j][2])/drawable.slider:getHeight() * speed
-					
-					lg.draw(drawable.slider, x, data.height - hitPosition - offset * speed - (data.beatmap.currentNote[j][3] - scroll) * speed, 0, scale.x, lnscale)
-					lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (data.beatmap.currentNote[j][2] - scroll) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
-					lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (data.beatmap.currentNote[j][3] - scroll) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
-				end
-			end
-			if data.beatmap.currentNote[j][1] == 3 then
-				
-				if data.keylocks[j] == 0 and math.abs(data.beatmap.currentNote[j][3] + offset - data.stats.currentTime) > data.od[#data.od - 1] then
-					data.stats.combo = 0
-					data.stats.hits[6] = data.stats.hits[6] + 1
-					data.beatmap.currentNote[j][1] = 4
-				end
-				
-				if data.keylocks[j] == 0 and math.abs(data.beatmap.currentNote[j][3] + offset - data.stats.currentTime) <= data.od[#data.od - 1] then
-					self:hit(data.beatmap.currentNote[j][3] - data.stats.currentTime, j, 1)
-				end
-				
-				if data.keylocks[j] == 1 and data.beatmap.currentNote[j][3] + offset - data.stats.currentTime <= -1 * data.od[#data.od - 3] then
-					self:hit(data.beatmap.currentNote[j][3] - data.stats.currentTime, j, 1)
-				end
-				
-				if data.beatmap.currentNote[j][1] == 3 then
-					update(j)
-					if data.beatmap.currentNote[j][2] + offset <= scroll and data.beatmap.currentNote[j][3] + offset > scroll then
-						local lnscale = (data.beatmap.currentNote[j][3] + offset - scroll)/drawable.slider:getHeight() * speed
-						lg.draw(drawable.slider, x, data.height - hitPosition - offset * speed - (data.beatmap.currentNote[j][3] - scroll) * speed, 0, scale.x, lnscale)
-						lg.draw(drawable.note, x, data.height - hitPosition - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
-						lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (data.beatmap.currentNote[j][3] - scroll) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
-						data.beatmap.currentNote[j][2] = scroll - offset
-					elseif data.beatmap.currentNote[j][2] + offset <= scroll and data.beatmap.currentNote[j][3] + offset <= scroll then
-					elseif data.beatmap.currentNote[j][2] + offset > scroll then
+			elseif data.beatmap.currentNote[j][1][1] == 2 then
+				if data.beatmap.currentNote[j][1][2] == 0 then
+					if data.keyhits[j] == 1 and math.abs(data.beatmap.currentNote[j][2] + offset - data.stats.currentTime) <= data.od[#data.od - 1] then
+						data.beatmap.currentNote[j][1][2] = 1
+					elseif data.keyhits[j] == 1 and data.beatmap.currentNote[j][2] + offset < scroll - data.od[#data.od - 1] then
+						data.stats.combo = 0
+						data.stats.hits[6] = data.stats.hits[6] + 1
+						data.beatmap.currentNote[j][1][2] = 2
+					elseif data.beatmap.currentNote[j][3] + offset < scroll - data.od[#data.od - 1] then
+						data.stats.combo = 0
+						data.stats.hits[6] = data.stats.hits[6] + 1
+						data.beatmap.currentNote[j][1][2] = 2
+					else
+						update(j)
 						local lnscale = (data.beatmap.currentNote[j][3] - data.beatmap.currentNote[j][2])/drawable.slider:getHeight() * speed
+						
 						lg.draw(drawable.slider, x, data.height - hitPosition - offset * speed - (data.beatmap.currentNote[j][3] - scroll) * speed, 0, scale.x, lnscale)
 						lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (data.beatmap.currentNote[j][2] - scroll) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
 						lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (data.beatmap.currentNote[j][3] - scroll) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
 					end
 				end
-			end
-			if data.beatmap.currentNote[j][1] == 4 then
-			
-				if data.keylocks[j] == 0 and math.abs(data.beatmap.currentNote[j][3] + offset - data.stats.currentTime) > data.od[#data.od - 1] then
-					data.stats.combo = 0
-				end
-				
-				if data.keylocks[j] == 0 and data.beatmap.currentNote[j][3] + offset - data.stats.currentTime <= -1 * data.od[#data.od - 1] then
-					data.stats.hits[5] = data.stats.hits[5] + 1
-					if beatmap.HitObjects[data.beatmap.currentNote[j][2]] == nil then beatmap.HitObjects[data.beatmap.currentNote[j][2]] = {} end
-					beatmap.HitObjects[data.beatmap.currentNote[j][2]][j] =  {2, data.beatmap.currentNote[j][2], data.beatmap.currentNote[j][3], data.beatmap.currentNote[j][4]}
-					data.beatmap.currentNote[j] = {}
-				end
-				
-				if data.beatmap.currentNote[j][1] == 4 then
-					if data.beatmap.currentNote[j][3] + offset < scroll - data.od[#data.od - 1] - hitPosition then
-						data.beatmap.currentNote[j] = {}
+				if data.beatmap.currentNote[j][1][2] == 1 then
+					if data.keylocks[j] == 0 and math.abs(data.beatmap.currentNote[j][3] + offset - data.stats.currentTime) > data.od[#data.od - 1] then
+						data.stats.combo = 0
+						data.stats.hits[6] = data.stats.hits[6] + 1
+						data.beatmap.currentNote[j][1][2] = 2
+						data.keyhits[j] = 0
+					elseif data.keylocks[j] == 0 and math.abs(data.beatmap.currentNote[j][3] + offset - data.stats.currentTime) <= data.od[#data.od - 1] then
+						self:hit(data.beatmap.currentNote[j][3] - data.stats.currentTime, j, 1)
+						data.beatmap.currentNote[j] = nil
+						data.keyhits[j] = 0
+					elseif data.keylocks[j] == 1 and data.beatmap.currentNote[j][3] + offset - data.stats.currentTime <= -1 * data.od[#data.od - 3] then
+						self:hit(data.beatmap.currentNote[j][3] - data.stats.currentTime, j, 1)
+						data.beatmap.currentNote[j] = nil
+						data.keyhits[j] = 0
+					else
+						update(j)
+						if data.beatmap.currentNote[j][2] + offset <= scroll and data.beatmap.currentNote[j][3] + offset > scroll then
+							local lnscale = (data.beatmap.currentNote[j][3] + offset - scroll)/drawable.slider:getHeight() * speed
+							lg.draw(drawable.slider, x, data.height - hitPosition - offset * speed - (data.beatmap.currentNote[j][3] - scroll) * speed, 0, scale.x, lnscale)
+							lg.draw(drawable.note, x, data.height - hitPosition - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+							lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (data.beatmap.currentNote[j][3] - scroll) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+							data.beatmap.currentNote[j][2] = scroll - offset
+						elseif data.beatmap.currentNote[j][2] + offset <= scroll and data.beatmap.currentNote[j][3] + offset <= scroll then
+						elseif data.beatmap.currentNote[j][2] + offset > scroll then
+							local lnscale = (data.beatmap.currentNote[j][3] - data.beatmap.currentNote[j][2])/drawable.slider:getHeight() * speed
+							lg.draw(drawable.slider, x, data.height - hitPosition - offset * speed - (data.beatmap.currentNote[j][3] - scroll) * speed, 0, scale.x, lnscale)
+							lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (data.beatmap.currentNote[j][2] - scroll) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+							lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (data.beatmap.currentNote[j][3] - scroll) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+						end
 					end
-				end 
-				
-				if data.beatmap.currentNote[j][1] == 4 then
-					update(j)
-					local lnscale = (data.beatmap.currentNote[j][3] - data.beatmap.currentNote[j][2])/drawable.slider:getHeight() * speed
-					lg.draw(drawable.slider, x, data.height - hitPosition - offset * speed - (data.beatmap.currentNote[j][3] - scroll) * speed, 0, scale.x, lnscale)
-					lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (data.beatmap.currentNote[j][2] - scroll) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
-					lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (data.beatmap.currentNote[j][3] - scroll) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+				elseif data.beatmap.currentNote[j][1][2] == 2 then
+					if data.keylocks[j] == 0 and math.abs(data.beatmap.currentNote[j][3] + offset - data.stats.currentTime) > data.od[#data.od - 1] then
+						data.stats.combo = 0
+						data.keyhits[j] = 0
+					end
+					if data.keylocks[j] == 0 and data.beatmap.currentNote[j][3] + offset - data.stats.currentTime <= -1 * data.od[#data.od - 1] then
+						if beatmap.HitObjects[data.beatmap.currentNote[j][2]] == nil then
+							beatmap.HitObjects[data.beatmap.currentNote[j][2]] = {}
+						end
+						beatmap.HitObjects[data.beatmap.currentNote[j][2]][j] = data.beatmap.currentNote[j]
+						data.beatmap.currentNote[j] = nil
+						data.keyhits[j] = 0
+					elseif data.beatmap.currentNote[j][3] + offset < scroll - data.od[#data.od - 1] - hitPosition then
+						data.beatmap.currentNote[j] = nil
+					else
+						update(j)
+						local lnscale = (data.beatmap.currentNote[j][3] - data.beatmap.currentNote[j][2])/drawable.slider:getHeight() * speed
+						lg.setColor(255,255,255,128)
+						lg.draw(drawable.slider, x, data.height - hitPosition - offset * speed - (data.beatmap.currentNote[j][3] - scroll) * speed, 0, scale.x, lnscale)
+						lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (data.beatmap.currentNote[j][2] - scroll) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+						lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (data.beatmap.currentNote[j][3] - scroll) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+						lg.setColor(255,255,255,255)
+					end
 				end
 			end
 		end
@@ -555,13 +569,12 @@ function osuClass.convertBeatmap(self)
 		if #explode("HitObjects", beatmap.raw.array[globalLine]) == 2 then
 			keymode = tonumber(beatmap.General["CircleSize"])
 			interval = 512/keymode
-			beatmap.HitObjects.firstnote = tonumber(explode(",", beatmap.raw.array[globalLine + 1])[3])
 			for offset = globalLine + 1, #beatmap.raw.array do
 				local time = nil
 				local key = nil
-				local type = nil
+				local type = {1, 0}
 				local endtime = nil
-				local timeoffset = 0
+				local hitsound = nil
 				
 				localLine = offset - globalLine
 				beatmap.raw.HitObjects[localLine] = explode(",", beatmap.raw.array[offset])
@@ -579,13 +592,13 @@ function osuClass.convertBeatmap(self)
 					end
 				end
 				
-				type = 1
+				type[1] = 1
 				if beatmap.raw.HitObjects[localLine][4] == "128" then
-					type = 2
+					type[1] = 2
 					endtime = tonumber(explode(":", beatmap.raw.HitObjects[localLine][6])[1])
 				end
 				
-				beatmap.HitObjects[time][key] = {type, time, endtime, timeoffset}
+				beatmap.HitObjects[time][key] = {type, time, endtime, hitsound}
 				beatmap.HitObjectsCount = beatmap.HitObjectsCount + 1
 			end
 		end
@@ -606,9 +619,6 @@ function osuClass.loadBeatmap(self, cache)
 	self:convertBeatmap()
 	
 	beatmap.currentNote = {}
-	for i = 1, tonumber(beatmap.General["CircleSize"]) do
-		beatmap.currentNote[i] = {}
-	end
 	
 	data.stats.hits = {0,0,0,0,0,0}
 	combo = 0
