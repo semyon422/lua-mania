@@ -18,12 +18,12 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 function love.conf(t)
 	t.identity = nil
 	t.version = "0.10.0"
-	t.console = true
+	t.console = false
 	t.accelerometerjoystick = true
 	t.gammacorrect = false
 	
-	t.window.title = "Untitled"
-	t.window.icon = nil
+	t.window.title = "lua-mania"
+	t.window.icon = "res/icon.png"
 	t.window.width = 800
 	t.window.height = 600
 	t.window.borderless = false
