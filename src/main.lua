@@ -79,7 +79,8 @@ function love.load()
 			speed = 1,
 			globalscale = 1,
 			offset = 0,
-			hitPosition = 100
+			hitPosition = 300,
+			pitch = 1,
 		},
 		cursor = {
 			x = 0,
