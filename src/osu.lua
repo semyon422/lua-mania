@@ -28,6 +28,8 @@ function osuClass.drawHUD(self)
 	local hud = data.hud
 	local dt = data.dt
 	
+	lg.setFont(data.ui.songlist.font)
+		
 	lg.setColor(255, 255, 255, 255)
 	if data.ui.debug == false then
 		lg.print(

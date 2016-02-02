@@ -41,6 +41,8 @@ function uiClass.songs(self)
 	if data.cache[data.ui.songlist.current] == nil then
 		lg.setColor(255,255,255,255)
 		lg.printf({{223, 196, 125, 255}, "Add beatmaps to res/Songs"}, 0, lg.getHeight()/2 - data.ui.mainmenu.logo.fontsize * (3/4), lg.getWidth(), "center")
+		function love.mousepressed(x, y, button, istouch)
+		end
 	else
 		data.ui.songlist.buttonHeight = (lg.getHeight() - 2*lg.getHeight()*data.ui.songlist.height - data.ui.songlist.offset)/5 - data.ui.songlist.offset,
 		lg.setColor(255,255,255,255)
@@ -77,8 +79,23 @@ function uiClass.songs(self)
 		lg.line(0, lg.getHeight()*((1/data.ui.songlist.height-1)/(1/data.ui.songlist.height)), lg.getWidth(), lg.getHeight()*((1/data.ui.songlist.height-1)/(1/data.ui.songlist.height)))
 		
 		lg.setColor(255,255,255,255)
-	end
-	function love.mousepressed(x, y, button, istouch)
+		
+		data.ui.songlist.playbutton.x = data.width / 6
+		data.ui.songlist.playbutton.y = data.height / 2
+		lg.setColor(220,220,204,255)
+		lg.setFont(data.ui.songlist.playbutton.font)
+		lg.circle("line", data.ui.songlist.playbutton.x, data.ui.songlist.playbutton.y, data.ui.songlist.playbutton.radius, 90)
+		lg.setColor(255,255,255,255)
+		lg.printf({{223, 196, 125, 255}, "play"}, 0, data.ui.songlist.playbutton.y - data.ui.songlist.playbutton.fontsize * (3/4), data.ui.songlist.playbutton.x*2, "center")
+		function love.mousepressed(x, y, button, istouch)
+			if (x - data.ui.songlist.playbutton.x)^2 + (y - data.ui.songlist.playbutton.y)^2 <= data.ui.songlist.playbutton.radius^2 then
+				data.ui.simplemenu.onscreen = false
+				data.currentbeatmap = data.ui.songlist.current
+				osu:reloadBeatmap()
+				osu:play()
+				data.ui.state = 3
+			end
+		end
 	end
 end
 
@@ -107,6 +124,7 @@ end
 
 
 function uiClass.simplemenu(self)
+	lg.setFont(data.ui.mainmenu.logo.font)
 	local mode = data.ui.mode
 	local buttoncount = 3
 	local offset = data.ui.simplemenu.offset

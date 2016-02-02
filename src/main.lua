@@ -51,6 +51,14 @@ function love.load()
 				offset = 1/16,
 			},
 			songlist = {
+				playbutton = {
+					radius = 1/6 * lg.getHeight(),
+					fontsize = lg.getHeight() / 18,
+					font = lg.newFont("res/fonts/OpenSans/OpenSansLight/OpenSansLight.ttf", lg.getHeight() / 18),
+					x = lg.getWidth() / 6,
+					y = lg.getHeight() / 2,
+					scale = 1
+				},
 				scroll = 0,
 				height = 1/8,
 				offset = 16,
