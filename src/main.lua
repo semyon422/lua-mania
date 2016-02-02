@@ -79,7 +79,7 @@ function love.load()
 			speed = 1,
 			globalscale = 1,
 			offset = 0,
-			hitPosition = 300,
+			hitPosition = 100,
 			pitch = 1,
 		},
 		cursor = {
@@ -90,6 +90,7 @@ function love.load()
 		},
 		od = {16, 64, 97, 127, 151, 188},
 		--od = {1, 2, 3, 4, 5, 200},
+		--od = {1, 2, 3, 4, 200, 202},
 		stats = {
 			currentTime = 0,
 			hits = {0,0,0,0,0,0},
@@ -100,7 +101,8 @@ function love.load()
 				maxCount = 20
 			},
 			lastHit = 0,
-			combo = 0
+			combo = 0,
+			maxcombo = 0
 		}
 	}
 	data.font = lg.newFont("res/fonts/OpenSans/OpenSansLight/OpenSansLight.ttf", lg.getWidth()/24)
