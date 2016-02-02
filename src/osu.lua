@@ -32,7 +32,7 @@ function osuClass.drawHUD(self)
 	if data.ui.debug == false then
 		lg.print(
 			"FPS: "..love.timer.getFPS().."\n"..
-			"time: " .. math.floor(beatmap.audio:tell()*10)/10 .. "\n" ..
+			"time: " .. data.stats.currentTime .. "\n" ..
 			"speed: " .. data.config.speed .. "\n" ..
 			"offset: " .. data.config.offset .. "\n" ..
 			"HitObjects: " .. data.beatmap.HitObjectsCount .. "\n" ..
@@ -70,11 +70,11 @@ function osuClass.start(self)
 	beatmap.audio:stop()
 	beatmap.audio:play()
 	beatmap.audio:pause()
-	data.starttime = love.timer.getTime() * 1000
-	data.stats.currentTime = 0
-	data.play = 1
+	data.stats.currentTime = -data.config.preview
+	data.starttime = love.timer.getTime() * 1000 - data.stats.currentTime
+	data.play = -1
 	data.state = "started"
-	beatmap.audio:play()
+	--beatmap.audio:play()
 	beatmap.audio:setPitch(data.config.pitch)
 end
 function osuClass.stop(self)
@@ -84,9 +84,15 @@ function osuClass.stop(self)
 	data.state = "stopped"
 end
 function osuClass.play(self)
-	if data.state == "paused" then
+	if data.play == 1 then
 		data.play = 1
 		data.state = "started"
+		beatmap.audio:play()
+	elseif data.play == 2 and data.stats.currentTime < 0 then
+		data.play = -1
+	elseif data.play == 2 then
+		data.play = 1
+		beatmap.audio:seek(beatmap.audio:tell() - 1)
 		beatmap.audio:play()
 	else
 		self:start()
@@ -236,11 +242,16 @@ function osuClass.keyboard(self)
 	
 	
 	if beatmap.audio ~= nil then
-		if data.play == 1 then
+		if data.play == -1 then
+			data.stats.currentTime = math.floor(love.timer.getTime() * 1000 - data.starttime)
+			if data.stats.currentTime >= 0 then
+				data.play = 1
+				beatmap.audio:play()
+			end
+		elseif data.play == 1 then
 			data.stats.currentTime =  math.floor(beatmap.audio:tell() * 1000)
-			--data.stats.currentTime = math.floor(love.timer.getTime() * 1000 - data.starttime)
 		elseif data.play == 2 then
-			data.stats.currentTime = math.floor(beatmap.audio:tell() * 1000)
+			--data.stats.currentTime = math.floor(beatmap.audio:tell() * 1000)
 			data.starttime = math.floor(love.timer.getTime() * 1000 - data.stats.currentTime)
 		end
 	end
@@ -322,7 +333,7 @@ function osuClass.drawNotes(self)
 						beatmap.missedHitObjects[data.beatmap.currentNote[j][2]][j][1][2] = 2
 						if data.beatmap.currentNote[j][1][1] == 2 then
 							self:hit(beatmap.currentNote[j][3] - currentTime, j)
-							if data.beatmap.currentNote[j][2] + data.od[#data.od - 1] >= data.beatmap.currentNote[j][3] then
+							if data.beatmap.currentNote[j][2] + data.od[#data.od - 1] >= data.beatmap.currentNote[j][3] and data.beatmap.currentNote[j][1][2] == 1 then
 								beatmap.missedHitObjects[data.beatmap.currentNote[j][2]][j] = nil
 							end
 						end
