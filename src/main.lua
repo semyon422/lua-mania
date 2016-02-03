@@ -76,7 +76,8 @@ function love.load()
 		dt = 0,
 		height = lg.getWidth(),
 		width = lg.getHeight(),
-		
+		beatradius = 1,
+		autoplay = 0,
 		cache = {},
 		BMFList = {},
 		currentbeatmap = 1,
@@ -90,6 +91,7 @@ function love.load()
 			hitPosition = 100,
 			pitch = 1,
 			preview = 2000,
+			fullscreen = false,
 		},
 		cursor = {
 			x = 0,
@@ -156,7 +158,7 @@ function love.draw()
 	
 	if data.ui.state == 1 then
 		ui:mainmenu()
-		ui:simplemenu()
+		--ui:simplemenu()
 	elseif data.ui.state == 2 then
 		ui:songs()
 	elseif data.ui.state == 3 then

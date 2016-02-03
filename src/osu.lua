@@ -37,6 +37,8 @@ function osuClass.drawHUD(self)
 			"time: " .. data.stats.currentTime .. "\n" ..
 			"speed: " .. data.config.speed .. "\n" ..
 			"offset: " .. data.config.offset .. "\n" ..
+			"autoplay: " .. data.autoplay .. "\n" ..
+			"pitch: " .. data.config.pitch .. "\n" ..
 			"HitObjects: " .. data.beatmap.HitObjectsCount .. "\n" ..
 			"miss: " .. data.stats.hits[6] .. "\n" ..
 			"50: " .. data.stats.hits[5] .. "\n" ..
@@ -45,8 +47,7 @@ function osuClass.drawHUD(self)
 			"300: " .. data.stats.hits[2] .. "\n" ..
 			"MAX: " .. data.stats.hits[1] .. "\n" ..
 			"MaxCombo: " .. data.stats.maxcombo .. "\n" ..
-			"Combo: " .. data.stats.combo .. "\n" ..
-			"cN: " .. #data.beatmap.currentNote .. "\n"
+			"Combo: " .. data.stats.combo .. "\n"
 		, 0, 0, 0, 1, 1)
 	else
 		lg.print(
@@ -57,13 +58,14 @@ function osuClass.drawHUD(self)
 		, 0, 0, 0,1,1)
 	end
 	lg.setColor(255, 255, 255, 255)
+	--lg.circle("line", lg.getWidth()*3/4, lg.getHeight()/2, data.beatradius*100)
 end
 
 function osuClass.beat(self, state)
 	if state == 1 then
-		--data.debugscale = 0.85
+		data.beatradius = 0.85
 	elseif state == 0 then
-		--if data.debugscale < 1 then data.debugscale = data.debugscale + 0.002 end
+		if data.beatradius < 1 then data.beatradius = data.beatradius + 0.002 end
 	end
 	
 end
@@ -89,12 +91,14 @@ function osuClass.play(self)
 	if data.play == 1 then
 		data.play = 1
 		data.state = "started"
+		beatmap.audio:setPitch(data.config.pitch)
 		beatmap.audio:play()
 	elseif data.play == 2 and data.stats.currentTime < 0 then
 		data.play = -1
 	elseif data.play == 2 then
 		data.play = 1
 		--beatmap.audio:seek(beatmap.audio:tell() - 1)
+		beatmap.audio:setPitch(data.config.pitch)
 		beatmap.audio:play()
 	else
 		self:start()
@@ -157,13 +161,27 @@ function osuClass.keyboard(self)
 	local keyboard = data.keyboard
 
 	for act,key in pairs(keyboard.key) do
-		if love.keyboard.isDown(key[1]) then
-			if data.keylocks[key[1]] == nil then
-				key.action()
+		if key[2] ~= nil then
+			--function love.wheelmoved(x, y) end
+			if love.keyboard.isDown(key[1]) and love.keyboard.isDown(key[2]) then
+				--if data.keylocks[key[1]] == nil and data.keylocks[key[2]] == nil then
+					key.action()
+				--end
+				--data.keylocks[key[1]] = 1
+				--data.keylocks[key[2]] = 1
+			--else
+				--data.keylocks[key[1]] = nil
+				--data.keylocks[key[2]] = nil
 			end
-			data.keylocks[key[1]] = 1
-		else
-			data.keylocks[key[1]] = nil
+		elseif key[2] == nil then
+			if love.keyboard.isDown(key[1]) then
+				if data.keylocks[key[1]] == nil then
+					key.action()
+				end
+				data.keylocks[key[1]] = 1
+			else
+				data.keylocks[key[1]] = nil
+			end
 		end
 	end
 	
@@ -318,27 +336,35 @@ function osuClass.drawNotes(self)
 				if note[j] ~= nil then
 					if note[j][1][1] == 1 then
 						if note[j][1][2] == 0 then
-							if note[j][2] + offset < currentTime - data.od[#data.od - 1] then
-								data.stats.combo = 0
-								data.stats.hits[6] = data.stats.hits[6] + 1
-								if beatmap.missedHitObjects[note[j][2]] == nil then
-									beatmap.missedHitObjects[note[j][2]] = {}
+							if data.autoplay == 1 then
+								if note[j][2] + offset <= currentTime then
+									self:hit(-offset, j)
+									note[j] = nil
 								end
-								beatmap.missedHitObjects[note[j][2]][j] = note[j]
-								beatmap.missedHitObjects[note[j][2]][j][1][2] = 2
-								note[j] = nil
-							elseif data.keyhits[j] == 1 then
-								if note[j][2] + offset > currentTime + data.od[#data.od - 1] then
+							end
+							if note[j] ~= nil then
+								if note[j][2] + offset < currentTime - data.od[#data.od - 1] then
 									data.stats.combo = 0
 									data.stats.hits[6] = data.stats.hits[6] + 1
-									note[j][1][2] = 2
+									if beatmap.missedHitObjects[note[j][2]] == nil then
+										beatmap.missedHitObjects[note[j][2]] = {}
+									end
+									beatmap.missedHitObjects[note[j][2]][j] = note[j]
+									beatmap.missedHitObjects[note[j][2]][j][1][2] = 2
+									note[j] = nil
+								elseif data.keyhits[j] == 1 then
+									if note[j][2] + offset > currentTime + data.od[#data.od - 1] then
+										data.stats.combo = 0
+										data.stats.hits[6] = data.stats.hits[6] + 1
+										note[j][1][2] = 2
+									else
+										note[j][1][2] = 1
+									end
+									data.keyhits[j] = 0
 								else
-									note[j][1][2] = 1
+									update(j)
+									lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (note[j][2] - currentTime) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
 								end
-								data.keyhits[j] = 0
-							else
-								update(j)
-								lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (note[j][2] - currentTime) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
 							end
 						end
 						if note[j] ~= nil then
@@ -362,6 +388,11 @@ function osuClass.drawNotes(self)
 						end
 					elseif note[j][1][1] == 2 then
 						if note[j][1][2] == 0 then
+							if data.autoplay == 1 then
+								if note[j][2] + offset <= currentTime then
+									self:hit(-offset, j)
+								end
+							end
 							if data.keyhits[j] == 1 then
 								if math.abs(note[j][2] + offset - currentTime) <= data.od[#data.od - 1] then
 									note[j][1][2] = 1
@@ -385,15 +416,19 @@ function osuClass.drawNotes(self)
 							end
 						end
 						if note[j][1][2] == 1 then
-							if data.keyhits[j] == 0 and math.abs(note[j][3] + offset - currentTime) > data.od[#data.od - 1] then
+							if data.keyhits[j] == 0 and math.abs(note[j][3] + offset - currentTime) > data.od[#data.od - 1] and data.autoplay == 0 then
 								data.stats.combo = 0
 								data.stats.hits[6] = data.stats.hits[6] + 1
 								note[j][1][2] = 2
-							elseif data.keyhits[j] == 0 and math.abs(note[j][3] + offset - currentTime) <= data.od[#data.od - 1] then
+							elseif data.autoplay == 1 and note[j][3] + offset - currentTime <= 0 then
+								self:hit(-offset, j)
+								note[j] = nil
+								data.keyhits[j] = 0
+							elseif data.keyhits[j] == 0 and math.abs(note[j][3] + offset - currentTime) <= data.od[#data.od - 1] and data.autoplay == 0 then
 								self:hit(note[j][3] - currentTime, j)
 								note[j] = nil
 								data.keyhits[j] = 0
-							elseif data.keyhits[j] == 1 and note[j][3] + offset - currentTime <= -1 * data.od[#data.od - 2] then
+							elseif data.keyhits[j] == 1 and note[j][3] + offset - currentTime <= -1 * data.od[#data.od - 2] and data.autoplay == 0 then
 								self:hit(note[j][3] - currentTime, j)
 								note[j] = nil
 								data.keyhits[j] = 0
@@ -448,42 +483,44 @@ function osuClass.drawNotes(self)
 		end
 	end
 	--lg.setColor(255,255,255,255)
-	for notetime,note in pairs(beatmap.missedHitObjects) do --missedHitObjects
-		if note ~= nil then
-			for j = 1, keymode do
-				if note[j] ~= nil then
-					if note[j][1][1] == 1 then
-						if note[j][2] < math.ceil(currentTime - (hitPosition + drawable.note:getHeight() * scale.y) / speed) then
-							note[j] = nil
-						else
-							update(j)
-							lg.setColor(255,255,255,128)
-							lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (notetime - currentTime) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
-							lg.setColor(255,255,255,255)
-						end
-					elseif note[j][1][1] == 2 then
-						if note[j][3] < math.ceil(currentTime - (hitPosition + drawable.note:getHeight() * scale.y) / speed) then
-							note[j] = nil
-						else
-							update(j)
-							lg.setColor(255,255,255,128)
-							lg.draw(drawable.slider, x, data.height - hitPosition - offset * speed - (note[j][3] - currentTime) * speed, 0, scale.x, (note[j][3] - note[j][2])/drawable.slider:getHeight() * speed)
-							if note[j][2] > currentTime - math.ceil(hitPosition/speed) - math.ceil(drawable.note:getHeight()*scale.y/speed) then
-								lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (note[j][2] - currentTime) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+	if data.autoplay == 0 then
+		for notetime,note in pairs(beatmap.missedHitObjects) do --missedHitObjects
+			if note ~= nil then
+				for j = 1, keymode do
+					if note[j] ~= nil then
+						if note[j][1][1] == 1 then
+							if note[j][2] < math.ceil(currentTime - (hitPosition + drawable.note:getHeight() * scale.y) / speed) then
+								note[j] = nil
+							else
+								update(j)
+								lg.setColor(255,255,255,128)
+								lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (notetime - currentTime) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+								lg.setColor(255,255,255,255)
 							end
-							lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (note[j][3] - currentTime) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
-							lg.setColor(255,255,255,255)
+						elseif note[j][1][1] == 2 then
+							if note[j][3] < math.ceil(currentTime - (hitPosition + drawable.note:getHeight() * scale.y) / speed) then
+								note[j] = nil
+							else
+								update(j)
+								lg.setColor(255,255,255,128)
+								lg.draw(drawable.slider, x, data.height - hitPosition - offset * speed - (note[j][3] - currentTime) * speed, 0, scale.x, (note[j][3] - note[j][2])/drawable.slider:getHeight() * speed)
+								if note[j][2] > currentTime - math.ceil(hitPosition/speed) - math.ceil(drawable.note:getHeight()*scale.y/speed) then
+									lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (note[j][2] - currentTime) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+								end
+								lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (note[j][3] - currentTime) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+								lg.setColor(255,255,255,255)
+							end
 						end
 					end
 				end
+				local remove = true
+				for i,p in pairs(note) do
+					remove = false
+				end
+				if remove then beatmap.missedHitObjects[notetime] = nil end
 			end
-			local remove = true
-			for i,p in pairs(note) do
-				remove = false
-			end
-			if remove then beatmap.missedHitObjects[notetime] = nil end
 		end
-	end 
+	end
 end
 
 function osuClass.drawUI(self)

@@ -34,7 +34,7 @@ local keyboard = {
 			action = function()
 				if data.ui.state == 2 then
 					data.ui.simplemenu.onscreen = false
-					--data.ui.state = 1
+					data.ui.state = 1
 				elseif data.ui.state == 3 then
 					if data.ui.simplemenu.onscreen == true then
 						data.ui.simplemenu.onscreen = false
@@ -108,6 +108,63 @@ local keyboard = {
 					osu:reloadBeatmap()
 					osu:play()
 					data.ui.state = 3
+				end
+			end
+		},
+		["autoplay"] = {"f10",
+			action = function()
+				if data.ui.state == 3 then
+					if data.autoplay == 0 then
+						data.autoplay = 1
+					elseif data.autoplay == 1 then
+						data.autoplay = 0
+					end
+				end
+			end
+		},
+		["fullscreen"] = {"f11",
+			action = function()
+				if data.config.fullscreen == false then
+					data.config.fullscreen = true
+				elseif data.config.fullscreen == true then
+					data.config.fullscreen = false
+				end
+				love.window.setFullscreen(data.config.fullscreen, "desktop")
+			end
+		},
+		["c1"] = {"lctrl", "z",
+			action = function()
+				if data.ui.state == 3 then
+					function love.wheelmoved(x, y)
+					end
+				end
+			end
+		},
+		["c2"] = {"lctrl", "q",
+			action = function()
+				if data.ui.state == 3 then
+					function love.wheelmoved(x, y)
+						if y > 0 then
+							data.config.hitPosition = data.config.hitPosition + 5
+						elseif y < 0 then
+							data.config.hitPosition = data.config.hitPosition - 5
+						end
+					end
+				end
+			end
+		},
+		["c3"] = {"lctrl", "w",
+			action = function()
+				if data.ui.state == 3 then
+					function love.wheelmoved(x, y)
+						if y > 0 then
+							data.config.pitch = data.config.pitch + 0.1
+						elseif y < 0 then
+							if data.config.pitch > 0.2 then
+								data.config.pitch = data.config.pitch - 0.1
+							end
+						end
+					end
 				end
 			end
 		},
