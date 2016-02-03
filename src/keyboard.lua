@@ -30,15 +30,87 @@ local keyboard = {
 		[18] = {"q","q","q","q","q","q","q","q","q","q","q","q","q","q","q","q","q","q"}
 	},
 	key = {
-		pause = "escape",
-		retry = "`",
-		speedup = "f4",
-		speeddown = "f3",
-		offsetup = "=",
-		offsetdown = "-",
-		songup = "up",
-		songdown = "down",
-		enter = "return",
+		["back"] = {"escape",
+			action = function()
+				if data.ui.state == 2 then
+					data.ui.simplemenu.onscreen = false
+					--data.ui.state = 1
+				elseif data.ui.state == 3 then
+					if data.ui.simplemenu.onscreen == true then
+						data.ui.simplemenu.onscreen = false
+						osu:play()
+					else
+						data.ui.simplemenu.onscreen = true
+						data.ui.simplemenu.state = "pause"
+						osu:pause()
+					end
+				end
+			end
+		},
+		["retry"] = {"`",
+			action = function()
+				if data.ui.state == 3 then
+					osu:stop()
+					data.beatmap = {}
+					osu:reloadBeatmap()
+					osu:start()
+					data.ui.simplemenu.onscreen = false
+				end
+			end
+		},
+		["speedup"] = {"f4",
+			action = function()
+				if data.ui.state == 3 then
+					data.config.speed = data.config.speed + 0.1
+				end
+			end
+		},
+		["speeddown"] = {"f3",
+			action = function()
+				if data.ui.state == 3 then
+					if data.config.speed > 0.2 then data.config.speed = data.config.speed - 0.1 end
+				end
+			end
+		},
+		["offsetup"] = {"=",
+			action = function()
+				if data.ui.state == 3 then
+					data.config.offset = data.config.offset + 5
+				end
+			end
+		},
+		["offsetdown"] = {"-",
+			action = function()
+				if data.ui.state == 3 then
+					data.config.offset = data.config.offset - 5
+				end
+			end
+		},
+		["songup"] = {"up",
+			action = function()
+				if data.ui.state == 2 then
+					if data.ui.songlist.scroll < 2 and data.ui.songlist.scroll >= -#data.cache + 3 then data.ui.songlist.scroll = data.ui.songlist.scroll + 1 end
+				end
+			end
+		},
+		["songdown"] = {"down",
+			action = function()
+				if data.ui.state == 2 then
+					if data.ui.songlist.scroll <= 2 and data.ui.songlist.scroll > -#data.cache + 3 then data.ui.songlist.scroll = data.ui.songlist.scroll - 1 end
+				end
+			end
+		},
+		["enter"] = {"return",
+			action = function()
+				if data.ui.state == 2 then
+					data.ui.simplemenu.onscreen = false
+					data.currentbeatmap = data.ui.songlist.current
+					osu:reloadBeatmap()
+					osu:play()
+					data.ui.state = 3
+				end
+			end
+		},
 	}
 }
 

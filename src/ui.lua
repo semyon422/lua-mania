@@ -96,6 +96,13 @@ function uiClass.songs(self)
 				data.ui.state = 3
 			end
 		end
+		function love.wheelmoved(x, y)
+			if y > 0 then
+				if data.ui.songlist.scroll < 2 and data.ui.songlist.scroll >= -#data.cache + 3 then data.ui.songlist.scroll = data.ui.songlist.scroll + 1 end
+			elseif y < 0 then
+				if data.ui.songlist.scroll <= 2 and data.ui.songlist.scroll > -#data.cache + 3 then data.ui.songlist.scroll = data.ui.songlist.scroll - 1 end
+			end
+		end
 	end
 end
 

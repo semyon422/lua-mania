@@ -94,7 +94,7 @@ function osuClass.play(self)
 		data.play = -1
 	elseif data.play == 2 then
 		data.play = 1
-		beatmap.audio:seek(beatmap.audio:tell() - 1)
+		--beatmap.audio:seek(beatmap.audio:tell() - 1)
 		beatmap.audio:play()
 	else
 		self:start()
@@ -108,12 +108,19 @@ end
 
 function osuClass.hit(self, ms, key)
 	local trueMs = ms + data.config.offset
-	for i = 1, #data.od do
-		if math.abs(trueMs) <= data.od[i] then 
-			data.stats.lastHit = i
-			data.stats.hits[i] = data.stats.hits[i] + 1
-			if i == #data.od then data.stats.combo = 0 end
-			break
+	local beatmap = data.beatmap
+	local currentTime = data.stats.currentTime
+	local offset = data.config.offset
+	if beatmap.currentNote[key][1][1] == 2 and beatmap.currentNote[key][1][2] == 2 and beatmap.currentNote[key][2] + offset <= currentTime + data.od[#data.od] and beatmap.currentNote[key][2] + offset > currentTime - data.od[#data.od - 1] then
+	
+	else
+		for i = 1, #data.od do
+			if math.abs(trueMs) <= data.od[i] then 
+				data.stats.lastHit = i
+				data.stats.hits[i] = data.stats.hits[i] + 1
+				if i == #data.od then data.stats.combo = 0 end
+				break
+			end
 		end
 	end
 	if math.abs(trueMs) <= data.od[#data.od] then 
@@ -133,13 +140,13 @@ function osuClass.hit(self, ms, key)
 		end
 		data.keyhits[key] = 1
 	end
-	if data.beatmap.currentNote[key] ~= nil then
+	--if data.beatmap.currentNote[key] ~= nil then
 		if data.beatmap.currentNote[key][1][1] == 2 then
 			if data.beatmap.currentNote[key][2] < data.stats.currentTime - data.od[#data.od - 1] and data.beatmap.currentNote[key][3] > data.stats.currentTime + data.od[#data.od - 1] then
 				data.keyhits[key] = 1
 			end
 		end
-	end
+	--end
 end
 
 function osuClass.keyboard(self)
@@ -149,81 +156,15 @@ function osuClass.keyboard(self)
 
 	local keyboard = data.keyboard
 
-	if love.keyboard.isDown(keyboard.key.pause) then
-		data.ui.simplemenu.onscreen = true
-		data.ui.simplemenu.state = "pause"
-		osu:pause()
-	end
-	if love.keyboard.isDown(keyboard.key.retry) then
-		osu:stop()
-		data.beatmap = {}
-		osu:reloadBeatmap()
-		osu:start()
-		data.ui.simplemenu.onscreen = false
-	end
-	
-	if love.keyboard.isDown(keyboard.key.speedup) then
-		if data.keylocks[keyboard.key.speedup] == nil then
-			data.config.speed = data.config.speed + 0.1
+	for act,key in pairs(keyboard.key) do
+		if love.keyboard.isDown(key[1]) then
+			if data.keylocks[key[1]] == nil then
+				key.action()
+			end
+			data.keylocks[key[1]] = 1
+		else
+			data.keylocks[key[1]] = nil
 		end
-		data.keylocks[keyboard.key.speedup] = 1
-	else
-		data.keylocks[keyboard.key.speedup] = nil
-	end
-	if love.keyboard.isDown(keyboard.key.speeddown) then
-		if data.keylocks[keyboard.key.speeddown] == nil then
-			if data.config.speed > 0.2 then data.config.speed = data.config.speed - 0.1 end
-		end
-		data.keylocks[keyboard.key.speeddown] = 1
-	else
-		data.keylocks[keyboard.key.speeddown] = nil
-	end
-	
-	if love.keyboard.isDown(keyboard.key.offsetup) then
-		if data.keylocks[keyboard.key.offsetup] == nil then
-			data.config.offset = data.config.offset + 5
-		end
-		data.keylocks[keyboard.key.offsetup] = 1
-	else
-		data.keylocks[keyboard.key.offsetup] = nil
-	end
-	if love.keyboard.isDown(keyboard.key.offsetdown) then
-		if data.keylocks[keyboard.key.offsetdown] == nil then
-			data.config.offset = data.config.offset - 5
-		end
-		data.keylocks[keyboard.key.offsetdown] = 1
-	else
-		data.keylocks[keyboard.key.offsetdown] = nil
-	end
-	
-	if love.keyboard.isDown(keyboard.key.songup) then
-		if data.keylocks[keyboard.key.songup] == nil then
-			if data.ui.songlist.scroll < 2 and data.ui.songlist.scroll >= -#data.cache + 3 then data.ui.songlist.scroll = data.ui.songlist.scroll + 1 end
-		end
-		data.keylocks[keyboard.key.songup] = 1
-	else
-		data.keylocks[keyboard.key.songup] = nil
-	end
-	if love.keyboard.isDown(keyboard.key.songdown) then
-		if data.keylocks[keyboard.key.songdown] == nil then
-			if data.ui.songlist.scroll <= 2 and data.ui.songlist.scroll > -#data.cache + 3 then data.ui.songlist.scroll = data.ui.songlist.scroll - 1 end
-		end
-		data.keylocks[keyboard.key.songdown] = 1
-	else
-		data.keylocks[keyboard.key.songdown] = nil
-	end
-	
-	if love.keyboard.isDown(keyboard.key.enter) then
-		if data.keylocks[keyboard.key.enter] == nil then
-			data.ui.simplemenu.onscreen = false
-			data.currentbeatmap = data.ui.songlist.current
-			self:reloadBeatmap()
-			self:play()
-			data.ui.state = 3
-		end
-		data.keylocks[keyboard.key.enter] = 1
-	else
-		data.keylocks[keyboard.key.enter] = nil
 	end
 	
 	if data.beatmap.General ~= nil then
