@@ -286,21 +286,21 @@ function osuClass.drawNotes(self)
 		if note ~= nil then
 			for j = 1, keymode do
 				if note[j] ~= nil then
-					if notetime + offset <= currentTime + data.od[1] and notetime + offset > currentTime - data.od[#data.od] and data.beatmap.currentNote[j] ~= nil then
-						if beatmap.missedHitObjects[data.beatmap.currentNote[j][2]] == nil then
-							beatmap.missedHitObjects[data.beatmap.currentNote[j][2]] = {}
-						end
-						beatmap.missedHitObjects[data.beatmap.currentNote[j][2]][j] = data.beatmap.currentNote[j]
-						beatmap.missedHitObjects[data.beatmap.currentNote[j][2]][j][1][2] = 2
-						if data.beatmap.currentNote[j][1][1] == 2 then
-							self:hit(beatmap.currentNote[j][3] - currentTime, j)
-							if data.beatmap.currentNote[j][2] + data.od[#data.od - 1] >= data.beatmap.currentNote[j][3] and data.beatmap.currentNote[j][1][2] == 1 then
-								beatmap.missedHitObjects[data.beatmap.currentNote[j][2]][j] = nil
-							end
-						end
-						data.beatmap.currentNote[j] = nil
-						data.keyhits[j] = 0
-					end
+					--if notetime + offset <= currentTime + data.od[1] and notetime + offset > currentTime - data.od[#data.od] and data.beatmap.currentNote[j] ~= nil then
+					--	if beatmap.missedHitObjects[data.beatmap.currentNote[j][2]] == nil then
+					--		beatmap.missedHitObjects[data.beatmap.currentNote[j][2]] = {}
+					--	end
+					--	beatmap.missedHitObjects[data.beatmap.currentNote[j][2]][j] = data.beatmap.currentNote[j]
+					--	beatmap.missedHitObjects[data.beatmap.currentNote[j][2]][j][1][2] = 2
+					--	if data.beatmap.currentNote[j][1][1] == 2 then
+					--		self:hit(beatmap.currentNote[j][3] - currentTime, j)
+					--		if data.beatmap.currentNote[j][2] + data.od[#data.od - 1] >= data.beatmap.currentNote[j][3] and data.beatmap.currentNote[j][1][2] == 1 then
+					--			beatmap.missedHitObjects[data.beatmap.currentNote[j][2]][j] = nil
+					--		end
+					--	end
+					--	data.beatmap.currentNote[j] = nil
+					--	data.keyhits[j] = 0
+					--end
 					if note[j][1][1] == 1 then
 						if note[j][1][2] == 0 then
 							if notetime + offset <= currentTime + data.od[#data.od] and notetime + offset > currentTime - data.od[#data.od - 1] and data.beatmap.currentNote[j] == nil then
@@ -393,7 +393,16 @@ function osuClass.drawNotes(self)
 									self:hit(-offset, j)
 								end
 							end
-							if data.keyhits[j] == 1 then
+							if note[j][3] + offset < currentTime - data.od[#data.od - 1] then
+								data.stats.combo = 0
+								data.stats.hits[6] = data.stats.hits[6] + 1
+								if beatmap.missedHitObjects[note[j][2]] == nil then
+									beatmap.missedHitObjects[note[j][2]] = {}
+								end
+								beatmap.missedHitObjects[note[j][2]][j] = note[j]
+								beatmap.missedHitObjects[note[j][2]][j][1][2] = 2
+								note[j] = nil
+							elseif data.keyhits[j] == 1 then
 								if math.abs(note[j][2] + offset - currentTime) <= data.od[#data.od - 1] then
 									note[j][1][2] = 1
 								--elseif (note[j][2] + offset < currentTime - data.od[#data.od - 1]) or (note[j][3] + offset < currentTime - data.od[#data.od - 1]) then
@@ -415,37 +424,39 @@ function osuClass.drawNotes(self)
 								--lg.setColor(255,255,0,255)
 							end
 						end
-						if note[j][1][2] == 1 then
-							if data.keyhits[j] == 0 and math.abs(note[j][3] + offset - currentTime) > data.od[#data.od - 1] and data.autoplay == 0 then
-								data.stats.combo = 0
-								data.stats.hits[6] = data.stats.hits[6] + 1
-								note[j][1][2] = 2
-							elseif data.autoplay == 1 and note[j][3] + offset - currentTime <= 0 then
-								self:hit(-offset, j)
-								note[j] = nil
-								data.keyhits[j] = 0
-							elseif data.keyhits[j] == 0 and math.abs(note[j][3] + offset - currentTime) <= data.od[#data.od - 1] and data.autoplay == 0 then
-								self:hit(note[j][3] - currentTime, j)
-								note[j] = nil
-								data.keyhits[j] = 0
-							elseif data.keyhits[j] == 1 and note[j][3] + offset - currentTime <= -1 * data.od[#data.od - 2] and data.autoplay == 0 then
-								self:hit(note[j][3] - currentTime, j)
-								note[j] = nil
-								data.keyhits[j] = 0
-							else
-								update(j)
-								if note[j][2] + offset <= currentTime and note[j][3] + offset > currentTime then
-									local lnscale = (note[j][3] + offset - currentTime)/drawable.slider:getHeight() * speed
-									lg.draw(drawable.slider, x, data.height - hitPosition - offset * speed - (note[j][3] - currentTime) * speed, 0, scale.x, lnscale)
-									lg.draw(drawable.note, x, data.height - hitPosition - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
-									lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (note[j][3] - currentTime) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
-									note[j][2] = currentTime - offset
-								elseif note[j][2] + offset <= currentTime and note[j][3] + offset <= currentTime then
-								elseif note[j][2] + offset > currentTime then
-									local lnscale = (note[j][3] - note[j][2])/drawable.slider:getHeight() * speed
-									lg.draw(drawable.slider, x, data.height - hitPosition - offset * speed - (note[j][3] - currentTime) * speed, 0, scale.x, lnscale)
-									lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (note[j][2] - currentTime) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
-									lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (note[j][3] - currentTime) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+						if note[j] ~= nil then
+							if note[j][1][2] == 1 then
+								if data.keyhits[j] == 0 and math.abs(note[j][3] + offset - currentTime) > data.od[#data.od - 1] and data.autoplay == 0 then
+									data.stats.combo = 0
+									data.stats.hits[6] = data.stats.hits[6] + 1
+									note[j][1][2] = 2
+								elseif data.autoplay == 1 and note[j][3] + offset <= currentTime then
+									self:hit(-offset, j)
+									note[j] = nil
+									data.keyhits[j] = 0
+								elseif data.keyhits[j] == 0 and math.abs(note[j][3] + offset - currentTime) <= data.od[#data.od - 1] and data.autoplay == 0 then
+									self:hit(note[j][3] - currentTime, j)
+									note[j] = nil
+									data.keyhits[j] = 0
+								elseif data.keyhits[j] == 1 and note[j][3] + offset - currentTime <= -1 * data.od[#data.od - 2] and data.autoplay == 0 then
+									self:hit(note[j][3] - currentTime, j)
+									note[j] = nil
+									data.keyhits[j] = 0
+								else
+									update(j)
+									if note[j][2] + offset <= currentTime and note[j][3] + offset > currentTime then
+										local lnscale = (note[j][3] + offset - currentTime)/drawable.slider:getHeight() * speed
+										lg.draw(drawable.slider, x, data.height - hitPosition - offset * speed - (note[j][3] - currentTime) * speed, 0, scale.x, lnscale)
+										lg.draw(drawable.note, x, data.height - hitPosition - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+										lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (note[j][3] - currentTime) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+										note[j][2] = currentTime - offset
+									elseif note[j][2] + offset <= currentTime and note[j][3] + offset <= currentTime then
+									elseif note[j][2] + offset > currentTime then
+										local lnscale = (note[j][3] - note[j][2])/drawable.slider:getHeight() * speed
+										lg.draw(drawable.slider, x, data.height - hitPosition - offset * speed - (note[j][3] - currentTime) * speed, 0, scale.x, lnscale)
+										lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (note[j][2] - currentTime) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+										lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (note[j][3] - currentTime) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+									end
 								end
 							end
 						end
@@ -483,7 +494,7 @@ function osuClass.drawNotes(self)
 		end
 	end
 	--lg.setColor(255,255,255,255)
-	if data.autoplay == 0 then
+	if data.autoplay == 0 or true then
 		for notetime,note in pairs(beatmap.missedHitObjects) do --missedHitObjects
 			if note ~= nil then
 				for j = 1, keymode do

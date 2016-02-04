@@ -130,6 +130,7 @@ local keyboard = {
 					data.config.fullscreen = false
 				end
 				love.window.setFullscreen(data.config.fullscreen, "desktop")
+				--love.window.setFullscreen(data.config.fullscreen, "exclusive")
 			end
 		},
 		["c1"] = {"lctrl", "z",
