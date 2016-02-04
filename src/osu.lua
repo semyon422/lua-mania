@@ -693,7 +693,8 @@ function osuClass.loadBeatmap(self, cache)
 	beatmap.missedHitObjects = {}
 	
 	data.stats.hits = {0,0,0,0,0,0}
-	combo = 0
+	data.stats.combo = 0
+	data.stats.maxcombo = 0
 end
 
 function osuClass.reloadBeatmap(self)
