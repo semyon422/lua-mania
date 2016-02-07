@@ -189,6 +189,7 @@ function osuClass.keyboard(self)
 		for keynumber,key in pairs(keyboard.maniaLayouts[tonumber(data.beatmap.General["CircleSize"])]) do
 			if love.keyboard.isDown(key) then
 				if data.keylocks[keynumber] == 0 then
+					data.beatmap.HitSounds[keynumber]:play()
 					if data.beatmap.currentNote[keynumber] ~= nil then
 						self:hit(data.beatmap.currentNote[keynumber][2] - data.stats.currentTime, keynumber)
 					end
@@ -197,6 +198,7 @@ function osuClass.keyboard(self)
 			else
 				data.keylocks[keynumber] = 0
 				data.keyhits[keynumber] = 0
+				--data.beatmap.HitSounds[keynumber]:stop()
 			end
 		end
 	end
@@ -286,6 +288,13 @@ function osuClass.drawNotes(self)
 		if note ~= nil then
 			for j = 1, keymode do
 				if note[j] ~= nil then
+					if beatmap.HitSounds[j] == nil then
+						if note[j][4] == "" then
+							beatmap.HitSounds[j] = love.audio.newSource(data.config.skinname .. "/" .. data.skin.config.HitSoundsFolder .. "/soft-hitnormal.wav")
+						else
+							beatmap.HitSounds[j] = love.audio.newSource(beatmap.path .. "/" .. note[j][4], "static")
+						end
+					end
 					--if notetime + offset <= currentTime + data.od[1] and notetime + offset > currentTime - data.od[#data.od] and data.beatmap.currentNote[j] ~= nil then
 					--	if beatmap.missedHitObjects[data.beatmap.currentNote[j][2]] == nil then
 					--		beatmap.missedHitObjects[data.beatmap.currentNote[j][2]] = {}
@@ -340,6 +349,9 @@ function osuClass.drawNotes(self)
 								if note[j][2] + offset <= currentTime then
 									self:hit(-offset, j)
 									note[j] = nil
+									data.beatmap.HitSounds[j]:stop()
+									data.beatmap.HitSounds[j]:play()
+									beatmap.HitSounds[j] = nil
 								end
 							end
 							if note[j] ~= nil then
@@ -391,6 +403,9 @@ function osuClass.drawNotes(self)
 							if data.autoplay == 1 then
 								if note[j][2] + offset <= currentTime then
 									self:hit(-offset, j)
+									data.beatmap.HitSounds[j]:stop()
+									data.beatmap.HitSounds[j]:play()
+									beatmap.HitSounds[j] = nil
 								end
 							end
 							if note[j][3] + offset < currentTime - data.od[#data.od - 1] then
@@ -605,6 +620,11 @@ function osuClass.loadSkin(self, name)
 	--skin.sprites.scorebarColour = lg.newImage(name .. "/scorebar-colour.png")
 	--skin.sprites.scorebarBG = lg.newImage(name .. "/scorebar-bg.png")
 	skin.sprites.background = lg.newImage(name .. "/menu-background.png")
+	
+	skin.sampleSet = {}
+	--for i,hs in pairs(skin.config.HitSounds[data.config.sampleSet]) do
+	--	skin.sampleSet[i] = love.audio.newSource(name .. "/" .. skin.config.HitSoundsFolder .. "/" .. hs)
+	--end
 
 end
 
@@ -669,6 +689,9 @@ function osuClass.convertBeatmap(self)
 					endtime = tonumber(explode(":", beatmap.raw.HitObjects[localLine][6])[1])
 				end
 				
+				local udata = explode(":", beatmap.raw.HitObjects[localLine][6])
+				hitsound = tostring(udata[#udata])
+				
 				beatmap.HitObjects[time][key] = {type, time, endtime, hitsound}
 				beatmap.HitObjectsCount = beatmap.HitObjectsCount + 1
 			end
@@ -691,6 +714,8 @@ function osuClass.loadBeatmap(self, cache)
 	
 	beatmap.currentNote = {}
 	beatmap.missedHitObjects = {}
+	
+	beatmap.HitSounds = {}
 	
 	data.stats.hits = {0,0,0,0,0,0}
 	data.stats.combo = 0

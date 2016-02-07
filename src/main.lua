@@ -92,6 +92,8 @@ function love.load()
 			pitch = 1,
 			preview = 2000,
 			fullscreen = false,
+			sampleSet = "soft",
+			skinname = "res/Skins/skin-1",
 		},
 		cursor = {
 			x = 0,
