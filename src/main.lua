@@ -116,7 +116,8 @@ function love.load()
 			lastHit = 0,
 			combo = 0,
 			maxcombo = 0
-		}
+		},
+		audioFormats = {"wav","ogg","mp3"}
 	}
 	data.font = lg.newFont("res/fonts/OpenSans/OpenSansLight/OpenSansLight.ttf", lg.getWidth()/24)
 	lg.setFont(data.font)
