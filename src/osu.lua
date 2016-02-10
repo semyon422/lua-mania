@@ -346,6 +346,7 @@ function osuClass.drawNotes(self)
 		if note ~= nil then
 			for j = 1, keymode do
 				if note[j] ~= nil then
+					--print(note[j][1][2])
 					if beatmap.HitSounds[j] == nil then
 						beatmap.HitSounds[j] = love.audio.newSource(self:getHitSound(note[j][4]))
 					end
@@ -692,185 +693,27 @@ function osuClass.loadSkin(self, name)
 
 end
 
-function osuClass.convertBeatmap(self)
-	beatmap = data.beatmap
-	beatmap.raw = {}
-	beatmap.raw.file = io.open(beatmap.pathFile, "r")
-	beatmap.raw.array = {}
-	beatmap.raw.HitObjects = {}
-	beatmap.raw.General = {}
-	beatmap.HitObjects = {}
-	beatmap.HitObjectsCount = 0
-	beatmap.General = {}
-	for line in beatmap.raw.file:lines() do
-		table.insert(beatmap.raw.array, line)
-	end
-	beatmap.raw.file:close()
-	for globalLine = 1, #beatmap.raw.array do
-		if #explode("General]", beatmap.raw.array[globalLine]) == 2 or
-		--#explode("Editor", beatmap.raw.array[globalLine]) == 2 or
-		#explode("Metadata]", beatmap.raw.array[globalLine]) == 2 or
-		#explode("Difficulty]", beatmap.raw.array[globalLine]) == 2 then
-			for offset = globalLine + 1, #beatmap.raw.array - globalLine do
-				if string.find(beatmap.raw.array[offset], "[", 1, true) then
-					break
-				end
-				localLine = offset - globalLine
-				beatmap.raw.General[localLine] = explode(":", beatmap.raw.array[offset])
-				beatmap.General[localLine] = {}
-				beatmap.General[beatmap.raw.General[localLine][1]] = trim(tostring(beatmap.raw.General[localLine][2]))
-			end
-		end
-		if #explode("HitObjects", beatmap.raw.array[globalLine]) == 2 then
-			keymode = tonumber(beatmap.General["CircleSize"])
-			interval = 512/keymode
-			for offset = globalLine + 1, #beatmap.raw.array do
-				local time = nil
-				local key = nil
-				local type = {1, 0}
-				local endtime = nil
-				local hitsound = nil
-				
-				localLine = offset - globalLine
-				beatmap.raw.HitObjects[localLine] = explode(",", beatmap.raw.array[offset])
-				
-				time = tonumber(beatmap.raw.HitObjects[localLine][3])
-				if time == nil then break end
-				if beatmap.HitObjects[time] == nil then
-					beatmap.HitObjects[time] = {}
-				end
-				
-				beatmap.raw.HitObjects[localLine][1] = tonumber(beatmap.raw.HitObjects[localLine][1])
-				for nkey = 1, keymode do
-					if beatmap.raw.HitObjects[localLine][1] >= nkey * interval - interval and beatmap.raw.HitObjects[localLine][1] < nkey * interval then
-						key = nkey
-					end
-				end
-				
-				type[1] = 1
-				if beatmap.raw.HitObjects[localLine][4] == "128" then
-					type[1] = 2
-					endtime = tonumber(explode(":", beatmap.raw.HitObjects[localLine][6])[1])
-				end
-				
-				local udata = explode(":", beatmap.raw.HitObjects[localLine][6])
-				
-				hitsound = self:removeExtension(tostring(udata[#udata]))
-				
-				if hitsound == "" then
-					if beatmap.General["SampleSet"] == "None" then
-						beatmap.General["SampleSet"] = "Soft"
-					end
-					hitsound = string.lower(beatmap.General["SampleSet"]) .. "-hitnormal"
-				end
-				
-				beatmap.HitObjects[time][key] = {type, time, endtime, hitsound}
-				beatmap.HitObjectsCount = beatmap.HitObjectsCount + 1
-			end
-		end
-	end
-end
-
-function osuClass.loadBeatmap(self, cache)
-	data.beatmap = {}
-	beatmap = data.beatmap
-	beatmap.path = cache.path
-	beatmap.pathFile = cache.pathFile
-	beatmap.pathAudio = cache.pathAudio
-	beatmap.title = cache.title
-	beatmap.artist = cache.artist
-	beatmap.difficulity = cache.difficulity
-	beatmap.audioFile = cache.audioFile
-	if cache.audioFile ~= "virtual" then
-		beatmap.audio = love.audio.newSource(cache.pathAudio)
-	else
-		beatmap.audio = nil
-	end
-	
-	self:convertBeatmap()
-	
-	beatmap.currentNote = {}
-	beatmap.missedHitObjects = {}
-	
-	beatmap.HitSounds = {}
-	
+function osuClass.clearStats(self)
 	data.stats.hits = {0,0,0,0,0,0}
 	data.stats.combo = 0
 	data.stats.maxcombo = 0
+end 
+
+osuClass.convertBeatmap = require "src.converters.lm2lua"
+
+function osuClass.loadBeatmap(self, cache)
+	self:convertBeatmap(cache)
+	self:clearStats()
 end
 
 function osuClass.reloadBeatmap(self)
 	self:loadBeatmap(data.cache[data.currentbeatmap])
 end
 
+osuClass.getBeatmapFileList = require "src.getBeatmapFileList"
 
-function osuClass.getBeatmapFileList(self) 
-	local cd = ""
-	for out in io.popen("echo %CD%"):lines() do
-		cd = out
-		break
-	end
-	for file in io.popen("dir /B /S /OD /A-D res\\Songs"):lines() do
-		if #explode(".osu", tostring(file)) == 2 then
-			table.insert(data.BMFList, {tostring(explode("\\", explode(cd .. "\\res\\Songs\\", file)[2])[1]), tostring(explode("\\", explode(cd .. "\\res\\Songs\\", file)[2])[2])})
-		end
-	end
-end
+osuClass.generateBeatmapCache = require "src.genLmCache"
 
-function osuClass.generateBeatmapCache(self)
-	cache = data.cache
-	local BMFList = data.BMFList
-	for index,info in pairs(BMFList) do
-		local raw = io.open("res/Songs/" .. info[1] .. "/" .. info[2], "r")
-		local rawTable = {}
-		for line in raw:lines() do
-			table.insert(rawTable, line)
-		end
-		raw:close()
-		local title = ""
-		local artist = ""
-		local audio = ""
-		local difficulity = ""
-		local creator = ""
-		local source = ""
-		for gLine = 1, #rawTable do
-			if explode(":", tostring(rawTable[gLine]))[1] == "AudioFilename" then
-				audio = trim(tostring(explode(":", tostring(rawTable[gLine]))[2]))
-			end
-			if explode(":", tostring(rawTable[gLine]))[1] == "Title" then
-				title = trim(tostring(explode(":", tostring(rawTable[gLine]))[2]))
-			end
-			if explode(":", tostring(rawTable[gLine]))[1] == "Artist" then
-				artist = trim(tostring(explode(":", tostring(rawTable[gLine]))[2]))
-			end
-			if explode(":", tostring(rawTable[gLine]))[1] == "Version" then
-				difficulity = trim(tostring(explode(":", tostring(rawTable[gLine]))[2]))
-			end
-			if explode(":", tostring(rawTable[gLine]))[1] == "Creator" then
-				creator = trim(tostring(explode(":", tostring(rawTable[gLine]))[2]))
-			end
-			if explode(":", tostring(rawTable[gLine]))[1] == "Source" then
-				source = trim(tostring(explode(":", tostring(rawTable[gLine]))[2]))
-				if source == "" then source = "No source" end
-			end
-			if #explode("HitObjects", tostring(rawTable[gLine])) == 2 then
-				break
-			end
-		end
-		table.insert(cache, {
-			title = title,
-			artist = artist,
-			difficulity = difficulity,
-			audio = audio,
-			audioFile = audio,
-			pathAudio = "res/Songs/" .. info[1] .. "/" .. audio,
-			pathFile = "res/Songs/" .. info[1] .. "/" .. info[2],
-			path = "res/Songs/" .. info[1],
-			creator = creator,
-			source = source
-			})
-	end
-end
 
 
 

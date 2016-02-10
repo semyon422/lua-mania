@@ -1,23 +1,23 @@
-function explode(divider, input)
-	if (divider == "") then
-		return false
-	end
-	local position = 0
-	local output = {}
+local function lm2lua(self, cache)
+
+	data.beatmap = {}
+	beatmap = data.beatmap
+	beatmap.HitObjectsCount = 0
+	beatmap.General = {}
+	beatmap.General["CircleSize"] = 4
+	beatmap.path = cache.path
+	beatmap.pathFile = cache.pathFile
+	beatmap.pathAudio = cache.pathAudio
+	beatmap.title = cache.title
+	beatmap.artist = cache.artist
+	beatmap.difficulity = cache.difficulity
+	beatmap.audioFile = cache.audioFile
+	beatmap.currentNote = {}
+	beatmap.missedHitObjects = {}
+		beatmap.audio = love.audio.newSource(cache.pathAudio)
 	
-	for endchar,startchar in	function()
-									return string.find(input, divider, position, true)
-								end
-	do
-		table.insert(output, string.sub(input, position, endchar - 1))
-		position = startchar + 1
-	end
-	table.insert(output, string.sub(input, position))
-	return output
-end
-local function lm2lua(filepath)
-	local beatmap = {}
-	local file = io.open(filepath, "r")
+	beatmap.HitSounds = {}
+	local file = io.open(beatmap.pathFile, "r")
 	local tblLines = {}
 	for line in file:lines() do
 		table.insert(tblLines, line)
@@ -47,7 +47,7 @@ local function lm2lua(filepath)
 	local tact = 0
 	local subTact = 0
 	local key = 1
-	local type = 1
+	local type = {1,0}
 	local time = 0
 	local lenght = 0
 	local endtime = 0
@@ -89,10 +89,11 @@ local function lm2lua(filepath)
 					key = tonumber(string.sub(tempKey[1], 1, -1))
 				end
 				if tempKey[2] ~= nil then
-					type = tonumber(string.sub(tempKey[2], 1, -1))
+					type = {tonumber(string.sub(tempKey[2], 1, -1)), 0}
 				end
 				if tempKey[3] ~= nil then
-					endtime = math.floor(beatmap.events.offset + (tact + tempLine[1] / beatmap.events.beatDivisor + lenght / beatmap.events.beatDivisor) * beatTime)
+					lenght = tonumber(string.sub(tempKey[3], 1, -1))
+					endtime = math.floor(beatmap.events.offset + (tact + subTact / beatmap.events.beatDivisor + lenght / beatmap.events.beatDivisor) * 4 * beatTime)
 				end
 				if tempKey[4] ~= nil then
 					hitsound = string.sub(tempKey[4], 1, -1)
@@ -103,13 +104,15 @@ local function lm2lua(filepath)
 				
 				tempKey = {}
 				beatmap.events[time][key] = {type, time, endtime, hitsound, image}
-				print(time .. " => " .. key .. " " .. type .. " " .. time)
+				print(time .. " => " .. type[1])
+				type = {1,0}
 			end
 		end
 		if string.sub(line, 1, 2) == "#e" then break end
 	end
 	
-	return beatmap
+	
+	beatmap.HitObjects = beatmap.events
 end
 
 return lm2lua
