@@ -86,7 +86,19 @@ local function osu2lua(self, cache)
 					if beatmap.General["SampleSet"] == "None" then
 						beatmap.General["SampleSet"] = "Soft"
 					end
-					hitsound = string.lower(beatmap.General["SampleSet"]) .. "-hitnormal"
+					if beatmap.raw.HitObjects[localLine][5] == "0" then
+						hitsound = string.lower(beatmap.General["SampleSet"]) .. "-hitnormal"
+					end
+					if beatmap.raw.HitObjects[localLine][5] == "2" then
+						hitsound = string.lower(beatmap.General["SampleSet"]) .. "-hitwhistle"
+					end
+					if beatmap.raw.HitObjects[localLine][5] == "4" then
+						hitsound = string.lower(beatmap.General["SampleSet"]) .. "-hitfinish"
+					end
+					if beatmap.raw.HitObjects[localLine][5] == "8" then
+						hitsound = string.lower(beatmap.General["SampleSet"]) .. "-hitclap"
+					end
+					
 				end
 				
 				
@@ -97,7 +109,7 @@ local function osu2lua(self, cache)
 			end
 		end
 	end
-	local newHitSounds = {}
+	--local newHitSounds = {}
 	--for j = 1, keymode do
 	--	if beatmap.HitSounds[j] == nil then beatmap.HitSounds[j] = {} end
 	--	if newHitSounds[j] == nil then newHitSounds[j] = {} end

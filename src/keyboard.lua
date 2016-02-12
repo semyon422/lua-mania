@@ -159,10 +159,12 @@ local keyboard = {
 				if data.ui.state == 3 then
 					function love.wheelmoved(x, y)
 						if y > 0 then
-							data.config.pitch = data.config.pitch + 0.1
+							data.config.pitch = data.config.pitch + 0.05
+							data.beatmap.audio:setPitch(data.config.pitch)
 						elseif y < 0 then
 							if data.config.pitch > 0.2 then
-								data.config.pitch = data.config.pitch - 0.1
+								data.config.pitch = data.config.pitch - 0.05
+							data.beatmap.audio:setPitch(data.config.pitch)
 							end
 						end
 					end
