@@ -18,6 +18,7 @@ local function osu2lua(self, cache)
 	beatmap.missedHitObjects = {}
 	
 	beatmap.HitSounds = {}
+	beatmap.playingHitSounds = {}
 	beatmap.raw = {}
 	beatmap.raw.file = io.open(beatmap.pathFile, "r")
 	beatmap.raw.array = {}
@@ -45,7 +46,7 @@ local function osu2lua(self, cache)
 				beatmap.General[beatmap.raw.General[localLine][1]] = trim(tostring(beatmap.raw.General[localLine][2]))
 			end
 		end
-		if #explode("HitObjects", beatmap.raw.array[globalLine]) == 2 then
+		if string.sub(beatmap.raw.array[globalLine], 1, -1) == "[HitObjects]" then
 			keymode = tonumber(beatmap.General["CircleSize"])
 			interval = 512/keymode
 			for offset = globalLine + 1, #beatmap.raw.array do
@@ -88,11 +89,24 @@ local function osu2lua(self, cache)
 					hitsound = string.lower(beatmap.General["SampleSet"]) .. "-hitnormal"
 				end
 				
-				beatmap.HitObjects[time][key] = {type, time, endtime, hitsound}
+				
+				if beatmap.HitSounds[key] == nil then beatmap.HitSounds[key] = {} end
+				table.insert(beatmap.HitSounds[key], hitsound)
+				beatmap.HitObjects[time][key] = {type, time, endtime}
 				beatmap.HitObjectsCount = beatmap.HitObjectsCount + 1
 			end
 		end
 	end
+	local newHitSounds = {}
+	--for j = 1, keymode do
+	--	if beatmap.HitSounds[j] == nil then beatmap.HitSounds[j] = {} end
+	--	if newHitSounds[j] == nil then newHitSounds[j] = {} end
+	--	for i = 0, #beatmap.HitSounds[j] - 1 do
+	--		table.insert(newHitSounds[j], beatmap.HitSounds[j][#beatmap.HitSounds[j] - i])
+	--	end
+	--	beatmap.HitSounds[j] = newHitSounds[j]
+	--	newHitSounds[j] = nil
+	--end
 end
 
 return osu2lua

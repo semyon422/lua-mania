@@ -200,9 +200,8 @@ function osuClass.keyboard(self)
 		for keynumber,key in pairs(keyboard.maniaLayouts[tonumber(data.beatmap.General["CircleSize"])]) do
 			if love.keyboard.isDown(key) then
 				if data.keylocks[keynumber] == 0 then
-					if beatmap.HitSounds[keynumber] ~= nil then
-						data.beatmap.HitSounds[keynumber]:stop()
-						data.beatmap.HitSounds[keynumber]:play()
+					if data.beatmap.HitSounds[keynumber][1] ~= nil then
+						love.audio.newSource(self:getHitSound(data.beatmap.HitSounds[keynumber][1])):play()
 					end
 					if data.beatmap.currentNote[keynumber] ~= nil then
 						self:hit(data.beatmap.currentNote[keynumber][2] - data.stats.currentTime, keynumber)
@@ -278,6 +277,10 @@ function osuClass.getHitSound(self, filename)
 			return pathHitSound
 		end
 	end
+	
+	if filename == "blank" then
+		return "res/blank.ogg"
+	end
 end
 
 function osuClass.drawBackground(self)
@@ -347,9 +350,6 @@ function osuClass.drawNotes(self)
 			for j = 1, keymode do
 				if note[j] ~= nil then
 					--print(note[j][1][2])
-					if beatmap.HitSounds[j] == nil then
-						beatmap.HitSounds[j] = love.audio.newSource(self:getHitSound(note[j][4]))
-					end
 					--if notetime + offset <= currentTime + data.od[1] and notetime + offset > currentTime - data.od[#data.od] and data.beatmap.currentNote[j] ~= nil then
 					--	if beatmap.missedHitObjects[data.beatmap.currentNote[j][2]] == nil then
 					--		beatmap.missedHitObjects[data.beatmap.currentNote[j][2]] = {}
@@ -402,13 +402,12 @@ function osuClass.drawNotes(self)
 						if note[j][1][2] == 0 then
 							if data.autoplay == 1 then
 								if note[j][2] + offset <= currentTime then
-									if beatmap.HitSounds[j] ~= nil then
-										data.beatmap.HitSounds[j]:stop()
-										data.beatmap.HitSounds[j]:play()
+									if data.beatmap.HitSounds[j][1] ~= nil then
+										love.audio.newSource(self:getHitSound(data.beatmap.HitSounds[j][1])):play()
 									end
 									self:hit(-offset, j)
 									note[j] = nil
-									beatmap.HitSounds[j] = nil
+									table.remove(data.beatmap.HitSounds[j], 1)
 								end
 							end
 							if note[j] ~= nil then
@@ -421,7 +420,7 @@ function osuClass.drawNotes(self)
 									beatmap.missedHitObjects[note[j][2]][j] = note[j]
 									beatmap.missedHitObjects[note[j][2]][j][1][2] = 2
 									note[j] = nil
-									beatmap.HitSounds[j] = nil
+									table.remove(data.beatmap.HitSounds[j], 1)
 								elseif data.keyhits[j] == 1 then
 									if note[j][2] + offset > currentTime + data.od[#data.od - 1] then
 										data.stats.combo = 0
@@ -440,7 +439,7 @@ function osuClass.drawNotes(self)
 						if note[j] ~= nil then
 							if note[j][1][2] == 1 then
 								note[j] = nil
-								beatmap.HitSounds[j] = nil
+								table.remove(data.beatmap.HitSounds[j], 1)
 							elseif note[j][1][2] == 2 then
 								if note[j][2] + offset <= currentTime then
 									if beatmap.missedHitObjects[note[j][2]] == nil then
@@ -449,7 +448,7 @@ function osuClass.drawNotes(self)
 									beatmap.missedHitObjects[note[j][2]][j] = note[j]
 									beatmap.missedHitObjects[note[j][2]][j][1][2] = 2
 									note[j] = nil
-									beatmap.HitSounds[j] = nil
+									table.remove(data.beatmap.HitSounds[j], 1)
 								else
 									update(j)
 									lg.setColor(255,255,255,128)
@@ -462,12 +461,11 @@ function osuClass.drawNotes(self)
 						if note[j][1][2] == 0 then
 							if data.autoplay == 1 then
 								if note[j][2] + offset <= currentTime then
-									if beatmap.HitSounds[j] ~= nil then
-										data.beatmap.HitSounds[j]:stop()
-										data.beatmap.HitSounds[j]:play()
-										beatmap.HitSounds[j] = nil
+									if data.beatmap.HitSounds[j][1] ~= nil then
+										love.audio.newSource(self:getHitSound(data.beatmap.HitSounds[j][1])):play()
 									end
 									self:hit(-offset, j)
+									--table.remove(data.beatmap.HitSounds[j], 1)
 								end
 							end
 							if note[j][3] + offset < currentTime - data.od[#data.od - 1] then
@@ -479,7 +477,7 @@ function osuClass.drawNotes(self)
 								beatmap.missedHitObjects[note[j][2]][j] = note[j]
 								beatmap.missedHitObjects[note[j][2]][j][1][2] = 2
 								note[j] = nil
-								beatmap.HitSounds[j] = nil
+								table.remove(data.beatmap.HitSounds[j], 1)
 							elseif data.keyhits[j] == 1 then
 								if math.abs(note[j][2] + offset - currentTime) <= data.od[#data.od - 1] then
 									note[j][1][2] = 1
@@ -511,17 +509,17 @@ function osuClass.drawNotes(self)
 								elseif data.autoplay == 1 and note[j][3] + offset <= currentTime then
 									self:hit(-offset, j)
 									note[j] = nil
-									beatmap.HitSounds[j] = nil
+									table.remove(data.beatmap.HitSounds[j], 1)
 									data.keyhits[j] = 0
 								elseif data.keyhits[j] == 0 and math.abs(note[j][3] + offset - currentTime) <= data.od[#data.od - 1] and data.autoplay == 0 then
 									self:hit(note[j][3] - currentTime, j)
 									note[j] = nil
-									beatmap.HitSounds[j] = nil
+									table.remove(data.beatmap.HitSounds[j], 1)
 									data.keyhits[j] = 0
 								elseif data.keyhits[j] == 1 and note[j][3] + offset - currentTime <= -1 * data.od[#data.od - 2] and data.autoplay == 0 then
 									self:hit(note[j][3] - currentTime, j)
 									note[j] = nil
-									beatmap.HitSounds[j] = nil
+									table.remove(data.beatmap.HitSounds[j], 1)
 									data.keyhits[j] = 0
 								else
 									update(j)
@@ -557,7 +555,7 @@ function osuClass.drawNotes(self)
 									beatmap.missedHitObjects[note[j][2]][j] = note[j]
 									beatmap.missedHitObjects[note[j][2]][j][1][2] = 2
 									note[j] = nil
-									beatmap.HitSounds[j] = nil
+									table.remove(data.beatmap.HitSounds[j], 1)
 									data.keyhits[j] = 0
 								else
 									update(j)
@@ -699,7 +697,7 @@ function osuClass.clearStats(self)
 	data.stats.maxcombo = 0
 end 
 
-osuClass.convertBeatmap = require "src.converters.lm2lua"
+osuClass.convertBeatmap = require "src.converters.osu2lua"
 
 function osuClass.loadBeatmap(self, cache)
 	self:convertBeatmap(cache)
@@ -712,7 +710,7 @@ end
 
 osuClass.getBeatmapFileList = require "src.getBeatmapFileList"
 
-osuClass.generateBeatmapCache = require "src.genLmCache"
+osuClass.generateBeatmapCache = require "src.genOsuCache"
 
 
 
