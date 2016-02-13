@@ -39,7 +39,7 @@ function osuClass.drawHUD(self)
 			"offset: " .. data.config.offset .. "\n" ..
 			"autoplay: " .. data.autoplay .. "\n" ..
 			"pitch: " .. data.config.pitch .. "\n" ..
-			"HitObjects: " .. data.beatmap.HitObjectsCount .. "\n" ..
+			"HitObjects: " .. data.beatmap.objects.count .. "\n" ..
 			"miss: " .. data.stats.hits[6] .. "\n" ..
 			"50: " .. data.stats.hits[5] .. "\n" ..
 			"100: " .. data.stats.hits[4] .. "\n" ..
@@ -71,11 +71,11 @@ function osuClass.beat(self, state)
 end
 
 function osuClass.start(self)
-	if beatmap.audio ~= nil then
-		beatmap.audio:stop()
-		beatmap.audio:play()
-		beatmap.audio:pause()
-		beatmap.audio:setPitch(data.config.pitch)
+	if data.beatmap.audio ~= nil then
+		data.beatmap.audio:stop()
+		data.beatmap.audio:play()
+		data.beatmap.audio:pause()
+		data.beatmap.audio:setPitch(data.config.pitch)
 	end
 	data.stats.currentTime = -data.config.preview
 	data.starttime = love.timer.getTime() * 1000 - data.stats.currentTime
@@ -85,8 +85,8 @@ function osuClass.start(self)
 	--beatmap.audio:setVolume(0)
 end
 function osuClass.stop(self)
-	if beatmap.audio ~= nil then
-		beatmap.audio:stop()
+	if data.beatmap.audio ~= nil then
+		data.beatmap.audio:stop()
 	end
 	data.play = 0
 	data.stats.currentTime = 0
@@ -96,18 +96,18 @@ function osuClass.play(self)
 	if data.play == 1 then
 		data.play = 1
 		data.state = "started"
-		if beatmap.audio ~= nil then
-			beatmap.audio:setPitch(data.config.pitch)
-			beatmap.audio:play()
+		if data.beatmap.audio ~= nil then
+			data.beatmap.audio:setPitch(data.config.pitch)
+			data.beatmap.audio:play()
 		end
 	elseif data.play == 2 and data.stats.currentTime < 0 then
 		data.play = -1
 	elseif data.play == 2 then
 		data.play = 1
-		if beatmap.audio ~= nil then
-			--beatmap.audio:seek(beatmap.audio:tell() - 1)
-			beatmap.audio:setPitch(data.config.pitch)
-			beatmap.audio:play()
+		if data.beatmap.audio ~= nil then
+			--beatmap.audio:seek(data.beatmap.audio:tell() - 1)
+			data.beatmap.audio:setPitch(data.config.pitch)
+			data.beatmap.audio:play()
 		end
 	else
 		self:start()
@@ -116,8 +116,8 @@ end
 function osuClass.pause(self)
 	data.play = 2
 	data.state = "paused"
-	if beatmap.audio ~= nil then
-		beatmap.audio:pause()
+	if data.beatmap.audio ~= nil then
+		data.beatmap.audio:pause()
 	end
 end
 
@@ -126,7 +126,7 @@ function osuClass.hit(self, ms, key)
 	local beatmap = data.beatmap
 	local currentTime = data.stats.currentTime
 	local offset = data.config.offset
-	if beatmap.currentNote[key][1][1] == 2 and beatmap.currentNote[key][1][2] == 2 and beatmap.currentNote[key][2] + offset <= currentTime + data.od[#data.od] and beatmap.currentNote[key][2] + offset > currentTime - data.od[#data.od - 1] then
+	if data.beatmap.objects.current[key][1][1] == 2 and data.beatmap.objects.current[key][1][2] == 2 and data.beatmap.objects.current[key][2] + offset <= currentTime + data.od[#data.od] and data.beatmap.objects.current[key][2] + offset > currentTime - data.od[#data.od - 1] then
 	
 	else
 		for i = 1, #data.od do
@@ -155,9 +155,9 @@ function osuClass.hit(self, ms, key)
 		end
 		data.keyhits[key] = 1
 	end
-	--if data.beatmap.currentNote[key] ~= nil then
-	if data.beatmap.currentNote[key][1][1] == 2 then
-		if data.beatmap.currentNote[key][2] < data.stats.currentTime - data.od[#data.od - 1] and data.beatmap.currentNote[key][3] > data.stats.currentTime + data.od[#data.od - 1] then
+	--if data.beatmap.objects.current[key] ~= nil then
+	if data.beatmap.objects.current[key][1][1] == 2 then
+		if data.beatmap.objects.current[key][2] < data.stats.currentTime - data.od[#data.od - 1] and data.beatmap.objects.current[key][3] > data.stats.currentTime + data.od[#data.od - 1] then
 			data.keyhits[key] = 1
 		end
 	end
@@ -196,15 +196,15 @@ function osuClass.keyboard(self)
 		end
 	end
 	
-	if data.beatmap.General ~= nil then
-		for keynumber,key in pairs(keyboard.maniaLayouts[tonumber(data.beatmap.General["CircleSize"])]) do
+	if data.beatmap.info ~= nil then
+		for keynumber,key in pairs(keyboard.maniaLayouts[data.beatmap.info.keymode]) do
 			if love.keyboard.isDown(key) then
 				if data.keylocks[keynumber] == 0 then
-					if data.beatmap.HitSounds[keynumber][1] ~= nil then
-						love.audio.newSource(self:getHitSound(data.beatmap.HitSounds[keynumber][1])):play()
+					if data.beatmap.hitSounds[keynumber][1] ~= nil then
+						love.audio.newSource(self:getHitSound(data.beatmap.hitSounds[keynumber][1])):play()
 					end
-					if data.beatmap.currentNote[keynumber] ~= nil then
-						self:hit(data.beatmap.currentNote[keynumber][2] - data.stats.currentTime, keynumber)
+					if data.beatmap.objects.current[keynumber] ~= nil then
+						self:hit(data.beatmap.objects.current[keynumber][2] - data.stats.currentTime, keynumber)
 					end
 				end
 				data.keylocks[keynumber] = 1
@@ -216,17 +216,17 @@ function osuClass.keyboard(self)
 	end
 	
 	
-	if beatmap.audio ~= nil then
+	if data.beatmap.audio ~= nil then
 		if data.play == -1 then
 			data.stats.currentTime = math.floor(love.timer.getTime() * 1000 - data.starttime)
 			if data.stats.currentTime >= 0 then
 				data.play = 1
-				beatmap.audio:play()
+				data.beatmap.audio:play()
 			end
 		elseif data.play == 1 then
-			data.stats.currentTime =  math.floor(beatmap.audio:tell() * 1000)
+			data.stats.currentTime =  math.floor(data.beatmap.audio:tell() * 1000)
 		elseif data.play == 2 then
-			--data.stats.currentTime = math.floor(beatmap.audio:tell() * 1000)
+			--data.stats.currentTime = math.floor(data.beatmap.audio:tell() * 1000)
 			data.starttime = math.floor(love.timer.getTime() * 1000 - data.stats.currentTime)
 		end
 	else
@@ -322,7 +322,7 @@ function osuClass.drawNotes(self)
 	local hitPosition = data.config.hitPosition
 	local globalscale = data.config.globalscale
 	
-	keymode = tonumber(beatmap.General["CircleSize"])
+	keymode = data.beatmap.info.keymode
 	
 	ColumnColours = skin.config.ManiaColours[keymode]
 	ColumnWidth = skin.config.ColumnWidth[keymode]
@@ -345,31 +345,15 @@ function osuClass.drawNotes(self)
 	data.drawedNotes = 0
 	
 	for notetime = currentTime - data.od[#data.od - 1], math.ceil(currentTime + data.height / speed) do --HitObjects
-		note = beatmap.HitObjects[notetime]
+		note = data.beatmap.objects.clean[notetime]
 		if note ~= nil then
 			for j = 1, keymode do
 				if note[j] ~= nil then
-					--print(note[j][1][2])
-					--if notetime + offset <= currentTime + data.od[1] and notetime + offset > currentTime - data.od[#data.od] and data.beatmap.currentNote[j] ~= nil then
-					--	if beatmap.missedHitObjects[data.beatmap.currentNote[j][2]] == nil then
-					--		beatmap.missedHitObjects[data.beatmap.currentNote[j][2]] = {}
-					--	end
-					--	beatmap.missedHitObjects[data.beatmap.currentNote[j][2]][j] = data.beatmap.currentNote[j]
-					--	beatmap.missedHitObjects[data.beatmap.currentNote[j][2]][j][1][2] = 2
-					--	if data.beatmap.currentNote[j][1][1] == 2 then
-					--		self:hit(beatmap.currentNote[j][3] - currentTime, j)
-					--		if data.beatmap.currentNote[j][2] + data.od[#data.od - 1] >= data.beatmap.currentNote[j][3] and data.beatmap.currentNote[j][1][2] == 1 then
-					--			beatmap.missedHitObjects[data.beatmap.currentNote[j][2]][j] = nil
-					--		end
-					--	end
-					--	data.beatmap.currentNote[j] = nil
-					--	data.keyhits[j] = 0
-					--end
 					if note[j][1][1] == 1 then
 						if note[j][1][2] == 0 then
-							if notetime + offset <= currentTime + data.od[#data.od] and notetime + offset > currentTime - data.od[#data.od - 1] and data.beatmap.currentNote[j] == nil then
-								data.beatmap.currentNote[j] = note[j]
-								beatmap.HitObjects[notetime][j] = nil
+							if notetime + offset <= currentTime + data.od[#data.od] and notetime + offset > currentTime - data.od[#data.od - 1] and data.beatmap.objects.current[j] == nil then
+								data.beatmap.objects.current[j] = note[j]
+								note[j] = nil
 							else
 								update(j)
 								lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (notetime - currentTime) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
@@ -377,8 +361,8 @@ function osuClass.drawNotes(self)
 						end
 					elseif note[j][1][1] == 2 then
 						if note[j][1][2] == 0 then
-							if notetime + offset <= currentTime + data.od[#data.od] and notetime + offset > currentTime - data.od[#data.od - 1] and data.beatmap.currentNote[j] == nil then
-								data.beatmap.currentNote[j] = note[j]
+							if notetime + offset <= currentTime + data.od[#data.od] and notetime + offset > currentTime - data.od[#data.od - 1] and data.beatmap.objects.current[j] == nil then
+								data.beatmap.objects.current[j] = note[j]
 								note[j] = nil
 							else
 								update(j)
@@ -394,7 +378,7 @@ function osuClass.drawNotes(self)
 	end
 	--lg.setColor(255,255,0,255)
 	do --currentNote
-		note = beatmap.currentNote
+		note = data.beatmap.objects.current
 		if note ~= nil then
 			for j = 1, keymode do
 				if note[j] ~= nil then
@@ -402,25 +386,25 @@ function osuClass.drawNotes(self)
 						if note[j][1][2] == 0 then
 							if data.autoplay == 1 then
 								if note[j][2] + offset <= currentTime then
-									if data.beatmap.HitSounds[j][1] ~= nil then
-										love.audio.newSource(self:getHitSound(data.beatmap.HitSounds[j][1])):play()
+									if data.beatmap.hitSounds[j][1] ~= nil then
+										love.audio.newSource(self:getHitSound(data.beatmap.hitSounds[j][1])):play()
 									end
 									self:hit(-offset, j)
 									note[j] = nil
-									table.remove(data.beatmap.HitSounds[j], 1)
+									table.remove(data.beatmap.hitSounds[j], 1)
 								end
 							end
 							if note[j] ~= nil then
 								if note[j][2] + offset < currentTime - data.od[#data.od - 1] then
 									data.stats.combo = 0
 									data.stats.hits[6] = data.stats.hits[6] + 1
-									if beatmap.missedHitObjects[note[j][2]] == nil then
-										beatmap.missedHitObjects[note[j][2]] = {}
+									if data.beatmap.objects.missed[note[j][2]] == nil then
+										data.beatmap.objects.missed[note[j][2]] = {}
 									end
-									beatmap.missedHitObjects[note[j][2]][j] = note[j]
-									beatmap.missedHitObjects[note[j][2]][j][1][2] = 2
+									data.beatmap.objects.missed[note[j][2]][j] = note[j]
+									data.beatmap.objects.missed[note[j][2]][j][1][2] = 2
 									note[j] = nil
-									table.remove(data.beatmap.HitSounds[j], 1)
+									table.remove(data.beatmap.hitSounds[j], 1)
 								elseif data.keyhits[j] == 1 then
 									if note[j][2] + offset > currentTime + data.od[#data.od - 1] then
 										data.stats.combo = 0
@@ -439,16 +423,16 @@ function osuClass.drawNotes(self)
 						if note[j] ~= nil then
 							if note[j][1][2] == 1 then
 								note[j] = nil
-								table.remove(data.beatmap.HitSounds[j], 1)
+								table.remove(data.beatmap.hitSounds[j], 1)
 							elseif note[j][1][2] == 2 then
 								if note[j][2] + offset <= currentTime then
-									if beatmap.missedHitObjects[note[j][2]] == nil then
-										beatmap.missedHitObjects[note[j][2]] = {}
+									if data.beatmap.objects.missed[note[j][2]] == nil then
+										data.beatmap.objects.missed[note[j][2]] = {}
 									end
-									beatmap.missedHitObjects[note[j][2]][j] = note[j]
-									beatmap.missedHitObjects[note[j][2]][j][1][2] = 2
+									data.beatmap.objects.missed[note[j][2]][j] = note[j]
+									data.beatmap.objects.missed[note[j][2]][j][1][2] = 2
 									note[j] = nil
-									table.remove(data.beatmap.HitSounds[j], 1)
+									table.remove(data.beatmap.hitSounds[j], 1)
 								else
 									update(j)
 									lg.setColor(255,255,255,128)
@@ -461,23 +445,23 @@ function osuClass.drawNotes(self)
 						if note[j][1][2] == 0 then
 							if data.autoplay == 1 then
 								if note[j][2] + offset <= currentTime then
-									if data.beatmap.HitSounds[j][1] ~= nil then
-										love.audio.newSource(self:getHitSound(data.beatmap.HitSounds[j][1])):play()
+									if data.beatmap.hitSounds[j][1] ~= nil then
+										love.audio.newSource(self:getHitSound(data.beatmap.hitSounds[j][1])):play()
 									end
 									self:hit(-offset, j)
-									--table.remove(data.beatmap.HitSounds[j], 1)
+									--table.remove(data.beatmap.hitSounds[j], 1)
 								end
 							end
 							if note[j][3] + offset < currentTime - data.od[#data.od - 1] then
 								data.stats.combo = 0
 								data.stats.hits[6] = data.stats.hits[6] + 1
-								if beatmap.missedHitObjects[note[j][2]] == nil then
-									beatmap.missedHitObjects[note[j][2]] = {}
+								if data.beatmap.objects.missed[note[j][2]] == nil then
+									data.beatmap.objects.missed[note[j][2]] = {}
 								end
-								beatmap.missedHitObjects[note[j][2]][j] = note[j]
-								beatmap.missedHitObjects[note[j][2]][j][1][2] = 2
+								data.beatmap.objects.missed[note[j][2]][j] = note[j]
+								data.beatmap.objects.missed[note[j][2]][j][1][2] = 2
 								note[j] = nil
-								table.remove(data.beatmap.HitSounds[j], 1)
+								table.remove(data.beatmap.hitSounds[j], 1)
 							elseif data.keyhits[j] == 1 then
 								if math.abs(note[j][2] + offset - currentTime) <= data.od[#data.od - 1] then
 									note[j][1][2] = 1
@@ -509,17 +493,17 @@ function osuClass.drawNotes(self)
 								elseif data.autoplay == 1 and note[j][3] + offset <= currentTime then
 									self:hit(-offset, j)
 									note[j] = nil
-									table.remove(data.beatmap.HitSounds[j], 1)
+									table.remove(data.beatmap.hitSounds[j], 1)
 									data.keyhits[j] = 0
 								elseif data.keyhits[j] == 0 and math.abs(note[j][3] + offset - currentTime) <= data.od[#data.od - 1] and data.autoplay == 0 then
 									self:hit(note[j][3] - currentTime, j)
 									note[j] = nil
-									table.remove(data.beatmap.HitSounds[j], 1)
+									table.remove(data.beatmap.hitSounds[j], 1)
 									data.keyhits[j] = 0
 								elseif data.keyhits[j] == 1 and note[j][3] + offset - currentTime <= -1 * data.od[#data.od - 2] and data.autoplay == 0 then
 									self:hit(note[j][3] - currentTime, j)
 									note[j] = nil
-									table.remove(data.beatmap.HitSounds[j], 1)
+									table.remove(data.beatmap.hitSounds[j], 1)
 									data.keyhits[j] = 0
 								else
 									update(j)
@@ -549,13 +533,13 @@ function osuClass.drawNotes(self)
 									if data.keyhits[j] == 1 then
 										data.stats.hits[5] = data.stats.hits[5] + 1
 									end
-									if beatmap.missedHitObjects[note[j][2]] == nil then
-										beatmap.missedHitObjects[note[j][2]] = {}
+									if data.beatmap.objects.missed[note[j][2]] == nil then
+										data.beatmap.objects.missed[note[j][2]] = {}
 									end
-									beatmap.missedHitObjects[note[j][2]][j] = note[j]
-									beatmap.missedHitObjects[note[j][2]][j][1][2] = 2
+									data.beatmap.objects.missed[note[j][2]][j] = note[j]
+									data.beatmap.objects.missed[note[j][2]][j][1][2] = 2
 									note[j] = nil
-									table.remove(data.beatmap.HitSounds[j], 1)
+									table.remove(data.beatmap.hitSounds[j], 1)
 									data.keyhits[j] = 0
 								else
 									update(j)
@@ -574,7 +558,7 @@ function osuClass.drawNotes(self)
 		end
 	end
 	--lg.setColor(255,255,255,255)
-	for notetime,note in pairs(beatmap.missedHitObjects) do --missedHitObjects
+	for notetime,note in pairs(data.beatmap.objects.missed) do --missedHitObjects
 		if note ~= nil then
 			for j = 1, keymode do
 				if note[j] ~= nil then
@@ -607,18 +591,18 @@ function osuClass.drawNotes(self)
 			for i,p in pairs(note) do
 				remove = false
 			end
-			if remove then beatmap.missedHitObjects[notetime] = nil end
+			if remove then data.beatmap.objects.missed[notetime] = nil end
 		end
 	end
 end
 
 function osuClass.drawUI(self)
-	beatmap = data.beatmap
+	data.beatmap = data.beatmap
 	skin = data.skin
 	offset = data.config.offset
 	globalscale = data.config.globalscale
 	
-	keymode = tonumber(beatmap.General["CircleSize"])
+	keymode = data.beatmap.info.keymode
 	
 	ColumnColours = skin.config.ManiaColours[keymode]
 	ColumnWidth = skin.config.ColumnWidth[keymode]

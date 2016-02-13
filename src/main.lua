@@ -168,8 +168,8 @@ function love.draw()
 		if data.ui.mode == 1 then
 			data.height = lg.getWidth()
 			data.width = lg.getHeight()
-			data.skin.config.ColumnStart[tonumber(data.beatmap.General["CircleSize"])] = 0
-			data.config.globalscale = lg.getHeight()/(skin.config.ColumnWidth[tonumber(data.beatmap.General["CircleSize"])][1]*tonumber(data.beatmap.General["CircleSize"]))
+			data.skin.config.ColumnStart[data.beatmap.info.keymode] = 0
+			data.config.globalscale = lg.getHeight()/(skin.config.ColumnWidth[data.beatmap.info.keymode][1]*data.beatmap.info.keymode)
 			lg.rotate(-math.pi/2)
 			lg.translate(-lg.getHeight(), 0)
 		end
@@ -177,7 +177,7 @@ function love.draw()
 		osu:drawNotes()
 		osu:drawHUD()
 		ui:simplemenu()
-		keymode = tonumber(beatmap.General["CircleSize"])
+		keymode = data.beatmap.info.keymode
 		lg.setColor(223, 196, 125, 128)
 		lg.line(globalscale*(skin.config.ColumnLineWidth[keymode][1] + skin.config.ColumnStart[keymode]), data.height - data.config.hitPosition - data.config.offset*data.config.speed, globalscale*(skin.config.ColumnLineWidth[keymode][1] + skin.config.ColumnStart[keymode] + keymode*skin.config.ColumnWidth[keymode][1]), data.height - data.config.hitPosition - data.config.offset*data.config.speed)
 		lg.setColor(220,220,204,255)

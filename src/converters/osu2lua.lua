@@ -1,124 +1,150 @@
 local function osu2lua(self, cache)
 	data.beatmap = {}
-	beatmap = data.beatmap
+	local beatmap = data.beatmap
+	
+	beatmap.file = io.open(cache.pathFile, "r")
+	beatmap.fileLines = {}
+	local stage = "info"
+	beatmap.info = {}
+	beatmap.timing = {}
+	beatmap.objects = {}
+	beatmap.objects.clean = {}
+	beatmap.objects.current = {}
+	beatmap.objects.missed = {}
+	beatmap.objects.count = 0
+	beatmap.hitSounds = {}
+	for line in beatmap.file:lines() do
+		table.insert(beatmap.fileLines, line)
+	end
+	beatmap.file:close()
+	--for globalLine = 1, #beatmap.raw.array do
+	for globalLine,line in pairs(beatmap.fileLines) do
+		if stage == "info" then
+			if string.sub(line, 1, 17) == "osu file format v" then
+				beatmap.info.osuFileFormat = string.sub(line, 18, -1)
+			end
+			if string.sub(line, 1, 13) == "AudioFilename" then
+				beatmap.info.audioFilename = trim(string.sub(line, 15, -1))
+			end
+			if string.sub(line, 1, 11) == "AudioLeadIn" then
+				beatmap.info.audioLeadIn = tonumber(trim(string.sub(line, 13, -1)))
+			end
+			if string.sub(line, 1, 11) == "PreviewTime" then
+				beatmap.info.previewTime = tonumber(trim(string.sub(line, 13, -1)))
+			end
+			if string.sub(line, 1, 9) == "SampleSet" then
+				beatmap.info.sampleSet = trim(string.sub(line, 11, -1))
+			end
+			if string.sub(line, 1, 4) == "Mode" then
+				beatmap.info.mode = trim(string.sub(line, 6, -1))
+			end
+			if string.sub(line, 1, 5) == "Title" then
+				beatmap.info.title = trim(string.sub(line, 6, -1))
+			end
+			if string.sub(line, 1, 12) == "TitleUnicode" then
+				beatmap.info.title = trim(string.sub(line, 14, -1))
+			end
+			if string.sub(line, 1, 13) == "ArtistUnicode" then
+				beatmap.info.artist = trim(string.sub(line, 15, -1))
+			end
+			if string.sub(line, 1, 7) == "Creator" then
+				beatmap.info.creator = trim(string.sub(line, 9, -1))
+			end
+			if string.sub(line, 1, 7) == "Version" then
+				beatmap.info.version = trim(string.sub(line, 9, -1))
+			end
+			if string.sub(line, 1, 6) == "Source" then
+				beatmap.info.source = trim(string.sub(line, 8, -1))
+			end
+			if string.sub(line, 1, 4) == "Tags" then
+				beatmap.info.tags = trim(string.sub(line, 6, -1))
+			end
+			if string.sub(line, 1, 10) == "CircleSize" then
+				beatmap.info.keymode = tonumber(trim(string.sub(line, 12, -1)))
+			end
+			if string.sub(line, 1, 17) == "OverallDifficulty" then
+				beatmap.info.overallDifficulty = tonumber(trim(string.sub(line, 19, -1)))
+			end
+		end
+		if string.sub(line, 1, -1) == "[TimingPoints]" then 
+			stage = "timing"
+		elseif stage == "timing" then
+			if string.sub(line, 1, 1) ~= "[" and explode(",", line)[1] ~= "" then 
+				beatmap.timing[tonumber(explode(",", line)[1])] = {}
+				for i,v in pairs(explode(",", line)) do
+					beatmap.timing[tonumber(explode(",", line)[1])][i] = tonumber(explode(",", line)[i])
+				end
+			end
+		end
+		if string.sub(line, 1, -1) == "[HitObjects]" then 
+			stage = "objects"
+		elseif stage == "objects" then
+			if string.sub(line, 1, 1) ~= "[" then 
+				interval = 512 / beatmap.info.keymode
+				local time = nil
+				local key = nil
+				local type = {0, 0}
+				local endtime = nil
+				local hitSound = nil
+				
+				local raw = explode(",", line)
+				
+				time = tonumber(raw[3])
+				if time == nil then break end
+				if beatmap.objects.clean[time] == nil then
+					beatmap.objects.clean[time] = {}
+				end
+				
+				for newKey = 1, beatmap.info.keymode do
+					if tonumber(raw[1]) >= interval * (newKey - 1) and tonumber(raw[1]) < newKey * interval then
+						key = newKey
+					end
+				end
+				
+				local noteData = explode(":", raw[6])
+				
+				type[1] = 1
+				if raw[4] == "128" then
+					type[1] = 2
+					endtime = tonumber(noteData[1])
+				end
+				
+				hitSound = self:removeExtension(tostring(noteData[#noteData]))
+				if hitSound == "" then
+					if beatmap.info.sampleSet == "None" then
+						beatmap.info.sampleSet = "Soft"
+					end
+					if raw[5] == "0" then
+						hitSound = string.lower(beatmap.info.sampleSet) .. "-hitnormal"
+					end
+					if raw[5] == "2" then
+						hitSound = string.lower(beatmap.info.sampleSet) .. "-hitwhistle"
+					end
+					if raw[5] == "4" then
+						hitSound = string.lower(beatmap.info.sampleSet) .. "-hitfinish"
+					end
+					if raw[5] == "8" then
+						hitSound = string.lower(beatmap.info.sampleSet) .. "-hitclap"
+					end
+				end
+				
+				if beatmap.hitSounds[key] == nil then beatmap.hitSounds[key] = {} end
+				table.insert(beatmap.hitSounds[key], hitSound)
+				
+				beatmap.objects.clean[time][key] = {type, time, endtime}
+				beatmap.objects.count = beatmap.objects.count + 1
+			end
+		end
+	end
+	
 	beatmap.path = cache.path
 	beatmap.pathFile = cache.pathFile
 	beatmap.pathAudio = cache.pathAudio
-	beatmap.title = cache.title
-	beatmap.artist = cache.artist
-	beatmap.difficulity = cache.difficulity
-	beatmap.audioFile = cache.audioFile
 	if cache.audioFile ~= "virtual" then
 		beatmap.audio = love.audio.newSource(cache.pathAudio)
 	else
 		beatmap.audio = nil
 	end
-	
-	beatmap.currentNote = {}
-	beatmap.missedHitObjects = {}
-	
-	beatmap.HitSounds = {}
-	beatmap.playingHitSounds = {}
-	beatmap.raw = {}
-	beatmap.raw.file = io.open(beatmap.pathFile, "r")
-	beatmap.raw.array = {}
-	beatmap.raw.HitObjects = {}
-	beatmap.raw.General = {}
-	beatmap.HitObjects = {}
-	beatmap.HitObjectsCount = 0
-	beatmap.General = {}
-	for line in beatmap.raw.file:lines() do
-		table.insert(beatmap.raw.array, line)
-	end
-	beatmap.raw.file:close()
-	for globalLine = 1, #beatmap.raw.array do
-		if #explode("General]", beatmap.raw.array[globalLine]) == 2 or
-		--#explode("Editor", beatmap.raw.array[globalLine]) == 2 or
-		#explode("Metadata]", beatmap.raw.array[globalLine]) == 2 or
-		#explode("Difficulty]", beatmap.raw.array[globalLine]) == 2 then
-			for offset = globalLine + 1, #beatmap.raw.array - globalLine do
-				if string.find(beatmap.raw.array[offset], "[", 1, true) then
-					break
-				end
-				localLine = offset - globalLine
-				beatmap.raw.General[localLine] = explode(":", beatmap.raw.array[offset])
-				beatmap.General[localLine] = {}
-				beatmap.General[beatmap.raw.General[localLine][1]] = trim(tostring(beatmap.raw.General[localLine][2]))
-			end
-		end
-		if string.sub(beatmap.raw.array[globalLine], 1, -1) == "[HitObjects]" then
-			keymode = tonumber(beatmap.General["CircleSize"])
-			interval = 512/keymode
-			for offset = globalLine + 1, #beatmap.raw.array do
-				local time = nil
-				local key = nil
-				local type = {1, 0}
-				local endtime = nil
-				local hitsound = nil
-				
-				localLine = offset - globalLine
-				beatmap.raw.HitObjects[localLine] = explode(",", beatmap.raw.array[offset])
-				
-				time = tonumber(beatmap.raw.HitObjects[localLine][3])
-				if time == nil then break end
-				if beatmap.HitObjects[time] == nil then
-					beatmap.HitObjects[time] = {}
-				end
-				
-				beatmap.raw.HitObjects[localLine][1] = tonumber(beatmap.raw.HitObjects[localLine][1])
-				for nkey = 1, keymode do
-					if beatmap.raw.HitObjects[localLine][1] >= nkey * interval - interval and beatmap.raw.HitObjects[localLine][1] < nkey * interval then
-						key = nkey
-					end
-				end
-				
-				type[1] = 1
-				if beatmap.raw.HitObjects[localLine][4] == "128" then
-					type[1] = 2
-					endtime = tonumber(explode(":", beatmap.raw.HitObjects[localLine][6])[1])
-				end
-				
-				local udata = explode(":", beatmap.raw.HitObjects[localLine][6])
-				
-				hitsound = self:removeExtension(tostring(udata[#udata]))
-				
-				if hitsound == "" then
-					if beatmap.General["SampleSet"] == "None" then
-						beatmap.General["SampleSet"] = "Soft"
-					end
-					if beatmap.raw.HitObjects[localLine][5] == "0" then
-						hitsound = string.lower(beatmap.General["SampleSet"]) .. "-hitnormal"
-					end
-					if beatmap.raw.HitObjects[localLine][5] == "2" then
-						hitsound = string.lower(beatmap.General["SampleSet"]) .. "-hitwhistle"
-					end
-					if beatmap.raw.HitObjects[localLine][5] == "4" then
-						hitsound = string.lower(beatmap.General["SampleSet"]) .. "-hitfinish"
-					end
-					if beatmap.raw.HitObjects[localLine][5] == "8" then
-						hitsound = string.lower(beatmap.General["SampleSet"]) .. "-hitclap"
-					end
-					
-				end
-				
-				
-				if beatmap.HitSounds[key] == nil then beatmap.HitSounds[key] = {} end
-				table.insert(beatmap.HitSounds[key], hitsound)
-				beatmap.HitObjects[time][key] = {type, time, endtime}
-				beatmap.HitObjectsCount = beatmap.HitObjectsCount + 1
-			end
-		end
-	end
-	--local newHitSounds = {}
-	--for j = 1, keymode do
-	--	if beatmap.HitSounds[j] == nil then beatmap.HitSounds[j] = {} end
-	--	if newHitSounds[j] == nil then newHitSounds[j] = {} end
-	--	for i = 0, #beatmap.HitSounds[j] - 1 do
-	--		table.insert(newHitSounds[j], beatmap.HitSounds[j][#beatmap.HitSounds[j] - i])
-	--	end
-	--	beatmap.HitSounds[j] = newHitSounds[j]
-	--	newHitSounds[j] = nil
-	--end
 end
 
 return osu2lua
