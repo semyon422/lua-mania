@@ -161,7 +161,6 @@ function love.draw()
 	
 	if data.ui.state == 1 then
 		ui:mainmenu()
-		--ui:simplemenu()
 	elseif data.ui.state == 2 then
 		ui:songs()
 	elseif data.ui.state == 3 then

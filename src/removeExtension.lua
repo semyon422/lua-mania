@@ -15,35 +15,22 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 --]]
-local menu = {
-	["empty"] = {
-		title = "pause",
-		[1] = {
-			text = "",
-			action = function() end
-		},
-	},
-	["pause"] = {
-		title = "pause",
-		[1] = {
-			text = "continue",
-			action = function() osu:play(); data.ui.simplemenu.onscreen = false end
-		},
-		[2] = {
-			text = "retry",
-			action = function()
-				osu:reloadBeatmap()
-				osu:start()
-				data.ui.simplemenu.onscreen = false
+local function removeExtension(self, filename)
+	tblFilename = explode(".", filename)
+	if #tblFilename == 1 then
+		return filename
+	else
+		local newFilename = ""
+		for i,substr in pairs(tblFilename) do
+			if i == #tblFilename then break end
+			if i == 1 then
+				newFilename = newFilename .. substr
+			else
+				newFilename = newFilename .. "." .. substr
 			end
-		},
-		[3] = {
-			text = "back to menu",
-			action = function()
-				osu:stop()
-				data.ui.state = 2
-			end
-		}
-	},
-}
-return menu
+		end
+		return newFilename
+	end
+end
+
+return removeExtension

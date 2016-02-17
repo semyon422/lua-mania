@@ -244,23 +244,7 @@ function osuClass.keyboard(self)
 
 end
 
-function osuClass.removeExtension(self, filename)
-	tblFilename = explode(".", filename)
-	if #tblFilename == 1 then
-		return filename
-	else
-		local newFilename = ""
-		for i,substr in pairs(tblFilename) do
-			if i == #tblFilename then break end
-			if i == 1 then
-				newFilename = newFilename .. substr
-			else
-				newFilename = newFilename .. "." .. substr
-			end
-		end
-		return newFilename
-	end
-end
+osuClass.removeExtension = require "src.removeExtension"
 
 function osuClass.getHitSound(self, filename)
 	pathHitSound = nil

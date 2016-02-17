@@ -52,13 +52,13 @@ function uiClass.songs(self)
 				lg.setColor(220,220,204,255)
 				lg.rectangle("line", 1/3*lg.getWidth(), data.ui.songlist.scroll*(data.ui.songlist.offset + data.ui.songlist.buttonHeight) + data.ui.songlist.offset*i + lg.getHeight()*data.ui.songlist.height + (i-1)*data.ui.songlist.buttonHeight, 2/3*lg.getWidth(), data.ui.songlist.buttonHeight)
 				lg.setColor(255,255,255,255)
-				lg.printf({{223, 196, 125, 255}, data.cache[i].artist .. " - " .. data.cache[i].title .. " - " .. data.cache[i].difficulity}, math.ceil(1/3*lg.getWidth()), data.ui.songlist.scroll*(data.ui.songlist.offset + data.ui.songlist.buttonHeight) + data.ui.songlist.offset*i + lg.getHeight()*data.ui.songlist.height + (i-1)*data.ui.songlist.buttonHeight, lg.getWidth())
+				lg.printf({{223, 196, 125, 255}, data.cache[i].artist .. " - " .. data.cache[i].title .. " - " .. data.cache[i].version}, math.ceil(1/3*lg.getWidth()), data.ui.songlist.scroll*(data.ui.songlist.offset + data.ui.songlist.buttonHeight) + data.ui.songlist.offset*i + lg.getHeight()*data.ui.songlist.height + (i-1)*data.ui.songlist.buttonHeight, lg.getWidth())
 				data.ui.songlist.current = i
 			else
 				lg.setColor(220,220,204,255)
 				lg.rectangle("line", 1/2*lg.getWidth(), data.ui.songlist.scroll*(data.ui.songlist.offset + data.ui.songlist.buttonHeight) + data.ui.songlist.offset*i + lg.getHeight()*data.ui.songlist.height + (i-1)*data.ui.songlist.buttonHeight, 1/2*lg.getWidth(), data.ui.songlist.buttonHeight)
 				lg.setColor(255,255,255,255)
-				lg.printf({{223, 196, 125, 255}, data.cache[i].artist .. " - " .. data.cache[i].title .. " - " .. data.cache[i].difficulity}, 1/2*lg.getWidth(), data.ui.songlist.scroll*(data.ui.songlist.offset + data.ui.songlist.buttonHeight) + data.ui.songlist.offset*i + lg.getHeight()*data.ui.songlist.height + (i-1)*data.ui.songlist.buttonHeight, lg.getWidth())
+				lg.printf({{223, 196, 125, 255}, data.cache[i].artist .. " - " .. data.cache[i].title .. " - " .. data.cache[i].version}, 1/2*lg.getWidth(), data.ui.songlist.scroll*(data.ui.songlist.offset + data.ui.songlist.buttonHeight) + data.ui.songlist.offset*i + lg.getHeight()*data.ui.songlist.height + (i-1)*data.ui.songlist.buttonHeight, lg.getWidth())
 			end
 		end
 		
@@ -69,7 +69,7 @@ function uiClass.songs(self)
 		lg.setColor(255,255,255,255)
 		
 		lg.printf({{223, 196, 125, 255},
-			data.cache[data.ui.songlist.current].source .. " - " .. data.cache[data.ui.songlist.current].artist .. " - " .. data.cache[data.ui.songlist.current].title .. " [" .. data.cache[data.ui.songlist.current].difficulity .. "] " .. data.cache[data.ui.songlist.current].creator
+			data.cache[data.ui.songlist.current].source .. " - " .. data.cache[data.ui.songlist.current].artist .. " - " .. data.cache[data.ui.songlist.current].title .. " [" .. data.cache[data.ui.songlist.current].version .. "] " .. data.cache[data.ui.songlist.current].creator
 		}, 0, 0, lg.getWidth())
 		
 		

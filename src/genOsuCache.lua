@@ -1,3 +1,20 @@
+--[[
+lua-mania
+Copyright (C) 2016 Semyon Jolnirov (semyon422)
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <http://www.gnu.org/licenses/>.
+--]]
 local function generateCache(self)
 	cache = data.cache
 	local BMFList = data.BMFList
@@ -11,37 +28,37 @@ local function generateCache(self)
 		local title = ""
 		local artist = ""
 		local audio = ""
-		local difficulity = ""
+		local version = ""
 		local creator = ""
 		local source = ""
-		for gLine = 1, #rawTable do
-			if explode(":", tostring(rawTable[gLine]))[1] == "AudioFilename" then
-				audio = trim(tostring(explode(":", tostring(rawTable[gLine]))[2]))
+		for globalLine,line in pairs(rawTable) do
+			if string.sub(line, 1, 13) == "AudioFilename" then
+				audio = trim(string.sub(line, 15, -1))
 			end
-			if explode(":", tostring(rawTable[gLine]))[1] == "Title" then
-				title = trim(tostring(explode(":", tostring(rawTable[gLine]))[2]))
+			if string.sub(line, 1, 12) == "TitleUnicode" then
+				title = trim(string.sub(line, 14, -1))
 			end
-			if explode(":", tostring(rawTable[gLine]))[1] == "Artist" then
-				artist = trim(tostring(explode(":", tostring(rawTable[gLine]))[2]))
+			if string.sub(line, 1, 13) == "ArtistUnicode" then
+				artist = trim(string.sub(line, 15, -1))
 			end
-			if explode(":", tostring(rawTable[gLine]))[1] == "Version" then
-				difficulity = trim(tostring(explode(":", tostring(rawTable[gLine]))[2]))
+			if string.sub(line, 1, 7) == "Version" then
+				version = trim(string.sub(line, 9, -1))
 			end
-			if explode(":", tostring(rawTable[gLine]))[1] == "Creator" then
-				creator = trim(tostring(explode(":", tostring(rawTable[gLine]))[2]))
+			if string.sub(line, 1, 7) == "Creator" then
+				creator = trim(string.sub(line, 9, -1))
 			end
-			if explode(":", tostring(rawTable[gLine]))[1] == "Source" then
-				source = trim(tostring(explode(":", tostring(rawTable[gLine]))[2]))
+			if string.sub(line, 1, 6) == "Source" then
+				source = trim(string.sub(line, 8, -1))
 				if source == "" then source = "No source" end
 			end
-			if #explode("HitObjects", tostring(rawTable[gLine])) == 2 then
+			if string.sub(line, 1, -1) == "[TimingPoints]" then
 				break
 			end
 		end
 		table.insert(cache, {
 			title = title,
 			artist = artist,
-			difficulity = difficulity,
+			version = version,
 			audio = audio,
 			audioFile = audio,
 			pathAudio = "res/Songs/" .. info[1] .. "/" .. audio,
