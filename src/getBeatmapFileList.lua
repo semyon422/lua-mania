@@ -1,14 +1,16 @@
-local function generateCache(self)
-	local cd = ""
-	for out in io.popen("echo %CD%"):lines() do
-		cd = out
-		break
-	end
-	for file in io.popen("dir /B /S /OD /A-D res\\Songs"):lines() do
-		if #explode(".osu", tostring(file)) == 2 then
-			table.insert(data.BMFList, {tostring(explode("\\", explode(cd .. "\\res\\Songs\\", file)[2])[1]), tostring(explode("\\", explode(cd .. "\\res\\Songs\\", file)[2])[2])})
+local function getBeatmapFileList(self)
+	local path = "res/Songs"
+	for _,folder in pairs(love.filesystem.getDirectoryItems(path)) do
+		if love.filesystem.isDirectory(path .. "/" .. folder) then
+			for _,file in pairs(love.filesystem.getDirectoryItems(path .. "/" .. folder)) do
+				if love.filesystem.isFile(path .. "/" .. folder .. "/" .. file) then
+					if string.sub(file, -4, -1) == ".osu" then
+						table.insert(data.BMFList, {folder, file})
+					end
+				end
+			end
 		end
 	end
 end
 
-return generateCache
+return getBeatmapFileList

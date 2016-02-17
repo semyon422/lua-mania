@@ -143,7 +143,7 @@ function osuClass.hit(self, ms, key)
 			data.stats.averageMismatch.value =  math.floor((data.stats.averageMismatch.value * (data.stats.averageMismatch.count - 1) + ms) / (data.stats.averageMismatch.count))
 		else
 			data.stats.averageMismatch.value = math.floor((data.stats.averageMismatch.value * data.stats.averageMismatch.count + ms) / (data.stats.averageMismatch.count + 1))
-			data.stats.averageMismatch.value = data.stats.averageMismatch.value + 1
+			data.stats.averageMismatch.count = data.stats.averageMismatch.count + 1
 		end
 		
 		--data.config.offset = -1 * data.stats.averageMismatch.value
