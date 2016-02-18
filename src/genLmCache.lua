@@ -15,10 +15,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 --]]
-local function generateCache(self)
+local function generateCache(self, info)
 	cache = data.cache
-	local BMFList = data.BMFList
-	for index,info in pairs(BMFList) do
 		local raw = io.open("res/Songs/" .. info[1] .. "/" .. info[2], "r")
 		local rawTable = {}
 		for line in raw:lines() do
@@ -28,7 +26,7 @@ local function generateCache(self)
 		local title = ""
 		local artist = ""
 		local audio = ""
-		local difficulity = ""
+		local version = ""
 		local creator = ""
 		local source = ""
 		for gLine = 1, #rawTable do
@@ -42,7 +40,7 @@ local function generateCache(self)
 				artist = trim(tostring(explode(":", tostring(rawTable[gLine]))[2]))
 			end
 			if explode(":", tostring(rawTable[gLine]))[1] == "version" then
-				difficulity = trim(tostring(explode(":", tostring(rawTable[gLine]))[2]))
+				version = trim(tostring(explode(":", tostring(rawTable[gLine]))[2]))
 			end
 			if explode(":", tostring(rawTable[gLine]))[1] == "creator" then
 				creator = trim(tostring(explode(":", tostring(rawTable[gLine]))[2]))
@@ -58,16 +56,16 @@ local function generateCache(self)
 		table.insert(cache, {
 			title = title,
 			artist = artist,
-			difficulity = difficulity,
+			version = version,
 			audio = audio,
 			audioFile = audio,
 			pathAudio = "res/Songs/" .. info[1] .. "/" .. audio,
 			pathFile = "res/Songs/" .. info[1] .. "/" .. info[2],
 			path = "res/Songs/" .. info[1],
 			creator = creator,
-			source = source
+			source = source,
+			format = info[3]
 			})
-	end
 end
 
 return generateCache

@@ -92,7 +92,6 @@ function love.load()
 			pitch = 1,
 			preview = 2000,
 			fullscreen = false,
-			sampleSet = "soft",
 			skinname = "res/Skins/skin-1",
 		},
 		cursor = {
@@ -124,7 +123,7 @@ function love.load()
 	osu = osuClass.new(data)
 	ui = uiClass.new(data)
 	
-	osu:loadSkin("res/Skins/skin-1")
+	osu:loadSkin(data.config.skinname)
 	
 	if love.system.getOS() == "Windows" then
 		mappathprefix = ""
@@ -138,8 +137,6 @@ function love.load()
 	end
 	
 	osu:getBeatmapFileList()
-	
-	osu:generateBeatmapCache()
 	
 	lg.setBackgroundColor(63,63,63)
 	lg.setColor(255,255,255,255)

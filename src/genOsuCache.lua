@@ -15,10 +15,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 --]]
-local function generateCache(self)
+local function generateCache(self, info)
 	cache = data.cache
-	local BMFList = data.BMFList
-	for index,info in pairs(BMFList) do
 		local raw = io.open("res/Songs/" .. info[1] .. "/" .. info[2], "r")
 		local rawTable = {}
 		for line in raw:lines() do
@@ -35,11 +33,11 @@ local function generateCache(self)
 			if string.sub(line, 1, 13) == "AudioFilename" then
 				audio = trim(string.sub(line, 15, -1))
 			end
-			if string.sub(line, 1, 12) == "TitleUnicode" then
-				title = trim(string.sub(line, 14, -1))
+			if string.sub(line, 1, 6) == "Title:" then
+				title = trim(string.sub(line, 7, -1))
 			end
-			if string.sub(line, 1, 13) == "ArtistUnicode" then
-				artist = trim(string.sub(line, 15, -1))
+			if string.sub(line, 1, 7) == "Artist:" then
+				artist = trim(string.sub(line, 8, -1))
 			end
 			if string.sub(line, 1, 7) == "Version" then
 				version = trim(string.sub(line, 9, -1))
@@ -65,9 +63,9 @@ local function generateCache(self)
 			pathFile = "res/Songs/" .. info[1] .. "/" .. info[2],
 			path = "res/Songs/" .. info[1],
 			creator = creator,
-			source = source
+			source = source,
+			format = info[3]
 			})
-	end
 end
 
 return generateCache

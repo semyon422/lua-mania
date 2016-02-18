@@ -22,7 +22,11 @@ local function getBeatmapFileList(self)
 			for _,file in pairs(love.filesystem.getDirectoryItems(path .. "/" .. folder)) do
 				if love.filesystem.isFile(path .. "/" .. folder .. "/" .. file) then
 					if string.sub(file, -4, -1) == ".osu" then
-						table.insert(data.BMFList, {folder, file})
+						--table.insert(data.BMFList, {folder, file, "osu"})
+						osu:generateBeatmapOsuCache({folder, file, "osu"})
+					end
+					if string.sub(file, -3, -1) == ".lm" then
+						osu:generateBeatmapLmCache({folder, file, "lm"})
 					end
 				end
 			end

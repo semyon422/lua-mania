@@ -33,8 +33,6 @@ local function osu2lua(self, cache)
 	for line in beatmap.file:lines() do
 		table.insert(beatmap.fileLines, line)
 	end
-	beatmap.file:close()
-	--for globalLine = 1, #beatmap.raw.array do
 	for globalLine,line in pairs(beatmap.fileLines) do
 		if stage == "info" then
 			if string.sub(line, 1, 17) == "osu file format v" then
@@ -80,17 +78,17 @@ local function osu2lua(self, cache)
 				beatmap.info.overallDifficulty = tonumber(trim(string.sub(line, 19, -1)))
 			end
 		end
-		if string.sub(line, 1, -1) == "[TimingPoints]" then 
+		if string.sub(line, 1, 14) == "[TimingPoints]" then 
 			stage = "timing"
 		elseif stage == "timing" then
-			if string.sub(line, 1, 1) ~= "[" and explode(",", line)[1] ~= "" then 
+			if trim(string.sub(line, 1, 1)) ~= "[" and trim(explode(",", line)[1]) ~= "" then 
 				beatmap.timing[tonumber(explode(",", line)[1])] = {}
 				for i,v in pairs(explode(",", line)) do
 					beatmap.timing[tonumber(explode(",", line)[1])][i] = tonumber(explode(",", line)[i])
 				end
 			end
 		end
-		if string.sub(line, 1, -1) == "[HitObjects]" then 
+		if string.sub(line, 1, 12) == "[HitObjects]" then 
 			stage = "objects"
 		elseif stage == "objects" then
 			if string.sub(line, 1, 1) ~= "[" then 
@@ -123,7 +121,7 @@ local function osu2lua(self, cache)
 					endtime = tonumber(noteData[1])
 				end
 				
-				hitSound = self:removeExtension(tostring(noteData[#noteData]))
+				hitSound = self:removeExtension(trim(tostring(noteData[#noteData])))
 				if hitSound == "" then
 					if beatmap.info.sampleSet == "None" then
 						beatmap.info.sampleSet = "Soft"
@@ -141,7 +139,7 @@ local function osu2lua(self, cache)
 						hitSound = string.lower(beatmap.info.sampleSet) .. "-hitclap"
 					end
 				end
-				
+
 				if beatmap.hitSounds[key] == nil then beatmap.hitSounds[key] = {} end
 				table.insert(beatmap.hitSounds[key], hitSound)
 				

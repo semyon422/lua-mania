@@ -200,8 +200,10 @@ function osuClass.keyboard(self)
 		for keynumber,key in pairs(keyboard.maniaLayouts[data.beatmap.info.keymode]) do
 			if love.keyboard.isDown(key) then
 				if data.keylocks[keynumber] == 0 then
-					if data.beatmap.hitSounds[keynumber][1] ~= nil then
-						love.audio.newSource(self:getHitSound(data.beatmap.hitSounds[keynumber][1])):play()
+					if data.beatmap.hitSounds[keynumber] ~= nil then
+						if data.beatmap.hitSounds[keynumber][1] ~= nil then
+							love.audio.newSource(self:getHitSound(data.beatmap.hitSounds[keynumber][1])):play()
+						end
 					end
 					if data.beatmap.objects.current[keynumber] ~= nil then
 						self:hit(data.beatmap.objects.current[keynumber][2] - data.stats.currentTime, keynumber)
@@ -665,10 +667,15 @@ function osuClass.clearStats(self)
 	data.stats.maxcombo = 0
 end 
 
-osuClass.convertBeatmap = require "src.converters.osu2lua"
+osuClass.convertOsuBeatmap = require "src.converters.osu2lua"
+osuClass.convertLmBeatmap = require "src.converters.lm2lua"
 
 function osuClass.loadBeatmap(self, cache)
-	self:convertBeatmap(cache)
+	if cache.format == "osu" then
+		self:convertOsuBeatmap(cache)
+	elseif cache.format == "lm" then
+		self:convertLmBeatmap(cache)
+	end
 	self:clearStats()
 end
 
@@ -676,9 +683,11 @@ function osuClass.reloadBeatmap(self)
 	self:loadBeatmap(data.cache[data.currentbeatmap])
 end
 
+osuClass.generateBeatmapOsuCache = require "src.genOsuCache"
+osuClass.generateBeatmapLmCache = require "src.genLmCache"
+
 osuClass.getBeatmapFileList = require "src.getBeatmapFileList"
 
-osuClass.generateBeatmapCache = require "src.genOsuCache"
 
 
 
