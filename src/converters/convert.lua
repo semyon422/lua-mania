@@ -15,23 +15,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 --]]
-local function getBeatmapFileList(self)
-	local path = "res/Songs"
-	for _,folder in pairs(love.filesystem.getDirectoryItems(path)) do
-		if love.filesystem.isDirectory(path .. "/" .. folder) then
-			for _,file in pairs(love.filesystem.getDirectoryItems(path .. "/" .. folder)) do
-				if love.filesystem.isFile(path .. "/" .. folder .. "/" .. file) then
-					if string.sub(file, -4, -1) == ".osu" then
-						--table.insert(data.BMFList, {folder, file, "osu"})
-						osu:generateBeatmapOsuCache({folder, file, "osu"})
-					end
-					if string.sub(file, -3, -1) == ".lm" then
-						osu:generateBeatmapLmCache({folder, file, "lm"})
-					end
-				end
-			end
-		end
+local function convertBeatmap(self, cache)
+	if cache.format == "osu" then
+		local convert = require "src.converters.osu2lua"
+		convert(self, cache)
+	elseif cache.format == "lm" then
+		local convert = require "src.converters.lm2lua"
+		convert(self, cache)
 	end
 end
 
-return getBeatmapFileList
+return convertBeatmap

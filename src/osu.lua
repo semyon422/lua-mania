@@ -58,7 +58,6 @@ function osuClass.drawHUD(self)
 		, 0, 0, 0,1,1)
 	end
 	lg.setColor(255, 255, 255, 255)
-	--lg.circle("line", lg.getWidth()*3/4, lg.getHeight()/2, data.beatradius*100)
 end
 
 function osuClass.beat(self, state)
@@ -155,13 +154,18 @@ function osuClass.hit(self, ms, key)
 		end
 		data.keyhits[key] = 1
 	end
-	--if data.beatmap.objects.current[key] ~= nil then
 	if data.beatmap.objects.current[key][1][1] == 2 then
 		if data.beatmap.objects.current[key][2] < data.stats.currentTime - data.od[#data.od - 1] and data.beatmap.objects.current[key][3] > data.stats.currentTime + data.od[#data.od - 1] then
 			data.keyhits[key] = 1
 		end
 	end
-	--end
+end
+
+function osuClass.playHitsound(self, source)
+	local hitSound = love.audio.newSource(source)
+	hitSound:setPitch(data.config.pitch)
+	hitSound:setVolume(0.2)
+	hitSound:play()
 end
 
 function osuClass.keyboard(self)
@@ -173,16 +177,8 @@ function osuClass.keyboard(self)
 
 	for act,key in pairs(keyboard.key) do
 		if key[2] ~= nil then
-			--function love.wheelmoved(x, y) end
 			if love.keyboard.isDown(key[1]) and love.keyboard.isDown(key[2]) then
-				--if data.keylocks[key[1]] == nil and data.keylocks[key[2]] == nil then
 					key.action()
-				--end
-				--data.keylocks[key[1]] = 1
-				--data.keylocks[key[2]] = 1
-			--else
-				--data.keylocks[key[1]] = nil
-				--data.keylocks[key[2]] = nil
 			end
 		elseif key[2] == nil then
 			if love.keyboard.isDown(key[1]) then
@@ -195,14 +191,13 @@ function osuClass.keyboard(self)
 			end
 		end
 	end
-	
 	if data.beatmap.info ~= nil then
 		for keynumber,key in pairs(keyboard.maniaLayouts[data.beatmap.info.keymode]) do
 			if love.keyboard.isDown(key) then
 				if data.keylocks[keynumber] == 0 then
 					if data.beatmap.hitSounds[keynumber] ~= nil then
 						if data.beatmap.hitSounds[keynumber][1] ~= nil then
-							love.audio.newSource(self:getHitSound(data.beatmap.hitSounds[keynumber][1])):play()
+							self:playHitsound(self:getHitSound(data.beatmap.hitSounds[keynumber][1]))
 						end
 					end
 					if data.beatmap.objects.current[keynumber] ~= nil then
@@ -216,7 +211,6 @@ function osuClass.keyboard(self)
 			end
 		end
 	end
-	
 	
 	if data.beatmap.audio ~= nil then
 		if data.play == -1 then
@@ -362,8 +356,7 @@ function osuClass.drawNotes(self)
 			end
 		end
 	end
-	--lg.setColor(255,255,0,255)
-	do --currentNote
+	do
 		note = data.beatmap.objects.current
 		if note ~= nil then
 			for j = 1, keymode do
@@ -373,7 +366,7 @@ function osuClass.drawNotes(self)
 							if data.autoplay == 1 then
 								if note[j][2] + offset <= currentTime then
 									if data.beatmap.hitSounds[j][1] ~= nil then
-										love.audio.newSource(self:getHitSound(data.beatmap.hitSounds[j][1])):play()
+										self:playHitsound(self:getHitSound(data.beatmap.hitSounds[j][1]))
 									end
 									self:hit(-offset, j)
 									note[j] = nil
@@ -432,10 +425,9 @@ function osuClass.drawNotes(self)
 							if data.autoplay == 1 then
 								if note[j][2] + offset <= currentTime then
 									if data.beatmap.hitSounds[j][1] ~= nil then
-										love.audio.newSource(self:getHitSound(data.beatmap.hitSounds[j][1])):play()
+										self:playHitsound(self:getHitSound(data.beatmap.hitSounds[j][1]))
 									end
 									self:hit(-offset, j)
-									--table.remove(data.beatmap.hitSounds[j], 1)
 								end
 							end
 							if note[j][3] + offset < currentTime - data.od[#data.od - 1] then
@@ -451,10 +443,6 @@ function osuClass.drawNotes(self)
 							elseif data.keyhits[j] == 1 then
 								if math.abs(note[j][2] + offset - currentTime) <= data.od[#data.od - 1] then
 									note[j][1][2] = 1
-								--elseif (note[j][2] + offset < currentTime - data.od[#data.od - 1]) or (note[j][3] + offset < currentTime - data.od[#data.od - 1]) then
-								--	data.stats.combo = 0
-								--	data.stats.hits[6] = data.stats.hits[6] + 1
-								--	note[j][1][2] = 2
 								else
 									data.stats.combo = 0
 									data.stats.hits[6] = data.stats.hits[6] + 1
@@ -463,11 +451,9 @@ function osuClass.drawNotes(self)
 							else
 								update(j)
 								local lnscale = (note[j][3] - note[j][2])/drawable.slider:getHeight() * speed
-								--lg.setColor(0,0,0,255)
 								lg.draw(drawable.slider, x, data.height - hitPosition - offset * speed - (note[j][3] - currentTime) * speed, 0, scale.x, lnscale)
 								lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (note[j][2] - currentTime) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
 								lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (note[j][3] - currentTime) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
-								--lg.setColor(255,255,0,255)
 							end
 						end
 						if note[j] ~= nil then
@@ -543,8 +529,7 @@ function osuClass.drawNotes(self)
 			end
 		end
 	end
-	--lg.setColor(255,255,255,255)
-	for notetime,note in pairs(data.beatmap.objects.missed) do --missedHitObjects
+	for notetime,note in pairs(data.beatmap.objects.missed) do
 		if note ~= nil then
 			for j = 1, keymode do
 				if note[j] ~= nil then
@@ -667,15 +652,10 @@ function osuClass.clearStats(self)
 	data.stats.maxcombo = 0
 end 
 
-osuClass.convertOsuBeatmap = require "src.converters.osu2lua"
-osuClass.convertLmBeatmap = require "src.converters.lm2lua"
+osuClass.convertBeatmap = require "src.converters.convert"
 
 function osuClass.loadBeatmap(self, cache)
-	if cache.format == "osu" then
-		self:convertOsuBeatmap(cache)
-	elseif cache.format == "lm" then
-		self:convertLmBeatmap(cache)
-	end
+	self:convertBeatmap(cache)
 	self:clearStats()
 end
 
@@ -683,10 +663,7 @@ function osuClass.reloadBeatmap(self)
 	self:loadBeatmap(data.cache[data.currentbeatmap])
 end
 
-osuClass.generateBeatmapOsuCache = require "src.genOsuCache"
-osuClass.generateBeatmapLmCache = require "src.genLmCache"
-
-osuClass.getBeatmapFileList = require "src.getBeatmapFileList"
+osuClass.genCache = require "src.cache.genCache"
 
 
 

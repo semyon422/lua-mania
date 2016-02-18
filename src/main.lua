@@ -136,7 +136,7 @@ function love.load()
 		mappathprefix = ""
 	end
 	
-	osu:getBeatmapFileList()
+	osu:genCache()
 	
 	lg.setBackgroundColor(63,63,63)
 	lg.setColor(255,255,255,255)
