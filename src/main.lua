@@ -114,7 +114,8 @@ function love.load()
 			},
 			lastHit = 0,
 			combo = 0,
-			maxcombo = 0
+			maxcombo = 0,
+			speed = nil
 		},
 		audioFormats = {"wav","ogg","mp3"}
 	}

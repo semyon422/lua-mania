@@ -24,6 +24,10 @@ local function osu2lua(self, cache)
 	local stage = "info"
 	beatmap.info = {}
 	beatmap.timing = {}
+	beatmap.timing.all = {}
+	beatmap.timing.global = nil
+	beatmap.timing.current = nil
+	beatmap.timing.barlines = {}
 	beatmap.objects = {}
 	beatmap.objects.clean = {}
 	beatmap.objects.current = {}
@@ -81,11 +85,36 @@ local function osu2lua(self, cache)
 		if string.sub(line, 1, 14) == "[TimingPoints]" then 
 			stage = "timing"
 		elseif stage == "timing" then
-			if trim(string.sub(line, 1, 1)) ~= "[" and trim(explode(",", line)[1]) ~= "" then 
-				beatmap.timing[tonumber(explode(",", line)[1])] = {}
-				for i,v in pairs(explode(",", line)) do
-					beatmap.timing[tonumber(explode(",", line)[1])][i] = tonumber(explode(",", line)[i])
+			if trim(string.sub(line, 1, 1)) ~= "[" and trim(explode(",", line)[1]) ~= "" then
+				local time = nil
+				local value = -100
+				local type = 1
+				local volume = 100
+				
+				local raw = explode(",", line)
+				
+				time = math.ceil(tonumber(raw[1]))
+				if beatmap.timing.all[time] == nil then
+					beatmap.timing.all[time] = {}
 				end
+				
+				value = tonumber(raw[2])
+				if value < 0 then
+					type = 1
+					value = -100 / value
+				elseif value > 0 then
+					type = 0
+				end
+				
+				volume = tonumber(raw[6])/100
+				
+				beatmap.timing.all[time] = {type = type, time = time, value = value, volume = volume}
+				--if beatmap.timing.global == nil then
+				--	beatmap.timing.global = beatmap.timing.all[time]
+				--end
+				--if beatmap.timing.current == nil then
+				--	beatmap.timing.current = beatmap.timing.all[time]
+				--end
 			end
 		end
 		if string.sub(line, 1, 12) == "[HitObjects]" then 

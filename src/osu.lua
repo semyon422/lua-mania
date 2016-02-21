@@ -36,6 +36,7 @@ function osuClass.drawHUD(self)
 			"FPS: "..love.timer.getFPS().."\n"..
 			"time: " .. data.stats.currentTime .. "\n" ..
 			"speed: " .. data.config.speed .. "\n" ..
+			"realSpeed: " .. data.stats.speed .. "\n" ..
 			"offset: " .. data.config.offset .. "\n" ..
 			"autoplay: " .. data.autoplay .. "\n" ..
 			"pitch: " .. data.config.pitch .. "\n" ..
@@ -53,7 +54,7 @@ function osuClass.drawHUD(self)
 		lg.print(
 			"FPS: "..love.timer.getFPS().."\n"..
 			"scroll: " .. data.stats.currentTime .. "\n" ..
-			"speed: " .. data.config.speed .. "\n" ..
+			"speed: " .. data.stats.speed .. "\n" ..
 			"notes: " .. data.drawedNotes .. "\n"
 		, 0, 0, 0,1,1)
 	end
@@ -164,7 +165,13 @@ end
 function osuClass.playHitsound(self, source)
 	local hitSound = love.audio.newSource(source)
 	hitSound:setPitch(data.config.pitch)
-	hitSound:setVolume(0.2)
+	if data.beatmap.timing.current ~= nil then
+		hitSound:setVolume(data.beatmap.timing.current.volume)
+		print("volc = " .. data.beatmap.timing.current.volume)
+	else
+		hitSound:setVolume(data.beatmap.timing.global.volume)
+		print("volg = " .. data.beatmap.timing.global.volume)
+	end
 	hitSound:play()
 end
 
@@ -261,6 +268,9 @@ function osuClass.getHitSound(self, filename)
 	if filename == "blank" then
 		return "res/blank.ogg"
 	end
+	if filename == "" then
+		return "res/blank.ogg"
+	end
 end
 
 function osuClass.drawBackground(self)
@@ -296,11 +306,15 @@ end
 function osuClass.drawNotes(self)
 	local beatmap = data.beatmap
 	local currentTime = data.stats.currentTime
-	local speed = data.config.speed
 	local skin = data.skin
 	local offset = data.config.offset
 	local hitPosition = data.config.hitPosition
 	local globalscale = data.config.globalscale
+	
+	if data.stats.speed == nil then
+		data.stats.speed = data.config.speed
+	end
+	local speed = data.stats.speed
 	
 	keymode = data.beatmap.info.keymode
 	
@@ -319,10 +333,28 @@ function osuClass.drawNotes(self)
 		end
 		x = x * globalscale
 	end
+	
 	update(1)
 	scale.y = globalscale * ColumnWidth[1] / drawable.note:getWidth()
 	
 	data.drawedNotes = 0
+	
+	for time = currentTime - data.od[#data.od - 1], math.ceil(currentTime + data.height / speed) do
+		if data.beatmap.timing.all[time] ~= nil then
+			local point = data.beatmap.timing.all[time]
+			if time <= currentTime then
+				if point.type == 0 then
+					data.beatmap.timing.global = point
+					print("newGlobal")
+				elseif point.type == 1 then
+					data.beatmap.timing.current = point
+					print("newCurrent")
+					data.stats.speed = point.value * data.config.speed
+				end
+				data.beatmap.timing.all[time] = nil
+			end
+		end
+	end
 	
 	for notetime = currentTime - data.od[#data.od - 1], math.ceil(currentTime + data.height / speed) do --HitObjects
 		note = data.beatmap.objects.clean[notetime]
