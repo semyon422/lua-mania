@@ -127,6 +127,7 @@ local function osu2lua(self, cache)
 				local type = {0, 0}
 				local endtime = nil
 				local hitSound = nil
+				local volume = nil
 				
 				local raw = explode(",", line)
 				
@@ -151,7 +152,9 @@ local function osu2lua(self, cache)
 				end
 				
 				hitSound = self:removeExtension(trim(tostring(noteData[#noteData])))
+				volume = tonumber(noteData[#noteData - 1]) / 100
 				if hitSound == "" then
+					volume = nil
 					if beatmap.info.sampleSet == "None" then
 						beatmap.info.sampleSet = "Soft"
 					end
@@ -170,7 +173,7 @@ local function osu2lua(self, cache)
 				end
 
 				if beatmap.hitSounds[key] == nil then beatmap.hitSounds[key] = {} end
-				table.insert(beatmap.hitSounds[key], hitSound)
+				table.insert(beatmap.hitSounds[key], {hitSound, volume})
 				
 				beatmap.objects.clean[time][key] = {type, time, endtime}
 				beatmap.objects.count = beatmap.objects.count + 1

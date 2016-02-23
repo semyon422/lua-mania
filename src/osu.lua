@@ -163,15 +163,18 @@ function osuClass.hit(self, ms, key)
 end
 
 function osuClass.playHitsound(self, source)
-	local hitSound = love.audio.newSource(source)
+	local hitSound = love.audio.newSource(source[1])
+	local volume = 1
 	hitSound:setPitch(data.config.pitch)
-	if data.beatmap.timing.current ~= nil then
-		hitSound:setVolume(data.beatmap.timing.current.volume)
-		print("volc = " .. data.beatmap.timing.current.volume)
-	else
-		hitSound:setVolume(data.beatmap.timing.global.volume)
-		print("volg = " .. data.beatmap.timing.global.volume)
+	if source[2] ~= nil then
+		volume = source[2]
+	elseif data.beatmap.timing.current ~= nil then
+		volume = data.beatmap.timing.current.volume
+	elseif data.beatmap.timing.global ~= nil then
+		volume = data.beatmap.timing.global.volume
 	end
+	hitSound:setVolume(volume)
+	print(volume)
 	hitSound:play()
 end
 
@@ -249,27 +252,27 @@ end
 
 osuClass.removeExtension = require "src.removeExtension"
 
-function osuClass.getHitSound(self, filename)
+function osuClass.getHitSound(self, hitSound)
 	pathHitSound = nil
 	for i,format in pairs(data.audioFormats) do
-		if love.filesystem.exists(data.beatmap.path .. "/" .. filename .. "." .. format) then
-			pathHitSound = data.beatmap.path .. "/" .. filename .. "." .. format
-			return pathHitSound
+		if love.filesystem.exists(data.beatmap.path .. "/" .. hitSound[1] .. "." .. format) then
+			pathHitSound = data.beatmap.path .. "/" .. hitSound[1] .. "." .. format
+			return {pathHitSound, hitSound[2]}
 		end
 	end
 	
 	for i,format in pairs(data.audioFormats) do
-		if love.filesystem.exists(data.config.skinname .. "/" .. filename .. "." .. format) then
-			pathHitSound = data.config.skinname .. "/" .. filename .. "." .. format
-			return pathHitSound
+		if love.filesystem.exists(data.config.skinname .. "/" .. hitSound[1] .. "." .. format) then
+			pathHitSound = data.config.skinname .. "/" .. hitSound[1] .. "." .. format
+			return {pathHitSound, hitSound[2]}
 		end
 	end
 	
 	if filename == "blank" then
-		return "res/blank.ogg"
+		return {"res/blank.ogg", 0}
 	end
 	if filename == "" then
-		return "res/blank.ogg"
+		return {"res/blank.ogg", 0}
 	end
 end
 
@@ -333,6 +336,9 @@ function osuClass.drawNotes(self)
 		end
 		x = x * globalscale
 	end
+	function getY(time)
+		return data.height - hitPosition - offset * speed - (time - currentTime) * speed
+	end
 	
 	update(1)
 	scale.y = globalscale * ColumnWidth[1] / drawable.note:getWidth()
@@ -368,7 +374,7 @@ function osuClass.drawNotes(self)
 								note[j] = nil
 							else
 								update(j)
-								lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (notetime - currentTime) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+								lg.draw(drawable.note, x, getY(notetime) - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
 							end
 						end
 					elseif note[j][1][1] == 2 then
@@ -378,9 +384,9 @@ function osuClass.drawNotes(self)
 								note[j] = nil
 							else
 								update(j)
-								lg.draw(drawable.slider, x, data.height - hitPosition - offset * speed - (note[j][3] - currentTime) * speed, 0, scale.x, (note[j][3] - notetime)/drawable.slider:getHeight() * speed)
-								lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (notetime - currentTime) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
-								lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (note[j][3] - currentTime) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+								lg.draw(drawable.slider, x, getY(note[j][3]), 0, scale.x, (note[j][3] - notetime)/drawable.slider:getHeight() * speed)
+								lg.draw(drawable.note, x, getY(notetime) - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+								lg.draw(drawable.note, x, getY(note[j][3]) - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
 							end
 						end
 					end
@@ -427,7 +433,7 @@ function osuClass.drawNotes(self)
 									data.keyhits[j] = 0
 								else
 									update(j)
-									lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (note[j][2] - currentTime) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+									lg.draw(drawable.note, x, getY(note[j][2]) - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
 								end
 							end
 						end
@@ -447,7 +453,7 @@ function osuClass.drawNotes(self)
 								else
 									update(j)
 									lg.setColor(255,255,255,128)
-									lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (note[j][2] - currentTime) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+									lg.draw(drawable.note, x, getY(note[j][2]) - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
 									lg.setColor(255,255,255,255)
 								end
 							end
@@ -483,9 +489,9 @@ function osuClass.drawNotes(self)
 							else
 								update(j)
 								local lnscale = (note[j][3] - note[j][2])/drawable.slider:getHeight() * speed
-								lg.draw(drawable.slider, x, data.height - hitPosition - offset * speed - (note[j][3] - currentTime) * speed, 0, scale.x, lnscale)
-								lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (note[j][2] - currentTime) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
-								lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (note[j][3] - currentTime) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+								lg.draw(drawable.slider, x, getY(note[j][3]), 0, scale.x, lnscale)
+								lg.draw(drawable.note, x, getY(note[j][2]) - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+								lg.draw(drawable.note, x, getY(note[j][3]) - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
 							end
 						end
 						if note[j] ~= nil then
@@ -513,16 +519,16 @@ function osuClass.drawNotes(self)
 									update(j)
 									if note[j][2] + offset <= currentTime and note[j][3] + offset > currentTime then
 										local lnscale = (note[j][3] + offset - currentTime)/drawable.slider:getHeight() * speed
-										lg.draw(drawable.slider, x, data.height - hitPosition - offset * speed - (note[j][3] - currentTime) * speed, 0, scale.x, lnscale)
+										lg.draw(drawable.slider, x, getY(note[j][3]), 0, scale.x, lnscale)
 										lg.draw(drawable.note, x, data.height - hitPosition - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
-										lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (note[j][3] - currentTime) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+										lg.draw(drawable.note, x, getY(note[j][3]) - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
 										note[j][2] = currentTime - offset
 									elseif note[j][2] + offset <= currentTime and note[j][3] + offset <= currentTime then
 									elseif note[j][2] + offset > currentTime then
 										local lnscale = (note[j][3] - note[j][2])/drawable.slider:getHeight() * speed
-										lg.draw(drawable.slider, x, data.height - hitPosition - offset * speed - (note[j][3] - currentTime) * speed, 0, scale.x, lnscale)
-										lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (note[j][2] - currentTime) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
-										lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (note[j][3] - currentTime) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+										lg.draw(drawable.slider, x, getY(note[j][3]), 0, scale.x, lnscale)
+										lg.draw(drawable.note, x, getY(note[j][2]) - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+										lg.draw(drawable.note, x, getY(note[j][3]) - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
 									end
 								end
 							end
@@ -549,9 +555,9 @@ function osuClass.drawNotes(self)
 									update(j)
 									local lnscale = (note[j][3] - note[j][2])/drawable.slider:getHeight() * speed
 									lg.setColor(255,255,255,128)
-									lg.draw(drawable.slider, x, data.height - hitPosition - offset * speed - (note[j][3] - currentTime) * speed, 0, scale.x, lnscale)
-									lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (note[j][2] - currentTime) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
-									lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (note[j][3] - currentTime) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+									lg.draw(drawable.slider, x, getY(note[j][3]), 0, scale.x, lnscale)
+									lg.draw(drawable.note, x, getY(note[j][2]) - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+									lg.draw(drawable.note, x, getY(note[j][3]) - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
 									lg.setColor(255,255,255,255)
 								end
 							end
@@ -571,7 +577,7 @@ function osuClass.drawNotes(self)
 						else
 							update(j)
 							lg.setColor(255,255,255,128)
-							lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (notetime - currentTime) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+							lg.draw(drawable.note, x, getY(notetime) - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
 							lg.setColor(255,255,255,255)
 						end
 					elseif note[j][1][1] == 2 then
@@ -580,11 +586,11 @@ function osuClass.drawNotes(self)
 						else
 							update(j)
 							lg.setColor(255,255,255,128)
-							lg.draw(drawable.slider, x, data.height - hitPosition - offset * speed - (note[j][3] - currentTime) * speed, 0, scale.x, (note[j][3] - note[j][2])/drawable.slider:getHeight() * speed)
+							lg.draw(drawable.slider, x, getY(note[j][3]), 0, scale.x, (note[j][3] - note[j][2])/drawable.slider:getHeight() * speed)
 							if note[j][2] > currentTime - math.ceil(hitPosition/speed) - math.ceil(drawable.note:getHeight()*scale.y/speed) then
-								lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (note[j][2] - currentTime) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+								lg.draw(drawable.note, x, getY(note[j][2]) - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
 							end
-							lg.draw(drawable.note, x, data.height - hitPosition - offset * speed - (note[j][3] - currentTime) * speed - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+							lg.draw(drawable.note, x, getY(note[j][3]) - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
 							lg.setColor(255,255,255,255)
 						end
 					end
