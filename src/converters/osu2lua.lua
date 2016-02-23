@@ -87,6 +87,7 @@ local function osu2lua(self, cache)
 		elseif stage == "timing" then
 			if trim(string.sub(line, 1, 1)) ~= "[" and trim(explode(",", line)[1]) ~= "" then
 				local time = nil
+				local endtime = nil
 				local value = -100
 				local type = 1
 				local volume = 100
@@ -94,9 +95,6 @@ local function osu2lua(self, cache)
 				local raw = explode(",", line)
 				
 				time = math.ceil(tonumber(raw[1]))
-				if beatmap.timing.all[time] == nil then
-					beatmap.timing.all[time] = {}
-				end
 				
 				value = tonumber(raw[2])
 				if value < 0 then
@@ -107,8 +105,10 @@ local function osu2lua(self, cache)
 				end
 				
 				volume = tonumber(raw[6])/100
-				
-				beatmap.timing.all[time] = {type = type, time = time, value = value, volume = volume}
+				table.insert(beatmap.timing.all, {type = type, time = time, endtime = endtime, value = value, volume = volume})
+				if #beatmap.timing.all > 1 then
+					beatmap.timing.all[#beatmap.timing.all - 1].endtime = time
+				end
 				--if beatmap.timing.global == nil then
 				--	beatmap.timing.global = beatmap.timing.all[time]
 				--end
@@ -179,6 +179,9 @@ local function osu2lua(self, cache)
 				beatmap.objects.count = beatmap.objects.count + 1
 			end
 		end
+	end
+	for time,note in pairs(beatmap.objects.clean) do
+		beatmap.timing.all[#beatmap.timing.all].endtime = time + 100
 	end
 	
 	beatmap.path = cache.path

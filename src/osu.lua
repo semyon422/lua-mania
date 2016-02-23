@@ -174,7 +174,7 @@ function osuClass.playHitsound(self, source)
 		volume = data.beatmap.timing.global.volume
 	end
 	hitSound:setVolume(volume)
-	print(volume)
+	--print(volume)
 	hitSound:play()
 end
 
@@ -337,7 +337,33 @@ function osuClass.drawNotes(self)
 		x = x * globalscale
 	end
 	function getY(time)
-		return data.height - hitPosition - offset * speed - (time - currentTime) * speed
+		local temptime = time - currentTime
+		local notetime = time - currentTime
+		local distance = 0
+		for index,point in pairs(data.beatmap.timing.all) do
+			if time >= point.time then
+				if point.type == 1 then
+					if time >= point.endtime then
+						distance = distance + (point.endtime - point.time) * point.value / speed
+					elseif time < point.endtime then
+						distance = distance + (time - point.time) * point.value / speed
+						break
+					end
+				elseif point.type == 0 then
+					if time >= point.endtime then
+						distance = distance + (point.endtime - point.time)
+					elseif time < point.endtime then
+						distance = distance + (time - point.time)
+						break
+					end
+				end
+			end
+		end
+		if distance == 0 then
+			--distance = notetime
+		end
+		
+		return data.height - hitPosition - (distance - currentTime) * speed
 	end
 	
 	update(1)
@@ -345,19 +371,35 @@ function osuClass.drawNotes(self)
 	
 	data.drawedNotes = 0
 	
-	for time = currentTime - data.od[#data.od - 1], math.ceil(currentTime + data.height / speed) do
-		if data.beatmap.timing.all[time] ~= nil then
-			local point = data.beatmap.timing.all[time]
-			if time <= currentTime then
-				if point.type == 0 then
+	for index,point in pairs(data.beatmap.timing.all) do
+		if point.time <= currentTime then
+			if point.type == 0 then
+				if data.beatmap.timing.global ~= nil then
+					if data.beatmap.timing.global.time <= currentTime and point.time <= currentTime and data.beatmap.timing.global.time < point.time then
+						data.beatmap.timing.global = point
+						data.stats.speed = 1
+						print("newGlobal")
+					end
+				else
 					data.beatmap.timing.global = point
+					data.stats.speed = 1
 					print("newGlobal")
-				elseif point.type == 1 then
-					data.beatmap.timing.current = point
-					print("newCurrent")
-					data.stats.speed = point.value * data.config.speed
 				end
-				data.beatmap.timing.all[time] = nil
+				--table.remove(data.beatmap.timing.all, 1)
+			elseif point.type == 1 then
+				if data.beatmap.timing.current ~= nil then
+					if data.beatmap.timing.current.time <= currentTime and point.time <= currentTime and data.beatmap.timing.current.time < point.time then
+						data.beatmap.timing.current = point
+						data.stats.speed = point.value
+						print("newCurrent1")
+						print(point.time)
+					end
+				else
+					data.beatmap.timing.current = point
+					data.stats.speed = point.value
+					print("newCurrent2")
+				end
+				--table.remove(data.beatmap.timing.all, 1)
 			end
 		end
 	end
@@ -688,6 +730,7 @@ function osuClass.clearStats(self)
 	data.stats.hits = {0,0,0,0,0,0}
 	data.stats.combo = 0
 	data.stats.maxcombo = 0
+	data.stats.speed = nil
 end 
 
 osuClass.convertBeatmap = require "src.converters.convert"
