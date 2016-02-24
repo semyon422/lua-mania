@@ -337,33 +337,50 @@ function osuClass.drawNotes(self)
 		x = x * globalscale
 	end
 	function getY(time)
-		local temptime = time - currentTime
 		local notetime = time - currentTime
 		local distance = 0
 		for index,point in pairs(data.beatmap.timing.all) do
-			if time >= point.time then
-				if point.type == 1 then
-					if time >= point.endtime then
-						distance = distance + (point.endtime - point.time) * point.value / speed
-					elseif time < point.endtime then
-						distance = distance + (time - point.time) * point.value / speed
-						break
+			if point.type == 1 then
+				if point.time < time and point.endtime > currentTime then
+					if point.time <= currentTime and point.endtime > currentTime then
+						if time > point.time and time <= point.endtime then
+							distance = distance + (time - currentTime) * point.value
+						else
+							distance = distance + (point.endtime - currentTime) * point.value
+						end
+					elseif point.time > currentTime and point.endtime <= time then
+						distance = distance + (point.endtime - point.time) * point.value
+					elseif point.time < time and point.endtime > time then
+						distance = distance + (time - point.time) * point.value
+					elseif point.endtime < currentTime then
+						
+					else
+						print("e")
+						print("i: " .. index .. " p.t:" .. point.time .. " p.et:" .. point.endtime .. " p.v:" .. point.value .. " d:" .. distance .. " t: " .. time .. " cT: " .. currentTime)
 					end
-				elseif point.type == 0 then
-					if time >= point.endtime then
+				end
+			elseif point.type == 0 then
+				if point.time < time and point.endtime > currentTime then
+					if point.time < currentTime and point.endtime > currentTime then
+						if time > point.time and time < point.endtime then
+							distance = distance + (time - currentTime)
+						else
+							distance = distance + (point.endtime - currentTime)
+						end
+					elseif point.time > currentTime and point.endtime <= time then
 						distance = distance + (point.endtime - point.time)
-					elseif time < point.endtime then
+					elseif point.time < time and point.endtime > time then
 						distance = distance + (time - point.time)
-						break
+					elseif point.endtime < currentTime then
+						
+					else
+						print("e")
+						print("i: " .. index .. " p.t:" .. point.time .. " p.et:" .. point.endtime .. " p.v:" .. point.value .. " d:" .. distance .. " t: " .. time)
 					end
 				end
 			end
 		end
-		if distance == 0 then
-			--distance = notetime
-		end
-		
-		return data.height - hitPosition - (distance - currentTime) * speed
+		return data.height - hitPosition - offset*speed - distance*data.config.speed
 	end
 	
 	update(1)
@@ -391,13 +408,13 @@ function osuClass.drawNotes(self)
 					if data.beatmap.timing.current.time <= currentTime and point.time <= currentTime and data.beatmap.timing.current.time < point.time then
 						data.beatmap.timing.current = point
 						data.stats.speed = point.value
-						print("newCurrent1")
+						print("newCurrent")
 						print(point.time)
 					end
 				else
 					data.beatmap.timing.current = point
 					data.stats.speed = point.value
-					print("newCurrent2")
+					print("newCurrentNew")
 				end
 				--table.remove(data.beatmap.timing.all, 1)
 			end

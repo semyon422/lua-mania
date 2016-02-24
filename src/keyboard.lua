@@ -69,7 +69,7 @@ local keyboard = {
 		["speeddown"] = {"f3",
 			action = function()
 				if data.ui.state == 3 then
-					if data.config.speed > 0.2 then data.config.speed = data.config.speed - 0.1; data.stats.speed = data.config.speed end
+					if data.config.speed > 0.1 then data.config.speed = data.config.speed - 0.1; data.stats.speed = data.config.speed end
 				end
 			end
 		},
