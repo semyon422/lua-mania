@@ -421,7 +421,11 @@ function osuClass.drawNotes(self)
 				end
 			end
 		end
-		return data.height - hitPosition - offset*data.config.speed - distance*data.config.speed
+		if currentTime >= 0 then
+			return data.height - hitPosition - offset*data.config.speed - distance*data.config.speed
+		else
+			return data.height - hitPosition - offset*data.config.speed - distance*data.config.speed + currentTime
+		end
 	end
 	
 	update(1)
