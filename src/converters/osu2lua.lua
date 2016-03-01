@@ -105,6 +105,9 @@ local function osu2lua(self, cache)
 				end
 				
 				volume = tonumber(raw[6])/100
+				if #beatmap.timing.all == 0 and time > 0 then
+					table.insert(beatmap.timing.all, {type = type, time = 0, endtime = time, value = value, volume = volume})
+				end
 				table.insert(beatmap.timing.all, {type = type, time = time, endtime = endtime, value = value, volume = volume})
 				if #beatmap.timing.all > 1 then
 					beatmap.timing.all[#beatmap.timing.all - 1].endtime = time

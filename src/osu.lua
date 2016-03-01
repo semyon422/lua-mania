@@ -424,7 +424,7 @@ function osuClass.drawNotes(self)
 		if currentTime >= 0 then
 			return data.height - hitPosition - offset*data.config.speed - distance*data.config.speed
 		else
-			return data.height - hitPosition - offset*data.config.speed - distance*data.config.speed + currentTime
+			return data.height - hitPosition - offset*data.config.speed - distance*data.config.speed + currentTime*data.config.speed
 		end
 	end
 	
@@ -466,7 +466,7 @@ function osuClass.drawNotes(self)
 		end
 	end
 	
-	for notetime = currentTime - data.od[#data.od - 1], math.ceil(currentTime + data.height / data.config.speed) do --HitObjects
+	for notetime = currentTime - data.od[#data.od - 1], math.ceil(currentTime + data.height / speed) do --HitObjects
 		note = data.beatmap.objects.clean[notetime]
 		if note ~= nil then
 			for j = 1, keymode do
