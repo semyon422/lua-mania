@@ -673,7 +673,7 @@ function osuClass.drawNotes(self)
 			for j = 1, keymode do
 				if note[j] ~= nil then
 					if note[j][1][1] == 1 then
-						if getY(note[j][2]) < math.ceil(currentTime - (hitPosition + drawable.note:getHeight() * scale.y) / data.config.speed) then
+						if getY(note[j][2]) > data.height then
 							note[j] = nil
 						else
 							update(j)
@@ -682,7 +682,7 @@ function osuClass.drawNotes(self)
 							lg.setColor(255,255,255,255)
 						end
 					elseif note[j][1][1] == 2 then
-						if note[j][3] < math.ceil(currentTime - (hitPosition + drawable.note:getHeight() * scale.y) / data.config.speed) then
+						if getY(note[j][3]) > data.height then
 							note[j] = nil
 						else
 							update(j)
