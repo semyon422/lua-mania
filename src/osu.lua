@@ -337,50 +337,91 @@ function osuClass.drawNotes(self)
 		x = x * globalscale
 	end
 	function getY(time)
-		local notetime = time - currentTime
 		local distance = 0
 		for index,point in pairs(data.beatmap.timing.all) do
 			if point.type == 1 then
-				if point.time < time and point.endtime > currentTime then
-					if point.time <= currentTime and point.endtime > currentTime then
-						if time > point.time and time <= point.endtime then
-							distance = distance + (time - currentTime) * point.value
-						else
-							distance = distance + (point.endtime - currentTime) * point.value
-						end
-					elseif point.time > currentTime and point.endtime <= time then
-						distance = distance + (point.endtime - point.time) * point.value
-					elseif point.time < time and point.endtime > time then
-						distance = distance + (time - point.time) * point.value
-					elseif point.endtime < currentTime then
+				if time > currentTime then
+					if point.time < time and point.endtime > currentTime then
+						if point.time <= currentTime and point.endtime > currentTime then
+							if time > point.time and time <= point.endtime then
+								distance = distance + (time - currentTime) * point.value
+							else
+								distance = distance + (point.endtime - currentTime) * point.value
+							end
+						elseif point.time > currentTime and point.endtime <= time then
+							distance = distance + (point.endtime - point.time) * point.value
+						elseif point.time < time and point.endtime > time then
+							distance = distance + (time - point.time) * point.value
+						elseif point.endtime < currentTime then
 						
-					else
-						print("e")
-						print("i: " .. index .. " p.t:" .. point.time .. " p.et:" .. point.endtime .. " p.v:" .. point.value .. " d:" .. distance .. " t: " .. time .. " cT: " .. currentTime)
+						else
+							print("e")
+							print("i: " .. index .. " p.t:" .. point.time .. " p.et:" .. point.endtime .. " p.v:" .. point.value .. " d:" .. distance .. " t: " .. time .. " cT: " .. currentTime)
+						end
+					end
+				elseif time < currentTime then
+					if point.endtime > time and point.time < currentTime then
+						if point.time <= currentTime and point.endtime > currentTime then
+							if time > point.time and time <= point.endtime then
+								distance = distance + (time - currentTime) * point.value
+							else
+								distance = distance + (point.time - currentTime) * point.value
+							end
+						elseif point.endtime < currentTime and point.time >= time then
+							distance = distance + (point.time - point.endtime) * point.value
+						elseif point.time < time and point.endtime > time then
+							distance = distance + (time - point.endtime) * point.value
+						elseif point.endtime < currentTime then
+						
+						else
+							print("e")
+							print("i: " .. index .. " p.t:" .. point.time .. " p.et:" .. point.endtime .. " p.v:" .. point.value .. " d:" .. distance .. " t: " .. time .. " cT: " .. currentTime)
+						end
 					end
 				end
 			elseif point.type == 0 then
-				if point.time < time and point.endtime > currentTime then
-					if point.time < currentTime and point.endtime > currentTime then
-						if time > point.time and time < point.endtime then
-							distance = distance + (time - currentTime)
-						else
-							distance = distance + (point.endtime - currentTime)
-						end
-					elseif point.time > currentTime and point.endtime <= time then
-						distance = distance + (point.endtime - point.time)
-					elseif point.time < time and point.endtime > time then
-						distance = distance + (time - point.time)
-					elseif point.endtime < currentTime then
+				if time > currentTime then
+					if point.time < time and point.endtime > currentTime then
+						if point.time <= currentTime and point.endtime > currentTime then
+							if time > point.time and time <= point.endtime then
+								distance = distance + (time - currentTime)
+							else
+								distance = distance + (point.endtime - currentTime)
+							end
+						elseif point.time > currentTime and point.endtime <= time then
+							distance = distance + (point.endtime - point.time)
+						elseif point.time < time and point.endtime > time then
+							distance = distance + (time - point.time)
+						elseif point.endtime < currentTime then
 						
-					else
-						print("e")
-						print("i: " .. index .. " p.t:" .. point.time .. " p.et:" .. point.endtime .. " p.v:" .. point.value .. " d:" .. distance .. " t: " .. time)
+						else
+							print("e")
+							print("i: " .. index .. " p.t:" .. point.time .. " p.et:" .. point.endtime .. " p.v:" .. point.value .. " d:" .. distance .. " t: " .. time .. " cT: " .. currentTime)
+						end
+					end
+				elseif time < currentTime then
+					if point.endtime > time and point.time < currentTime then
+						if point.time <= currentTime and point.endtime > currentTime then
+							if time > point.time and time <= point.endtime then
+								distance = distance + (time - currentTime)
+							else
+								distance = distance + (point.time - currentTime)
+							end
+						elseif point.endtime < currentTime and point.time >= time then
+							distance = distance + (point.time - point.endtime)
+						elseif point.time < time and point.endtime > time then
+							distance = distance + (time - point.endtime)
+						elseif point.endtime < currentTime then
+						
+						else
+							print("e")
+							print("i: " .. index .. " p.t:" .. point.time .. " p.et:" .. point.endtime .. " p.v:" .. point.value .. " d:" .. distance .. " t: " .. time .. " cT: " .. currentTime)
+						end
 					end
 				end
 			end
 		end
-		return data.height - hitPosition - offset*speed - distance*data.config.speed
+		return data.height - hitPosition - offset*data.config.speed - distance*data.config.speed
 	end
 	
 	update(1)
@@ -421,7 +462,7 @@ function osuClass.drawNotes(self)
 		end
 	end
 	
-	for notetime = currentTime - data.od[#data.od - 1], math.ceil(currentTime + data.height / speed) do --HitObjects
+	for notetime = currentTime - data.od[#data.od - 1], math.ceil(currentTime + data.height / data.config.speed) do --HitObjects
 		note = data.beatmap.objects.clean[notetime]
 		if note ~= nil then
 			for j = 1, keymode do
@@ -443,7 +484,8 @@ function osuClass.drawNotes(self)
 								note[j] = nil
 							else
 								update(j)
-								lg.draw(drawable.slider, x, getY(note[j][3]), 0, scale.x, (note[j][3] - notetime)/drawable.slider:getHeight() * speed)
+								local lnscale = -(getY(note[j][3]) - getY(note[j][2]))/drawable.slider:getHeight()
+								lg.draw(drawable.slider, x, getY(note[j][3]), 0, scale.x, lnscale)
 								lg.draw(drawable.note, x, getY(notetime) - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
 								lg.draw(drawable.note, x, getY(note[j][3]) - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
 							end
@@ -547,7 +589,7 @@ function osuClass.drawNotes(self)
 								end
 							else
 								update(j)
-								local lnscale = (note[j][3] - note[j][2])/drawable.slider:getHeight() * speed
+								local lnscale = -(getY(note[j][3]) - getY(note[j][2]))/drawable.slider:getHeight()
 								lg.draw(drawable.slider, x, getY(note[j][3]), 0, scale.x, lnscale)
 								lg.draw(drawable.note, x, getY(note[j][2]) - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
 								lg.draw(drawable.note, x, getY(note[j][3]) - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
@@ -577,14 +619,14 @@ function osuClass.drawNotes(self)
 								else
 									update(j)
 									if note[j][2] + offset <= currentTime and note[j][3] + offset > currentTime then
-										local lnscale = (note[j][3] + offset - currentTime)/drawable.slider:getHeight() * speed
+										local lnscale = -(getY(note[j][3]) - getY(currentTime))/drawable.slider:getHeight() -- + offset
 										lg.draw(drawable.slider, x, getY(note[j][3]), 0, scale.x, lnscale)
 										lg.draw(drawable.note, x, data.height - hitPosition - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
 										lg.draw(drawable.note, x, getY(note[j][3]) - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
 										note[j][2] = currentTime - offset
 									elseif note[j][2] + offset <= currentTime and note[j][3] + offset <= currentTime then
 									elseif note[j][2] + offset > currentTime then
-										local lnscale = (note[j][3] - note[j][2])/drawable.slider:getHeight() * speed
+										local lnscale = -(getY(note[j][3]) - getY(note[j][2]))/drawable.slider:getHeight()
 										lg.draw(drawable.slider, x, getY(note[j][3]), 0, scale.x, lnscale)
 										lg.draw(drawable.note, x, getY(note[j][2]) - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
 										lg.draw(drawable.note, x, getY(note[j][3]) - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
@@ -612,7 +654,7 @@ function osuClass.drawNotes(self)
 									data.keyhits[j] = 0
 								else
 									update(j)
-									local lnscale = (note[j][3] - note[j][2])/drawable.slider:getHeight() * speed
+									local lnscale = -(getY(note[j][3]) - getY(note[j][2]))/drawable.slider:getHeight()
 									lg.setColor(255,255,255,128)
 									lg.draw(drawable.slider, x, getY(note[j][3]), 0, scale.x, lnscale)
 									lg.draw(drawable.note, x, getY(note[j][2]) - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
@@ -631,7 +673,7 @@ function osuClass.drawNotes(self)
 			for j = 1, keymode do
 				if note[j] ~= nil then
 					if note[j][1][1] == 1 then
-						if note[j][2] < math.ceil(currentTime - (hitPosition + drawable.note:getHeight() * scale.y) / speed) then
+						if getY(note[j][2]) < math.ceil(currentTime - (hitPosition + drawable.note:getHeight() * scale.y) / data.config.speed) then
 							note[j] = nil
 						else
 							update(j)
@@ -640,13 +682,14 @@ function osuClass.drawNotes(self)
 							lg.setColor(255,255,255,255)
 						end
 					elseif note[j][1][1] == 2 then
-						if note[j][3] < math.ceil(currentTime - (hitPosition + drawable.note:getHeight() * scale.y) / speed) then
+						if note[j][3] < math.ceil(currentTime - (hitPosition + drawable.note:getHeight() * scale.y) / data.config.speed) then
 							note[j] = nil
 						else
 							update(j)
 							lg.setColor(255,255,255,128)
-							lg.draw(drawable.slider, x, getY(note[j][3]), 0, scale.x, (note[j][3] - note[j][2])/drawable.slider:getHeight() * speed)
-							if note[j][2] > currentTime - math.ceil(hitPosition/speed) - math.ceil(drawable.note:getHeight()*scale.y/speed) then
+							local lnscale = -(getY(note[j][3]) - getY((note[j][2])))/drawable.slider:getHeight()
+							lg.draw(drawable.slider, x, getY(note[j][3]), 0, scale.x, lnscale)
+							if note[j][2] > currentTime - math.ceil(hitPosition/data.config.speed) - math.ceil(drawable.note:getHeight()*scale.y/data.config.speed) then
 								lg.draw(drawable.note, x, getY(note[j][2]) - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
 							end
 							lg.draw(drawable.note, x, getY(note[j][3]) - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)

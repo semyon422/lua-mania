@@ -181,7 +181,11 @@ local function osu2lua(self, cache)
 		end
 	end
 	for time,note in pairs(beatmap.objects.clean) do
-		beatmap.timing.all[#beatmap.timing.all].endtime = time + 100
+		if beatmap.timing.all[#beatmap.timing.all].endtime == nil then
+			beatmap.timing.all[#beatmap.timing.all].endtime = time + 100
+		elseif beatmap.timing.all[#beatmap.timing.all].endtime < time + 100 then
+			beatmap.timing.all[#beatmap.timing.all].endtime = time + 100
+		end
 	end
 	
 	beatmap.path = cache.path
