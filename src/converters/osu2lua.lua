@@ -162,16 +162,33 @@ local function osu2lua(self, cache)
 						beatmap.info.sampleSet = "Soft"
 					end
 					if raw[5] == "0" then
-						hitSound = string.lower(beatmap.info.sampleSet) .. "-hitnormal"
+						hitSound = {string.lower(beatmap.info.sampleSet) .. "-hitnormal"}
 					end
 					if raw[5] == "2" then
-						hitSound = string.lower(beatmap.info.sampleSet) .. "-hitwhistle"
+						hitSound = {string.lower(beatmap.info.sampleSet) .. "-hitwhistle"}
 					end
 					if raw[5] == "4" then
-						hitSound = string.lower(beatmap.info.sampleSet) .. "-hitfinish"
+						hitSound = {string.lower(beatmap.info.sampleSet) .. "-hitfinish"}
+					end
+					if raw[5] == "6" then
+						hitSound = {string.lower(beatmap.info.sampleSet) .. "-hitwhistle",
+									string.lower(beatmap.info.sampleSet) .. "-hitfinish"}
 					end
 					if raw[5] == "8" then
-						hitSound = string.lower(beatmap.info.sampleSet) .. "-hitclap"
+						hitSound = {string.lower(beatmap.info.sampleSet) .. "-hitclap"}
+					end
+					if raw[5] == "10" then
+						hitSound = {string.lower(beatmap.info.sampleSet) .. "-hitwhistle",
+									string.lower(beatmap.info.sampleSet) .. "-hitclap"}
+					end
+					if raw[5] == "12" then
+						hitSound = {string.lower(beatmap.info.sampleSet) .. "-hitfinish",
+									string.lower(beatmap.info.sampleSet) .. "-hitclap"}
+					end
+					if raw[5] == "14" then
+						hitSound = {string.lower(beatmap.info.sampleSet) .. "-hitwhistle",
+									string.lower(beatmap.info.sampleSet) .. "-hitfinish",
+									string.lower(beatmap.info.sampleSet) .. "-hitclap"}
 					end
 				end
 

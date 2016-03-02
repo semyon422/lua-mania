@@ -36,7 +36,7 @@ function osuClass.drawHUD(self)
 			"FPS: "..love.timer.getFPS().."\n"..
 			"time: " .. data.stats.currentTime .. "\n" ..
 			"speed: " .. data.config.speed .. "\n" ..
-			"realSpeed: " .. data.stats.speed .. "\n" ..
+			"speed multiplier: " .. data.stats.speed .. "\n" ..
 			"offset: " .. data.config.offset .. "\n" ..
 			"autoplay: " .. data.autoplay .. "\n" ..
 			"pitch: " .. data.config.pitch .. "\n" ..
@@ -162,22 +162,6 @@ function osuClass.hit(self, ms, key)
 	end
 end
 
-function osuClass.playHitsound(self, source)
-	local hitSound = love.audio.newSource(source[1])
-	local volume = 1
-	hitSound:setPitch(data.config.pitch)
-	if source[2] ~= nil then
-		volume = source[2]
-	elseif data.beatmap.timing.current ~= nil then
-		volume = data.beatmap.timing.current.volume
-	elseif data.beatmap.timing.global ~= nil then
-		volume = data.beatmap.timing.global.volume
-	end
-	hitSound:setVolume(volume)
-	--print(volume)
-	hitSound:play()
-end
-
 function osuClass.keyboard(self)
 	local dt = data.dt
 	local hud = data.hud
@@ -252,28 +236,50 @@ end
 
 osuClass.removeExtension = require "src.removeExtension"
 
+function osuClass.playHitsound(self, source)
+	for i,file in pairs(source[1]) do
+		--print("played " .. file .. " (" .. i .. ")")
+		local hitSound = love.audio.newSource(file)
+		local volume = 1
+		hitSound:setPitch(data.config.pitch)
+		if source[2] ~= nil then
+			volume = source[2]
+		elseif data.beatmap.timing.current ~= nil then
+			volume = data.beatmap.timing.current.volume
+		elseif data.beatmap.timing.global ~= nil then
+			volume = data.beatmap.timing.global.volume
+		end
+		hitSound:setVolume(volume)
+		--print(volume)
+		hitSound:play()
+	end
+end
+
 function osuClass.getHitSound(self, hitSound)
 	pathHitSound = nil
+	
+	local out = {{}, 0}
+	
 	for i,format in pairs(data.audioFormats) do
-		if love.filesystem.exists(data.beatmap.path .. "/" .. hitSound[1] .. "." .. format) then
-			pathHitSound = data.beatmap.path .. "/" .. hitSound[1] .. "." .. format
-			return {pathHitSound, hitSound[2]}
+		for i,file in pairs(hitSound[1]) do
+			if love.filesystem.exists(data.beatmap.path .. "/" .. file .. "." .. format) then
+				pathHitSound = data.beatmap.path .. "/" .. file .. "." .. format
+				out[2] = hitSound[2]
+				table.insert(out[1], pathHitSound)
+			elseif love.filesystem.exists(data.config.skinname .. "/" .. file .. "." .. format) then
+				pathHitSound = data.config.skinname .. "/" .. file .. "." .. format
+				out[2] = hitSound[2]
+				table.insert(out[1], pathHitSound)
+			end
 		end
 	end
 	
-	for i,format in pairs(data.audioFormats) do
-		if love.filesystem.exists(data.config.skinname .. "/" .. hitSound[1] .. "." .. format) then
-			pathHitSound = data.config.skinname .. "/" .. hitSound[1] .. "." .. format
-			return {pathHitSound, hitSound[2]}
-		end
-	end
 	
 	if filename == "blank" then
-		return {"res/blank.ogg", 0}
+		out = {{"res/blank.ogg"}, 0}
 	end
-	if filename == "" then
-		return {"res/blank.ogg", 0}
-	end
+	
+	return out
 end
 
 function osuClass.drawBackground(self)
