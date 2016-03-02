@@ -451,7 +451,6 @@ function osuClass.drawNotes(self)
 				else
 					data.beatmap.timing.global = point
 					data.stats.speed = 1
-					print("newGlobal")
 				end
 				--table.remove(data.beatmap.timing.all, 1)
 			elseif point.type == 1 then
@@ -459,24 +458,28 @@ function osuClass.drawNotes(self)
 					if data.beatmap.timing.current.time <= currentTime and point.time <= currentTime and data.beatmap.timing.current.time < point.time then
 						data.beatmap.timing.current = point
 						data.stats.speed = point.value
-						print("newCurrent")
-						print(point.time)
 					end
 				else
 					data.beatmap.timing.current = point
 					data.stats.speed = point.value
-					print("newCurrentNew")
 				end
 				--table.remove(data.beatmap.timing.all, 1)
 			end
 		end
 	end
 	
-	for notetime = currentTime - data.od[#data.od - 1], math.ceil(currentTime + data.height / speed) do --HitObjects
+	--local limit = math.ceil(currentTime + data.height / (data.config.speed * data.stats.speed))
+	local limit = math.ceil(currentTime + data.height / (data.config.speed * 0.1))
+	for notetime = currentTime - data.od[#data.od - 1], limit do --HitObjects
+		continue = false
 		note = data.beatmap.objects.clean[notetime]
 		if note ~= nil then
 			for j = 1, keymode do
 				if note[j] ~= nil then
+					if getY(notetime) + drawable.note:getHeight()*scale.y < 0 then
+						continue = true
+						break
+					end
 					if note[j][1][1] == 1 then
 						if note[j][1][2] == 0 then
 							if notetime + offset <= currentTime + data.od[#data.od] and notetime + offset > currentTime - data.od[#data.od - 1] and data.beatmap.objects.current[j] == nil then
@@ -504,6 +507,7 @@ function osuClass.drawNotes(self)
 				end
 			end
 		end
+		if continue then break end
 	end
 	do
 		note = data.beatmap.objects.current
