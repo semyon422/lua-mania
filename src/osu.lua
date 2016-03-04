@@ -1,20 +1,6 @@
---[[
-lua-mania
-Copyright (C) 2016 Semyon Jolnirov (semyon422)
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program. If not, see <http://www.gnu.org/licenses/>.
---]]
+--[[	lua-mania
+		Copyright (C) 2016 Semyon Jolnirov (semyon422)
+		This program licensed under the GNU GPLv3.	]]
 osuClass = {}
 osuClass.__index = osuClass
 
@@ -81,8 +67,6 @@ function osuClass.start(self)
 	data.starttime = love.timer.getTime() * 1000 - data.stats.currentTime
 	data.play = -1
 	data.state = "started"
-	--beatmap.audio:play()
-	--beatmap.audio:setVolume(0)
 end
 function osuClass.stop(self)
 	if data.beatmap.audio ~= nil then
@@ -105,7 +89,6 @@ function osuClass.play(self)
 	elseif data.play == 2 then
 		data.play = 1
 		if data.beatmap.audio ~= nil then
-			--beatmap.audio:seek(data.beatmap.audio:tell() - 1)
 			data.beatmap.audio:setPitch(data.config.pitch)
 			data.beatmap.audio:play()
 		end
@@ -191,7 +174,7 @@ function osuClass.keyboard(self)
 				if data.keylocks[keynumber] == 0 then
 					if data.beatmap.hitSounds[keynumber] ~= nil then
 						if data.beatmap.hitSounds[keynumber][1] ~= nil then
-							self:playHitsound(self:getHitSound(data.beatmap.hitSounds[keynumber][1]))
+							self:playHitSound(self:getHitSound(data.beatmap.hitSounds[keynumber][1]))
 						end
 					end
 					if data.beatmap.objects.current[keynumber] ~= nil then
@@ -234,82 +217,53 @@ function osuClass.keyboard(self)
 
 end
 
-osuClass.removeExtension = require "src.removeExtension"
+osuClass.removeExtension = require "src.functions.removeExtension"
 
-function osuClass.playHitsound(self, source)
-	for i,file in pairs(source[1]) do
-		--print("played " .. file .. " (" .. i .. ")")
-		local hitSound = love.audio.newSource(file)
-		local volume = 1
-		hitSound:setPitch(data.config.pitch)
-		if source[2] ~= nil then
-			volume = source[2]
-		elseif data.beatmap.timing.current ~= nil then
-			volume = data.beatmap.timing.current.volume
-		elseif data.beatmap.timing.global ~= nil then
-			volume = data.beatmap.timing.global.volume
-		end
-		hitSound:setVolume(volume)
-		--print(volume)
-		hitSound:play()
-	end
-end
+osuClass.getHitSound = require "src.functions.getHitSound"
 
-function osuClass.getHitSound(self, hitSound)
-	pathHitSound = nil
+osuClass.playHitSound = require "src.functions.playHitSound"
+
+osuClass.drawBackground = require "src.functions.drawBackground"
+
+function osuClass.drawObjects(self)
+	local objects = data.objects
 	
-	local out = {{}, 0}
-	
-	for i,format in pairs(data.audioFormats) do
-		for i,file in pairs(hitSound[1]) do
-			if love.filesystem.exists(data.beatmap.path .. "/" .. file .. "." .. format) then
-				pathHitSound = data.beatmap.path .. "/" .. file .. "." .. format
-				out[2] = hitSound[2]
-				table.insert(out[1], pathHitSound)
-			elseif love.filesystem.exists(data.config.skinname .. "/" .. file .. "." .. format) then
-				pathHitSound = data.config.skinname .. "/" .. file .. "." .. format
-				out[2] = hitSound[2]
-				table.insert(out[1], pathHitSound)
+	for layer = 1, #objects do
+		for number = 1, #objects[layer] do
+			local object = objects[layer][number]
+			if object.type == "note" then
+				self:drawNote(object.data)
+			elseif object.type == "rectangle" then
+				self:drawRectangle(object.data)
 			end
 		end
 	end
-	
-	
-	if filename == "blank" then
-		out = {{"res/blank.ogg"}, 0}
-	end
-	
-	return out
 end
 
-function osuClass.drawBackground(self)
-	local background = data.skin.sprites.background
-	local backgroundDarkness = data.config.backgroundDarkness
-	local skin = data.skin
-	
-	if skin.config.background.draw then
-		scale = 1
-		if data.width < background:getWidth() * scale then
-			-- nothing
-		end
-		if data.height < background:getHeight() * scale then
-			scale = data.height / background:getHeight()
-		end
-		if data.width > background:getWidth() * scale then
-			scale = data.width / background:getWidth()
-		end
-		if data.height > background:getHeight() * scale then
-			scale = data.height / background:getHeight()
-		end
-
-		lg.draw(background, data.width / 2, data.height / 2, 0, scale, scale, background:getWidth() / 2, background:getHeight() / 2)
-		
-		lg.setColor(0, 0, 0, (backgroundDarkness / 100) * 255)
-		lg.rectangle("fill", 0, 0, data.width, data.height)
-		lg.setColor(255, 255, 255, 255)
+function osuClass.drawNote(self, info)
+	--[[
+		info = {
+			[1] = {color = {255,255,255,255},drawable = noteimage, x = 100, y = 200, r = 0, sx = 1, sy = 1},
+		}
+	]]
+	for i = 1, #info do
+		local note = info[i]
+		if note.color == nil then note.color = {255, 255, 255, 255} end
+		if note.r == nil then note.r = 0 end
+		lg.setColor(note.color)
+		lg.draw(note.drawable, note.x, note.y, note.r, note.sx, note.sy)
+		lg.setColor({255, 255, 255, 255})
 	end
+end
 
-	
+function osuClass.drawRectangle(self, info)
+	if info.preset == "maniaColumn" then
+		info.type = "fill"
+		info.y = 0
+		info.h = data.height
+	end
+	lg.setColor(info.color)
+	lg.rectangle(info.type, info.x, info.y, info.w, info.h)
 end
 
 function osuClass.drawNotes(self)
@@ -358,10 +312,10 @@ function osuClass.drawNotes(self)
 							distance = distance + (point.endtime - point.time) * point.value
 						elseif point.time < time and point.endtime > time then
 							distance = distance + (time - point.time) * point.value
-						elseif point.endtime < currentTime then
+						elseif point.endtime <= currentTime then
 						
 						else
-							print("e")
+							print("e1")
 							print("i: " .. index .. " p.t:" .. point.time .. " p.et:" .. point.endtime .. " p.v:" .. point.value .. " d:" .. distance .. " t: " .. time .. " cT: " .. currentTime)
 						end
 					end
@@ -377,10 +331,10 @@ function osuClass.drawNotes(self)
 							distance = distance + (point.time - point.endtime) * point.value
 						elseif point.time < time and point.endtime > time then
 							distance = distance + (time - point.endtime) * point.value
-						elseif point.endtime < currentTime then
+						elseif point.endtime <= currentTime then
 						
 						else
-							print("e")
+							print("e2")
 							print("i: " .. index .. " p.t:" .. point.time .. " p.et:" .. point.endtime .. " p.v:" .. point.value .. " d:" .. distance .. " t: " .. time .. " cT: " .. currentTime)
 						end
 					end
@@ -398,10 +352,10 @@ function osuClass.drawNotes(self)
 							distance = distance + (point.endtime - point.time)
 						elseif point.time < time and point.endtime > time then
 							distance = distance + (time - point.time)
-						elseif point.endtime < currentTime then
+						elseif point.endtime <= currentTime then
 						
 						else
-							print("e")
+							print("e3")
 							print("i: " .. index .. " p.t:" .. point.time .. " p.et:" .. point.endtime .. " p.v:" .. point.value .. " d:" .. distance .. " t: " .. time .. " cT: " .. currentTime)
 						end
 					end
@@ -417,10 +371,10 @@ function osuClass.drawNotes(self)
 							distance = distance + (point.time - point.endtime)
 						elseif point.time < time and point.endtime > time then
 							distance = distance + (time - point.endtime)
-						elseif point.endtime < currentTime then
+						elseif point.endtime <= currentTime then
 						
 						else
-							print("e")
+							print("e4")
 							print("i: " .. index .. " p.t:" .. point.time .. " p.et:" .. point.endtime .. " p.v:" .. point.value .. " d:" .. distance .. " t: " .. time .. " cT: " .. currentTime)
 						end
 					end
@@ -446,13 +400,11 @@ function osuClass.drawNotes(self)
 					if data.beatmap.timing.global.time <= currentTime and point.time <= currentTime and data.beatmap.timing.global.time < point.time then
 						data.beatmap.timing.global = point
 						data.stats.speed = 1
-						print("newGlobal")
 					end
 				else
 					data.beatmap.timing.global = point
 					data.stats.speed = 1
 				end
-				--table.remove(data.beatmap.timing.all, 1)
 			elseif point.type == 1 then
 				if data.beatmap.timing.current ~= nil then
 					if data.beatmap.timing.current.time <= currentTime and point.time <= currentTime and data.beatmap.timing.current.time < point.time then
@@ -463,12 +415,10 @@ function osuClass.drawNotes(self)
 					data.beatmap.timing.current = point
 					data.stats.speed = point.value
 				end
-				--table.remove(data.beatmap.timing.all, 1)
 			end
 		end
 	end
 	
-	--local limit = math.ceil(currentTime + data.height / (data.config.speed * data.stats.speed))
 	local limit = math.ceil(currentTime + data.height / (data.config.speed * 0.1))
 	for notetime = currentTime - data.od[#data.od - 1], limit do --HitObjects
 		continue = false
@@ -487,7 +437,9 @@ function osuClass.drawNotes(self)
 								note[j] = nil
 							else
 								update(j)
-								lg.draw(drawable.note, x, getY(notetime) - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+								table.insert(data.objects[2], {type = "note", data = {
+									{drawable = drawable.note, x = x, y = getY(note[j][2]) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
+								}})
 							end
 						end
 					elseif note[j][1][1] == 2 then
@@ -497,10 +449,11 @@ function osuClass.drawNotes(self)
 								note[j] = nil
 							else
 								update(j)
-								local lnscale = -(getY(note[j][3]) - getY(note[j][2]))/drawable.slider:getHeight()
-								lg.draw(drawable.slider, x, getY(note[j][3]), 0, scale.x, lnscale)
-								lg.draw(drawable.note, x, getY(notetime) - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
-								lg.draw(drawable.note, x, getY(note[j][3]) - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+								table.insert(data.objects[2], {type = "note", data = {
+									{drawable = drawable.slider, x = x, y = getY(note[j][3]) - drawable.note:getHeight()*scale.y/2, sx = scale.x, sy = (getY(note[j][2]) - getY(note[j][3]))/drawable.slider:getHeight()},
+									{drawable = drawable.note, x = x, y = getY(note[j][2]) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y},
+									{drawable = drawable.note, x = x, y = getY(note[j][3]) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
+								}})
 							end
 						end
 					end
@@ -519,7 +472,7 @@ function osuClass.drawNotes(self)
 							if data.autoplay == 1 then
 								if note[j][2] + offset <= currentTime then
 									if data.beatmap.hitSounds[j][1] ~= nil then
-										self:playHitsound(self:getHitSound(data.beatmap.hitSounds[j][1]))
+										self:playHitSound(self:getHitSound(data.beatmap.hitSounds[j][1]))
 									end
 									self:hit(-offset, j)
 									note[j] = nil
@@ -548,7 +501,9 @@ function osuClass.drawNotes(self)
 									data.keyhits[j] = 0
 								else
 									update(j)
-									lg.draw(drawable.note, x, getY(note[j][2]) - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+									table.insert(data.objects[2], {type = "note", data = {
+										{drawable = drawable.note, x = x, y = getY(note[j][2]) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
+									}})
 								end
 							end
 						end
@@ -567,9 +522,9 @@ function osuClass.drawNotes(self)
 									table.remove(data.beatmap.hitSounds[j], 1)
 								else
 									update(j)
-									lg.setColor(255,255,255,128)
-									lg.draw(drawable.note, x, getY(note[j][2]) - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
-									lg.setColor(255,255,255,255)
+									table.insert(data.objects[2], {type = "note", data = {
+										{color = {255,255,255,128}, drawable = drawable.note, x = x, y = getY(note[j][2]) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
+									}})
 								end
 							end
 						end
@@ -578,7 +533,7 @@ function osuClass.drawNotes(self)
 							if data.autoplay == 1 then
 								if note[j][2] + offset <= currentTime then
 									if data.beatmap.hitSounds[j][1] ~= nil then
-										self:playHitsound(self:getHitSound(data.beatmap.hitSounds[j][1]))
+										self:playHitSound(self:getHitSound(data.beatmap.hitSounds[j][1]))
 									end
 									self:hit(-offset, j)
 								end
@@ -603,10 +558,11 @@ function osuClass.drawNotes(self)
 								end
 							else
 								update(j)
-								local lnscale = -(getY(note[j][3]) - getY(note[j][2]))/drawable.slider:getHeight()
-								lg.draw(drawable.slider, x, getY(note[j][3]), 0, scale.x, lnscale)
-								lg.draw(drawable.note, x, getY(note[j][2]) - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
-								lg.draw(drawable.note, x, getY(note[j][3]) - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+								table.insert(data.objects[2], {type = "note", data = {
+									{drawable = drawable.slider, x = x, y = getY(note[j][3]) - drawable.note:getHeight()*scale.y/2, sx = scale.x, sy = (getY(note[j][2]) - getY(note[j][3]))/drawable.slider:getHeight()},
+									{drawable = drawable.note, x = x, y = getY(note[j][2]) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y},
+									{drawable = drawable.note, x = x, y = getY(note[j][3]) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
+								}})
 							end
 						end
 						if note[j] ~= nil then
@@ -633,17 +589,18 @@ function osuClass.drawNotes(self)
 								else
 									update(j)
 									if note[j][2] + offset <= currentTime and note[j][3] + offset > currentTime then
-										local lnscale = -(getY(note[j][3]) - getY(currentTime))/drawable.slider:getHeight() -- + offset
-										lg.draw(drawable.slider, x, getY(note[j][3]), 0, scale.x, lnscale)
-										lg.draw(drawable.note, x, data.height - hitPosition - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
-										lg.draw(drawable.note, x, getY(note[j][3]) - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
 										note[j][2] = currentTime - offset
-									elseif note[j][2] + offset <= currentTime and note[j][3] + offset <= currentTime then
+										table.insert(data.objects[2], {type = "note", data = {
+											{drawable = drawable.slider, x = x, y = getY(note[j][3]) - drawable.note:getHeight()*scale.y/2, sx = scale.x, sy = (getY(note[j][2]) - getY(note[j][3]))/drawable.slider:getHeight()},
+											{drawable = drawable.note, x = x, y = data.height - hitPosition - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y},
+											{drawable = drawable.note, x = x, y = getY(note[j][3]) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
+										}})
 									elseif note[j][2] + offset > currentTime then
-										local lnscale = -(getY(note[j][3]) - getY(note[j][2]))/drawable.slider:getHeight()
-										lg.draw(drawable.slider, x, getY(note[j][3]), 0, scale.x, lnscale)
-										lg.draw(drawable.note, x, getY(note[j][2]) - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
-										lg.draw(drawable.note, x, getY(note[j][3]) - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
+										table.insert(data.objects[2], {type = "note", data = {
+											{drawable = drawable.slider, x = x, y = getY(note[j][3]) - drawable.note:getHeight()*scale.y/2, sx = scale.x, sy = (getY(note[j][2]) - getY(note[j][3]))/drawable.slider:getHeight()},
+											{drawable = drawable.note, x = x, y = getY(note[j][2]) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y},
+											{drawable = drawable.note, x = x, y = getY(note[j][3]) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
+										}})
 									end
 								end
 							end
@@ -668,12 +625,11 @@ function osuClass.drawNotes(self)
 									data.keyhits[j] = 0
 								else
 									update(j)
-									local lnscale = -(getY(note[j][3]) - getY(note[j][2]))/drawable.slider:getHeight()
-									lg.setColor(255,255,255,128)
-									lg.draw(drawable.slider, x, getY(note[j][3]), 0, scale.x, lnscale)
-									lg.draw(drawable.note, x, getY(note[j][2]) - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
-									lg.draw(drawable.note, x, getY(note[j][3]) - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
-									lg.setColor(255,255,255,255)
+									table.insert(data.objects[2], {type = "note", data = {
+										{color = {255, 255, 255, 128}, drawable = drawable.slider, x = x, y = getY(note[j][3]) - drawable.note:getHeight()*scale.y/2, sx = scale.x, sy = (getY(note[j][2]) - getY(note[j][3]))/drawable.slider:getHeight()},
+										{color = {255, 255, 255, 128}, drawable = drawable.note, x = x, y = getY(note[j][2]) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y},
+										{color = {255, 255, 255, 128}, drawable = drawable.note, x = x, y = getY(note[j][3]) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
+									}})
 								end
 							end
 						end
@@ -691,23 +647,20 @@ function osuClass.drawNotes(self)
 							note[j] = nil
 						else
 							update(j)
-							lg.setColor(255,255,255,128)
-							lg.draw(drawable.note, x, getY(notetime) - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
-							lg.setColor(255,255,255,255)
+							table.insert(data.objects[2], {type = "note", data = {
+								{color = {255, 255, 255, 128}, drawable = drawable.note, x = x, y = getY(note[j][2]) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
+							}})
 						end
 					elseif note[j][1][1] == 2 then
 						if getY(note[j][3]) > data.height then
 							note[j] = nil
 						else
 							update(j)
-							lg.setColor(255,255,255,128)
-							local lnscale = -(getY(note[j][3]) - getY((note[j][2])))/drawable.slider:getHeight()
-							lg.draw(drawable.slider, x, getY(note[j][3]), 0, scale.x, lnscale)
-							if note[j][2] > currentTime - math.ceil(hitPosition/data.config.speed) - math.ceil(drawable.note:getHeight()*scale.y/data.config.speed) then
-								lg.draw(drawable.note, x, getY(note[j][2]) - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
-							end
-							lg.draw(drawable.note, x, getY(note[j][3]) - drawable.note:getHeight()*scale.y, 0, scale.x, scale.y)
-							lg.setColor(255,255,255,255)
+							table.insert(data.objects[2], {type = "note", data = {
+								{color = {255, 255, 255, 128}, drawable = drawable.slider, x = x, y = getY(note[j][3]) - drawable.note:getHeight()*scale.y/2, sx = scale.x, sy = (getY(note[j][2]) - getY(note[j][3]))/drawable.slider:getHeight()},
+								{color = {255, 255, 255, 128}, drawable = drawable.note, x = x, y = getY(note[j][2]) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y},
+								{color = {255, 255, 255, 128}, drawable = drawable.note, x = x, y = getY(note[j][3]) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
+							}})
 						end
 					end
 				end
@@ -722,46 +675,55 @@ function osuClass.drawNotes(self)
 end
 
 function osuClass.drawUI(self)
-	data.beatmap = data.beatmap
-	skin = data.skin
-	offset = data.config.offset
-	globalscale = data.config.globalscale
+	local beatmap = data.beatmap
+	local skin = data.skin
+	local offset = data.config.offset
+	local globalscale = data.config.globalscale
 	
-	keymode = data.beatmap.info.keymode
+	local keymode = data.beatmap.info.keymode
 	
-	ColumnColours = skin.config.ManiaColours[keymode]
-	ColumnWidth = skin.config.ColumnWidth[keymode]
-	ColumnLineWidth = skin.config.ColumnLineWidth[keymode]
+	local ColumnColours = skin.config.ManiaColours[keymode]
+	local ColumnWidth = skin.config.ColumnWidth[keymode]
+	local ColumnLineWidth = skin.config.ColumnLineWidth[keymode]
 	
-	coveerWidth = ColumnLineWidth[1]
+	local coveerWidth = ColumnLineWidth[1]
 	for i = 1, keymode do
 		local x = ColumnLineWidth[1] + skin.config.ColumnStart[keymode]
 		for j = 1, i - 1 do
 			x = x + ColumnWidth[j] + ColumnLineWidth[j + 1]
 		end
 		coveerWidth = coveerWidth + ColumnWidth[i] + ColumnLineWidth[i + 1]
-		colourBG = skin.config.Colours[ColumnColours[i]].Colour
-		lg.setColor(colourBG[1],
-								colourBG[2],
-								colourBG[3],
-								colourBG[4])
-		lg.rectangle("fill", globalscale * x + ColumnLineWidth[1], 0, globalscale * ColumnWidth[i], data.height)
-		colourLine = skin.config.ColourColumnLine
-		lg.setColor(colourLine[1],
-								colourLine[2],
-								colourLine[3],
-								colourLine[4])
-		lg.rectangle("fill", globalscale * (x - ColumnLineWidth[1]) + ColumnLineWidth[1], 0, globalscale * ColumnLineWidth[i], data.height)
+		
+		table.insert(data.objects[1], {
+			type = "rectangle",
+			data = {
+				preset = "maniaColumn",
+				color = skin.config.Colours[ColumnColours[i]].Colour,
+				x = globalscale * x + ColumnLineWidth[1],
+				w = globalscale * ColumnWidth[i],
+			}
+		})
+		table.insert(data.objects[1], {
+			type = "rectangle",
+			data = {
+				preset = "maniaColumn",
+				color = skin.config.ColourColumnLine,
+				x = globalscale * (x - ColumnLineWidth[1]) + ColumnLineWidth[1],
+				w = globalscale * ColumnLineWidth[i]
+			}
+		})
 	end
-	lg.rectangle("fill", globalscale * (coveerWidth - ColumnLineWidth[1]) + ColumnLineWidth[1] + skin.config.ColumnStart[keymode], 0, globalscale * ColumnLineWidth[#ColumnLineWidth], data.height)
+	table.insert(data.objects[1], {
+		type = "rectangle",
+		data = {
+			preset = "maniaColumn",
+			color = skin.config.ColourColumnLine,
+			x = globalscale * (coveerWidth - ColumnLineWidth[1]) + ColumnLineWidth[1] + skin.config.ColumnStart[keymode],
+			w = globalscale * ColumnLineWidth[#ColumnLineWidth]
+		}
+	})
 	
-	lg.setColor(255, 255, 255, 192)
-	--lg.draw(skin.sprites.maniaStageLeft, ColumnLineWidth[1] + skin.config.ColumnStart[keymode] - skin.sprites.maniaStageLeft:getWidth(), 0, 0)
-	--lg.draw(skin.sprites.maniaStageRight, globalscale * coveerWidth + ColumnLineWidth[1] + skin.config.ColumnStart[keymode], 0, 0)
-	--lg.draw(skin.sprites.scorebarBG, globalscale * coveerWidth + 2, data.height, -math.pi/2, 0.7, 0.7)
-	--lg.draw(skin.sprites.scorebarColour, globalscale * coveerWidth + 3 + 0.7*(skin.sprites.scorebarBG:getWidth() - skin.sprites.scorebarColour:getWidth()), data.height - 5, -math.pi/2, 0.7, 0.7)
 	lg.setColor(255, 255, 255, 255)
-
 end
 
 function osuClass.loadSkin(self, name)
@@ -789,15 +751,9 @@ function osuClass.loadSkin(self, name)
 	end
 	skin.sprites.maniaStageRight = lg.newImage(name .. "/mania-stage-right.png")
 	skin.sprites.maniaStageLeft = lg.newImage(name .. "/mania-stage-left.png")
-	--skin.sprites.scorebarColour = lg.newImage(name .. "/scorebar-colour.png")
-	--skin.sprites.scorebarBG = lg.newImage(name .. "/scorebar-bg.png")
 	skin.sprites.background = lg.newImage(name .. "/menu-background.png")
 	
 	skin.sampleSet = {}
-	--for i,hs in pairs(skin.config.HitSounds[data.config.sampleSet]) do
-	--	skin.sampleSet[i] = love.audio.newSource(name .. "/" .. skin.config.HitSoundsFolder .. "/" .. hs)
-	--end
-
 end
 
 function osuClass.clearStats(self)
@@ -805,6 +761,7 @@ function osuClass.clearStats(self)
 	data.stats.combo = 0
 	data.stats.maxcombo = 0
 	data.stats.speed = nil
+	data.stats.objects = {}
 end 
 
 osuClass.convertBeatmap = require "src.converters.convert"
