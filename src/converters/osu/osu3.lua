@@ -132,7 +132,7 @@ local function osu2lua(self, cache)
 					end
 				end
 				
-				local noteData = explode(":", raw[6])
+				local noteData = explode(":", raw[#raw])
 				
 				type[1] = 1
 				if raw[4] == "128" then
@@ -176,6 +176,8 @@ local function osu2lua(self, cache)
 									string.lower(beatmap.info.sampleSet) .. "-hitfinish",
 									string.lower(beatmap.info.sampleSet) .. "-hitclap"}
 					end
+				else
+					hitSound = {hitSound}
 				end
 
 				if beatmap.hitSounds[key] == nil then beatmap.hitSounds[key] = {} end
