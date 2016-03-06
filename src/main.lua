@@ -161,8 +161,7 @@ function love.draw()
 			lg.rotate(-math.pi/2)
 			lg.translate(-lg.getHeight(), 0)
 		end
-		osu:drawUI()
-		osu:drawNotes()
+		osu:getObjects()
 		osu:drawHUD()
 		ui:simplemenu()
 		keymode = data.beatmap.info.keymode

@@ -55,7 +55,14 @@ function uiClass.songs(self)
 		lg.setColor(255,255,255,255)
 		
 		lg.printf({{223, 196, 125, 255},
-			data.cache[data.ui.songlist.current].source .. " - " .. data.cache[data.ui.songlist.current].artist .. " - " .. data.cache[data.ui.songlist.current].title .. " [" .. data.cache[data.ui.songlist.current].version .. "] " .. data.cache[data.ui.songlist.current].creator
+						data.cache[data.ui.songlist.current].source
+			.. " - " .. data.cache[data.ui.songlist.current].artist
+			.. " - " .. data.cache[data.ui.songlist.current].title
+			.. " [" .. data.cache[data.ui.songlist.current].version
+			.. "] " .. data.cache[data.ui.songlist.current].creator
+			.. " (Mode: " .. data.cache[data.ui.songlist.current].mode
+			.. ")"
+			
 		}, 0, 0, lg.getWidth())
 		
 		

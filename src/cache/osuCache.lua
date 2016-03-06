@@ -15,9 +15,13 @@ local function osuCache(info)
 	local version = ""
 	local creator = ""
 	local source = ""
+	local mode = 0
 	for globalLine,line in pairs(rawTable) do
 		if string.sub(line, 1, 13) == "AudioFilename" then
 			audio = trim(string.sub(line, 15, -1))
+		end
+		if string.sub(line, 1, 4) == "Mode" then
+			mode = trim(string.sub(line, 6, -1))
 		end
 		if string.sub(line, 1, 6) == "Title:" then
 			title = trim(string.sub(line, 7, -1))
@@ -50,7 +54,8 @@ local function osuCache(info)
 		path = "res/Songs/" .. info[1],
 		creator = creator,
 		source = source,
-		format = info[3]
+		format = info[3],
+		mode = mode
 	})
 end
 
