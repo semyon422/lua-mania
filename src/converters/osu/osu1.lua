@@ -130,7 +130,7 @@ local function osu2lua(self, cache)
 				interval = 512 / beatmap.info.keymode
 				local time = nil
 				--local key = nil
-				--local type = {0, 0}
+				local type = {0, 0}
 				--local endtime = nil
 				local hitSound = nil
 				local volume = nil
@@ -188,48 +188,54 @@ local function osu2lua(self, cache)
 									string.lower(beatmap.info.sampleSet) .. "-hitclap"}
 					end
 				end
+				
+				type[1] = 1
+				if raw[4] == "12" then
+					type[1] = 2
+					endtime = tonumber(raw[6])
+				end
 
 				if tonumber(raw[5]) == 0 then --little red
 					key = getKey("red")
-					beatmap.objects.clean[time][key] = {{1,0}, time}
+					beatmap.objects.clean[time][key] = {{1,0}, time, endtime}
 					table.insert(beatmap.hitSounds[key], {hitSound, volume})
 					beatmap.objects.count = beatmap.objects.count + 1
 				end
 				if tonumber(raw[5]) == 2 then --little blue
 					key = getKey("blue")
-					beatmap.objects.clean[time][key] = {{1,0}, time}
+					beatmap.objects.clean[time][key] = {{1,0}, time, endtime}
 					table.insert(beatmap.hitSounds[key], {hitSound, volume})
 					beatmap.objects.count = beatmap.objects.count + 1
 				end
 				if tonumber(raw[5]) == 4 then --big red
-					beatmap.objects.clean[time][2] = {{1,0}, time}
-					beatmap.objects.clean[time][3] = {{1,0}, time}
+					beatmap.objects.clean[time][2] = {{1,0}, time, endtime}
+					beatmap.objects.clean[time][3] = {{1,0}, time, endtime}
 					table.insert(beatmap.hitSounds[2], {hitSound, volume})
 					table.insert(beatmap.hitSounds[3], {hitSound, volume})
 					beatmap.objects.count = beatmap.objects.count + 2
 				end
 				if tonumber(raw[5]) == 6 then --big blue
-					beatmap.objects.clean[time][1] = {{1,0}, time}
-					beatmap.objects.clean[time][4] = {{1,0}, time}
+					beatmap.objects.clean[time][1] = {{1,0}, time, endtime}
+					beatmap.objects.clean[time][4] = {{1,0}, time, endtime}
 					table.insert(beatmap.hitSounds[1], {hitSound, volume})
 					table.insert(beatmap.hitSounds[4], {hitSound, volume})
 					beatmap.objects.count = beatmap.objects.count + 2
 				end
 				if tonumber(raw[5]) == 8 then --little blue
 					key = getKey("blue")
-					beatmap.objects.clean[time][key] = {{1,0}, time}
+					beatmap.objects.clean[time][key] = {{1,0}, time, endtime}
 					table.insert(beatmap.hitSounds[key], {hitSound, volume})
 					beatmap.objects.count = beatmap.objects.count + 1
 				end
 				if tonumber(raw[5]) == 10 then --little blue
 					key = getKey("blue")
-					beatmap.objects.clean[time][key] = {{1,0}, time}
+					beatmap.objects.clean[time][key] = {{1,0}, time, endtime}
 					table.insert(beatmap.hitSounds[key], {hitSound, volume})
 					beatmap.objects.count = beatmap.objects.count + 1
 				end
 				if tonumber(raw[5]) == 12 then --big blue
-					beatmap.objects.clean[time][1] = {{1,0}, time}
-					beatmap.objects.clean[time][4] = {{1,0}, time}
+					beatmap.objects.clean[time][1] = {{1,0}, time, endtime}
+					beatmap.objects.clean[time][4] = {{1,0}, time, endtime}
 					table.insert(beatmap.hitSounds[1], {hitSound, volume})
 					table.insert(beatmap.hitSounds[4], {hitSound, volume})
 					beatmap.objects.count = beatmap.objects.count + 2
