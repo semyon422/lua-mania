@@ -3,7 +3,7 @@
 		This program licensed under the GNU GPLv3.	]]
 local function convertBeatmap(self, cache)
 	if cache.format == "osu" then
-		local convert = require("src.converters.osu.osu" .. cache.mode)
+		local convert = require("src.converters.osu")
 		convert(self, cache)
 	elseif cache.format == "lm" then
 		local convert = require "src.converters.lm2lua"
