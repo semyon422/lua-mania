@@ -1,7 +1,7 @@
 --[[	lua-mania
 		Copyright (C) 2016 Semyon Jolnirov (semyon422)
 		This program licensed under the GNU GPLv3.	]]
-local function getGeneral(fileLines, first, last, cache)
+local function getHitObjects(fileLines, first, last, cache)
 	if data.beatmap.objects == nil then
 		data.beatmap.objects = {
 			clean = {},
@@ -69,5 +69,5 @@ local function getGeneral(fileLines, first, last, cache)
 	end
 end
 
-return getGeneral
+return getHitObjects
 
