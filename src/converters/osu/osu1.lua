@@ -21,14 +21,19 @@ local function osu2lua(self, cache)
 	beatmap.objects.count = 0
 	beatmap.hitSounds = {{},{},{},{}}
 	
-	local side = -1
+	local sider = -1
+	local sideb = -1
 	local function getKey(key)
-		if key == "blue" then key = -2
-		elseif key == "red" then key = -1
+		if key == "blue" then
+			key = -2
+			key = key * sideb
+			sideb = -sideb
+		elseif key == "red" then
+			key = -1
+			key = key * sider
+			sider = -sider
 		end
 		
-		key = key * side
-		side = -side
 		
 		if key == -2 then return 1
 		elseif key == -1 then return 2
