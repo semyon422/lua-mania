@@ -36,84 +36,42 @@ local function getObjects(self)
 	function getY(time)
 		local distance = 0
 		for index,point in pairs(data.beatmap.timing.all) do
-			if point.type == 1 then
-				if time > currentTime then
-					if point.time < time and point.endtime > currentTime then
-						if point.time <= currentTime and point.endtime > currentTime then
-							if time > point.time and time <= point.endtime then
-								distance = distance + (time - currentTime) * point.value
-							else
-								distance = distance + (point.endtime - currentTime) * point.value
-							end
-						elseif point.time > currentTime and point.endtime <= time then
-							distance = distance + (point.endtime - point.time) * point.value
-						elseif point.time < time and point.endtime > time then
-							distance = distance + (time - point.time) * point.value
-						elseif point.endtime <= currentTime then
-						
+			if time > currentTime then
+				if point.startTime < time and point.endTime > currentTime then
+					if point.startTime <= currentTime and point.endTime > currentTime then
+						if time > point.startTime and time <= point.endTime then
+							distance = distance + (time - currentTime) * point.velocity
 						else
-							print("e1")
-							print("i: " .. index .. " p.t:" .. point.time .. " p.et:" .. point.endtime .. " p.v:" .. point.value .. " d:" .. distance .. " t: " .. time .. " cT: " .. currentTime)
+							distance = distance + (point.endTime - currentTime) * point.velocity
 						end
-					end
-				elseif time < currentTime then
-					if point.endtime > time and point.time < currentTime then
-						if point.time <= currentTime and point.endtime > currentTime then
-							if time > point.time and time <= point.endtime then
-								distance = distance + (time - currentTime) * point.value
-							else
-								distance = distance + (point.time - currentTime) * point.value
-							end
-						elseif point.endtime < currentTime and point.time >= time then
-							distance = distance + (point.time - point.endtime) * point.value
-						elseif point.time < time and point.endtime > time then
-							distance = distance + (time - point.endtime) * point.value
-						elseif point.endtime <= currentTime then
-						
-						else
-							print("e2")
-							print("i: " .. index .. " p.t:" .. point.time .. " p.et:" .. point.endtime .. " p.v:" .. point.value .. " d:" .. distance .. " t: " .. time .. " cT: " .. currentTime)
-						end
+					elseif point.startTime > currentTime and point.endTime <= time then
+						distance = distance + (point.endTime - point.startTime) * point.velocity
+					elseif point.startTime < time and point.endTime > time then
+						distance = distance + (time - point.startTime) * point.velocity
+					elseif point.endTime <= currentTime then
+					
+					else
+						print("e1")
+						print("i: " .. index .. " p.t:" .. point.startTime .. " p.et:" .. point.endTime .. " p.v:" .. point.velocity .. " d:" .. distance .. " t: " .. time .. " cT: " .. currentTime)
 					end
 				end
-			elseif point.type == 0 then
-				if time > currentTime then
-					if point.time < time and point.endtime > currentTime then
-						if point.time <= currentTime and point.endtime > currentTime then
-							if time > point.time and time <= point.endtime then
-								distance = distance + (time - currentTime)
-							else
-								distance = distance + (point.endtime - currentTime)
-							end
-						elseif point.time > currentTime and point.endtime <= time then
-							distance = distance + (point.endtime - point.time)
-						elseif point.time < time and point.endtime > time then
-							distance = distance + (time - point.time)
-						elseif point.endtime <= currentTime then
-						
+			elseif time < currentTime then
+				if point.endTime > time and point.startTime < currentTime then
+					if point.startTime <= currentTime and point.endTime > currentTime then
+						if time > point.startTime and time <= point.endTime then
+							distance = distance + (time - currentTime) * point.velocity
 						else
-							print("e3")
-							print("i: " .. index .. " p.t:" .. point.time .. " p.et:" .. point.endtime .. " p.v:" .. point.value .. " d:" .. distance .. " t: " .. time .. " cT: " .. currentTime)
+							distance = distance + (point.startTime - currentTime) * point.velocity
 						end
-					end
-				elseif time < currentTime then
-					if point.endtime > time and point.time < currentTime then
-						if point.time <= currentTime and point.endtime > currentTime then
-							if time > point.time and time <= point.endtime then
-								distance = distance + (time - currentTime)
-							else
-								distance = distance + (point.time - currentTime)
-							end
-						elseif point.endtime < currentTime and point.time >= time then
-							distance = distance + (point.time - point.endtime)
-						elseif point.time < time and point.endtime > time then
-							distance = distance + (time - point.endtime)
-						elseif point.endtime <= currentTime then
-						
-						else
-							print("e4")
-							print("i: " .. index .. " p.t:" .. point.time .. " p.et:" .. point.endtime .. " p.v:" .. point.value .. " d:" .. distance .. " t: " .. time .. " cT: " .. currentTime)
-						end
+					elseif point.endTime < currentTime and point.startTime >= time then
+						distance = distance + (point.startTime - point.endTime) * point.velocity
+					elseif point.startTime < time and point.endTime > time then
+						distance = distance + (time - point.endTime) * point.velocity
+					elseif point.endTime <= currentTime then
+					
+					else
+						print("e2")
+						print("i: " .. index .. " p.t:" .. point.startTime .. " p.et:" .. point.endTime .. " p.v:" .. point.velocity .. " d:" .. distance .. " t: " .. time .. " cT: " .. currentTime)
 					end
 				end
 			end
@@ -131,45 +89,33 @@ local function getObjects(self)
 	data.drawedNotes = 0
 	
 	for index,point in pairs(data.beatmap.timing.all) do
-		if point.time <= currentTime then
-			if point.type == 0 then
-				if data.beatmap.timing.global ~= nil then
-					if data.beatmap.timing.global.time <= currentTime and point.time <= currentTime and data.beatmap.timing.global.time < point.time then
-						data.beatmap.timing.global = point
-						data.stats.speed = 1
-					end
-				else
-					data.beatmap.timing.global = point
-					data.stats.speed = 1
-				end
-			elseif point.type == 1 then
-				if data.beatmap.timing.current ~= nil then
-					if data.beatmap.timing.current.time <= currentTime and point.time <= currentTime and data.beatmap.timing.current.time < point.time then
-						data.beatmap.timing.current = point
-						data.stats.speed = point.value
-					end
-				else
+		if point.startTime <= currentTime then
+			if data.beatmap.timing.current ~= nil then
+				if data.beatmap.timing.current.startTime <= currentTime and point.startTime <= currentTime and data.beatmap.timing.current.startTime < point.startTime then
 					data.beatmap.timing.current = point
-					data.stats.speed = point.value
+					data.stats.speed = point.velocity
 				end
+			else
+				data.beatmap.timing.current = point
+				data.stats.speed = point.velocity
 			end
 		end
 	end
 	
 	local limit = math.ceil(currentTime + data.height / (data.config.speed * 0.1))
-	for notetime = currentTime - data.od[#data.od - 1], limit do --HitObjects
+	for notestartTime = currentTime - data.od[#data.od - 1], limit do --HitObjects
 		continue = false
-		note = data.beatmap.objects.clean[notetime]
+		note = data.beatmap.objects.clean[notestartTime]
 		if note ~= nil then
 			for j = 1, keymode do
 				if note[j] ~= nil then
-					if getY(notetime) + drawable.note:getHeight()*scale.y < 0 then
+					if getY(notestartTime) + drawable.note:getHeight()*scale.y < 0 then
 						continue = true
 						break
 					end
 					if note[j][1][1] == 1 then
 						if note[j][1][2] == 0 then
-							if notetime + offset <= currentTime + data.od[#data.od] and notetime + offset > currentTime - data.od[#data.od - 1] and data.beatmap.objects.current[j] == nil then
+							if notestartTime + offset <= currentTime + data.od[#data.od] and notestartTime + offset > currentTime - data.od[#data.od - 1] and data.beatmap.objects.current[j] == nil then
 								data.beatmap.objects.current[j] = note[j]
 								note[j] = nil
 							else
@@ -181,7 +127,7 @@ local function getObjects(self)
 						end
 					elseif note[j][1][1] == 2 then
 						if note[j][1][2] == 0 then
-							if notetime + offset <= currentTime + data.od[#data.od] and notetime + offset > currentTime - data.od[#data.od - 1] and data.beatmap.objects.current[j] == nil then
+							if notestartTime + offset <= currentTime + data.od[#data.od] and notestartTime + offset > currentTime - data.od[#data.od - 1] and data.beatmap.objects.current[j] == nil then
 								data.beatmap.objects.current[j] = note[j]
 								note[j] = nil
 							else
@@ -375,7 +321,7 @@ local function getObjects(self)
 			end
 		end
 	end
-	for notetime,note in pairs(data.beatmap.objects.missed) do
+	for notestartTime,note in pairs(data.beatmap.objects.missed) do
 		if note ~= nil then
 			for j = 1, keymode do
 				if note[j] ~= nil then
@@ -406,7 +352,7 @@ local function getObjects(self)
 			for i,p in pairs(note) do
 				remove = false
 			end
-			if remove then data.beatmap.objects.missed[notetime] = nil end
+			if remove then data.beatmap.objects.missed[notestartTime] = nil end
 		end
 	end
 	

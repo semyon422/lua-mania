@@ -8,7 +8,8 @@ local function getHitObjects(fileLines, first, last, cache)
 	elseif data.beatmap.info.mode == 1 then
 		require("src.converters.osu.getHitObjects.taiko")(fileLines, first, last, cache)
 	elseif data.beatmap.info.mode == 2 then
-		require("src.converters.osu.getHitObjects.catchTheBeat")(fileLines, first, last, cache)
+		--require("src.converters.osu.getHitObjects.catchTheBeat")(fileLines, first, last, cache)
+		require("src.converters.osu.getHitObjects.standart")(fileLines, first, last, cache)
 	elseif data.beatmap.info.mode == 3 then
 		require("src.converters.osu.getHitObjects.mania")(fileLines, first, last, cache)
 	end

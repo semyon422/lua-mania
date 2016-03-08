@@ -12,6 +12,9 @@ local function getGeneral(fileLines, bStart, bEnd)
 		if string.sub(line, 1, 17) == "OverallDifficulty" then
 			data.beatmap.info.overallDifficulty = tonumber(trim(string.sub(line, 19, -1)))
 		end
+		if string.sub(line, 1, 16) == "SliderMultiplier" then
+			data.beatmap.info.sliderMultiplier = tonumber(trim(string.sub(line, 18, -1)))
+		end
 	end
 end
 

@@ -14,12 +14,6 @@ local function playHitsound(self, source)
 			else
 				volume = data.beatmap.timing.current.volume
 			end
-		elseif data.beatmap.timing.global ~= nil then
-			if source[2] ~= nil then
-				volume = source[2] * data.beatmap.timing.global.volume
-			else
-				volume = data.beatmap.timing.global.volume
-			end
 		end
 		
 		hitSound:setVolume(volume)

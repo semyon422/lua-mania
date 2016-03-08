@@ -5,39 +5,53 @@ local function getTimingPoints(fileLines, first, last)
 	if data.beatmap.timing == nil then
 		data.beatmap.timing = {
 			all = {},
-			global = nil,
 			current = nil,
 			barlines = {}
 		}
 	end
+	
+	local timingPointSyntax = {
+		offset = 1,
+		millisecondsPerBeat = 2,
+		meter = 3,
+		sampleType = 4,
+		sampleSet = 5,
+		volume = 6,
+		inherited = 7,
+		kiaiMode = 8
+	}
+	
 	for numberLine = first, last do
 		local line = fileLines[numberLine]
 		
 		local raw = explode(",", line)
 		
-		local time = math.ceil(tonumber(raw[1]))
+		local startTime, beatLength, meter, sampleType, sampleSet, volume, inherited, kiaiMode, endTime, velocity
+		local syntax = timingPointSyntax
 		
-		local type = 1
-		local value = -100
-		if tonumber(raw[7]) == 0 then
-			type = 1
-			value = -100 / tonumber(raw[2])
-		elseif tonumber(raw[7]) == 1 then
-			type = 0
-			value = tonumber(raw[2])
+		type = tonumber(raw[syntax.inherited])
+		
+		if type == 0 then
+			velocity = -100 / tonumber(raw[syntax.millisecondsPerBeat])
+			beatLength = data.beatmap.timing.all[#data.beatmap.timing.all].beatLength
+		elseif type == 1 then
+			velocity = 1
+			beatLength = tonumber(raw[syntax.millisecondsPerBeat])
 		end
 		
-		local volume = tonumber(raw[6])/100
+		local startTime = math.ceil(tonumber(raw[syntax.offset]))
 		
-		if #data.beatmap.timing.all == 0 and time > 0 then
-			table.insert(data.beatmap.timing.all, {type = type, time = 0, endtime = time, value = value, volume = volume})
+		local volume = tonumber(raw[syntax.volume])/100
+		
+		if #data.beatmap.timing.all == 0 and startTime > 0 then
+			table.insert(data.beatmap.timing.all, {startTime = 0, endTime = startTime, beatLength = beatLength, velocity = velocity, volume = volume})
 		end
-		table.insert(data.beatmap.timing.all, {type = type, time = time, endtime = endtime, value = value, volume = volume})
+		table.insert(data.beatmap.timing.all, {startTime = startTime, endTime = endTime, beatLength = beatLength, velocity = velocity, volume = volume})
 		if #data.beatmap.timing.all > 1 then
-			data.beatmap.timing.all[#data.beatmap.timing.all - 1].endtime = time
+			data.beatmap.timing.all[#data.beatmap.timing.all - 1].endTime = startTime
 		end
 		if numberLine == last then
-			data.beatmap.timing.all[#data.beatmap.timing.all].endtime = 3600000
+			data.beatmap.timing.all[#data.beatmap.timing.all].endTime = 3600000
 		end
 	end
 end

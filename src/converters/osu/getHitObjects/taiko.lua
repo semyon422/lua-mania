@@ -44,57 +44,107 @@ local function getHitObjects(fileLines, first, last, cache)
 		end
 	end
 	
+	if data.beatmap.info.sampleSet == "None" then
+		data.beatmap.info.sampleSet = "Soft"
+	end
+	
+	local hitCircleSyntax = {
+		x = 1,
+		y = 2,
+		startTime = 3,
+		type = 4,
+		hitSound = 5,
+		addition = 6
+	}
+	local sliderSyntax = {
+		x = 1,
+		y = 2,
+		startTime = 3,
+		type = 4,
+		hitSound = 5,
+		sliderType = 6,
+		numRepeat = 7,
+		pixelLength = 8,
+		edgeHitsound = 9,
+		edgeAddition = 10,
+		addition = 11
+	}
+	local spinnerSyntax = {
+		x = 1,
+		y = 2,
+		startTime = 3,
+		type = 4,
+		hitSound = 5,
+		endTime = 6,
+		addition = 7
+	}
+	
 	for numberLine = first, last do
 		local line = fileLines[numberLine]
-	
+		
 		local raw = explode(",", line)
 		
-		local time = tonumber(raw[3])
-		if data.beatmap.objects.clean[time] == nil then
-			data.beatmap.objects.clean[time] = {}
-		end
+		local x, y, startTime, type, hitSound, endTime, addition, volume
+		local syntax = hitCircleSyntax
 		
-		local noteData = explode(":", raw[#raw])
+		type = tonumber(raw[4])
 		
-		if data.beatmap.info.sampleSet == "None" then
-			data.beatmap.info.sampleSet = "Soft"
-		end
-		
-		local volume = tonumber(noteData[#noteData - 1]) / 100
-		local hitSound = {osu:removeExtension(trim(tostring(noteData[#noteData])))}
-		if hitSound[1] == "" then
-			hitSound = getHitSound(tonumber(raw[5]))
-			volume = 1
-		end
-		
-		local type = {1, 0}
-		if raw[4] == "12" then
+		if type == 1 or type == 5 then
+			type = {1, 0}
+			syntax = hitCircleSyntax
+		elseif type == 2 or type == 6 then
 			type = {2, 0}
-			endtime = tonumber(raw[6])
+			syntax = sliderSyntax
+		elseif type == 8 or type == 12 then
+			type = {2, 0}
+			syntax = spinnerSyntax
+		end
+		
+		local startTime = tonumber(raw[syntax.startTime])
+		if data.beatmap.objects.clean[startTime] == nil then
+			data.beatmap.objects.clean[startTime] = {}
+		end
+		
+		if syntax.endTime ~= nil then
+			endTime = tonumber(raw[syntax.endTime])
+		end
+		
+		if raw[syntax.addition] ~= nil then
+			local addition = explode(":", raw[syntax.addition])
+		
+			volume = tonumber(addition[#addition - 1]) / 100
+			hitSound = {osu:removeExtension(trim(tostring(addition[#addition])))}
+			if hitSound[1] == "" then
+				hitSound = getHitSound(tonumber(raw[syntax.hitSound]))
+				volume = 1
+			end
+		else
+			volume = 1
+			hitSound = getHitSound(tonumber(raw[syntax.hitSound]))
 		end
 		
 		local color = getTaikoColors(tonumber(raw[5]), 2)
 		if #color == 1 then
 			if color == "b" then
 				key = getKey("blue")
-				data.beatmap.objects.clean[time][key] = {{1,0}, time, endtime}
+				data.beatmap.objects.clean[startTime][key] = {{1,0}, startTime, endTime}
 				table.insert(data.beatmap.hitSounds[key], {hitSound, volume})
 			elseif color == "r" then
 				key = getKey("red")
-				data.beatmap.objects.clean[time][key] = {{1,0}, time, endtime}
+				data.beatmap.objects.clean[startTime][key] = {{1,0}, startTime, endTime}
 				table.insert(data.beatmap.hitSounds[key], {hitSound, volume})
 			end
 			
 			data.beatmap.objects.count = data.beatmap.objects.count + 1
 		elseif #color == 2 then
 			if color == "bb" then
-				data.beatmap.objects.clean[time][1] = {{1,0}, time, endtime}
-				data.beatmap.objects.clean[time][4] = {{1,0}, time, endtime}
+				data.beatmap.objects.clean[startTime][1] = {{1,0}, startTime, endTime}
+				data.beatmap.objects.clean[startTime][4] = {{1,0}, startTime, endTime}
 				table.insert(data.beatmap.hitSounds[1], {hitSound, volume})
 				table.insert(data.beatmap.hitSounds[4], {hitSound, volume})
 			elseif color == "rr" then
-				data.beatmap.objects.clean[time][2] = {{1,0}, time, endtime}
-				data.beatmap.objects.clean[time][3] = {{1,0}, time, endtime}
+				data.beatmap.objects.clean[startTime][2] = {{1,0}, startTime, endTime}
+				data.beatmap.objects.clean[startTime][3] = {{1,0}, startTime, endTime}
 				table.insert(data.beatmap.hitSounds[2], {hitSound, volume})
 				table.insert(data.beatmap.hitSounds[3], {hitSound, volume})
 			end

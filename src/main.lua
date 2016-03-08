@@ -4,6 +4,7 @@
 function love.load()
 	lg = love.graphics
 	lm = love.mouse
+	lt = love.timer
 	pathprefix = "src/"
 	mappathprefix = ""
 	require(pathprefix .. "osu")

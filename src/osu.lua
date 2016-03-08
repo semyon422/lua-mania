@@ -19,8 +19,8 @@ function osuClass.drawHUD(self)
 	lg.setColor(255, 255, 255, 255)
 	if data.ui.debug == false then
 		lg.print(
-			"FPS: "..love.timer.getFPS().."\n"..
-			"time: " .. data.stats.currentTime .. "\n" ..
+			"FPS: "..lt.getFPS().."\n"..
+			"startTime: " .. data.stats.currentTime .. "\n" ..
 			"speed: " .. data.config.speed .. "\n" ..
 			"speed multiplier: " .. data.stats.speed .. "\n" ..
 			"offset: " .. data.config.offset .. "\n" ..
@@ -38,7 +38,7 @@ function osuClass.drawHUD(self)
 		, 0, 0, 0, 1, 1)
 	else
 		lg.print(
-			"FPS: "..love.timer.getFPS().."\n"..
+			"FPS: "..lt.getFPS().."\n"..
 			"scroll: " .. data.stats.currentTime .. "\n" ..
 			"speed: " .. data.stats.speed .. "\n" ..
 			"notes: " .. data.drawedNotes .. "\n"
@@ -64,7 +64,7 @@ function osuClass.start(self)
 		data.beatmap.audio:setPitch(data.config.pitch)
 	end
 	data.stats.currentTime = -data.config.preview
-	data.starttime = love.timer.getTime() * 1000 - data.stats.currentTime
+	data.startstartTime = lt.getTime() * 1000 - data.stats.currentTime
 	data.play = -1
 	data.state = "started"
 end
@@ -198,7 +198,7 @@ function osuClass.keyboard(self)
 	
 	if data.beatmap.audio ~= nil then
 		if data.play == -1 then
-			data.stats.currentTime = math.floor(love.timer.getTime() * 1000 - data.starttime)
+			data.stats.currentTime = math.floor(lt.getTime() * 1000 - data.startstartTime)
 			if data.stats.currentTime >= 0 then
 				data.play = 1
 				data.beatmap.audio:play()
@@ -207,18 +207,18 @@ function osuClass.keyboard(self)
 			data.stats.currentTime =  math.floor(data.beatmap.audio:tell() * 1000)
 		elseif data.play == 2 then
 			--data.stats.currentTime = math.floor(data.beatmap.audio:tell() * 1000)
-			data.starttime = math.floor(love.timer.getTime() * 1000 - data.stats.currentTime)
+			data.startstartTime = math.floor(lt.getTime() * 1000 - data.stats.currentTime)
 		end
 	else
 		if data.play == -1 then
-			data.stats.currentTime = math.floor(love.timer.getTime() * 1000 - data.starttime)
+			data.stats.currentTime = math.floor(lt.getTime() * 1000 - data.startstartTime)
 			if data.stats.currentTime >= 0 then
 				data.play = 1
 			end
 		elseif data.play == 1 then
-			data.stats.currentTime = math.floor(love.timer.getTime() * 1000 - data.starttime)
+			data.stats.currentTime = math.floor(lt.getTime() * 1000 - data.startstartTime)
 		elseif data.play == 2 then
-			data.starttime = math.floor(love.timer.getTime() * 1000 - data.stats.currentTime)
+			data.startstartTime = math.floor(lt.getTime() * 1000 - data.stats.currentTime)
 		end
 	end
 

@@ -72,15 +72,15 @@ local function osu2lua(self, cache)
 			stage = "timing"
 		elseif stage == "timing" then
 			if trim(string.sub(line, 1, 1)) ~= "[" and trim(explode(",", line)[1]) ~= "" then
-				local time = nil
-				local endtime = nil
+				local startTime = nil
+				local endTime = nil
 				local value = -100
 				local type = 1
 				local volume = 100
 				
 				local raw = explode(",", line)
 				
-				time = math.ceil(tonumber(raw[1]))
+				startTime = math.ceil(tonumber(raw[1]))
 				
 				value = tonumber(raw[2])
 				if value < 0 then
@@ -91,18 +91,18 @@ local function osu2lua(self, cache)
 				end
 				
 				volume = tonumber(raw[6])/100
-				if #beatmap.timing.all == 0 and time > 0 then
-					table.insert(beatmap.timing.all, {type = type, time = 0, endtime = time, value = value, volume = volume})
+				if #beatmap.timing.all == 0 and startTime > 0 then
+					table.insert(beatmap.timing.all, {type = type, startTime = 0, endTime = startTime, value = value, volume = volume})
 				end
-				table.insert(beatmap.timing.all, {type = type, time = time, endtime = endtime, value = value, volume = volume})
+				table.insert(beatmap.timing.all, {type = type, startTime = startTime, endTime = endTime, value = value, volume = volume})
 				if #beatmap.timing.all > 1 then
-					beatmap.timing.all[#beatmap.timing.all - 1].endtime = time
+					beatmap.timing.all[#beatmap.timing.all - 1].endTime = startTime
 				end
 				--if beatmap.timing.global == nil then
-				--	beatmap.timing.global = beatmap.timing.all[time]
+				--	beatmap.timing.global = beatmap.timing.all[startTime]
 				--end
 				--if beatmap.timing.current == nil then
-				--	beatmap.timing.current = beatmap.timing.all[time]
+				--	beatmap.timing.current = beatmap.timing.all[startTime]
 				--end
 			end
 		end
@@ -111,19 +111,19 @@ local function osu2lua(self, cache)
 		elseif stage == "objects" then
 			if string.sub(line, 1, 1) ~= "[" then 
 				interval = 512 / beatmap.info.keymode
-				local time = nil
+				local startTime = nil
 				local key = nil
 				local type = {0, 0}
-				local endtime = nil
+				local endTime = nil
 				local hitSound = nil
 				local volume = nil
 				
 				local raw = explode(",", line)
 				
-				time = tonumber(raw[3])
-				if time == nil then break end
-				if beatmap.objects.clean[time] == nil then
-					beatmap.objects.clean[time] = {}
+				startTime = tonumber(raw[3])
+				if startTime == nil then break end
+				if beatmap.objects.clean[startTime] == nil then
+					beatmap.objects.clean[startTime] = {}
 				end
 				
 				for newKey = 1, beatmap.info.keymode do
@@ -137,7 +137,7 @@ local function osu2lua(self, cache)
 				type[1] = 1
 				if raw[4] == "128" then
 					type[1] = 2
-					endtime = tonumber(noteData[1])
+					endTime = tonumber(noteData[1])
 				end
 				
 				hitSound = self:removeExtension(trim(tostring(noteData[#noteData])))
@@ -181,16 +181,16 @@ local function osu2lua(self, cache)
 				if beatmap.hitSounds[key] == nil then beatmap.hitSounds[key] = {} end
 				table.insert(beatmap.hitSounds[key], {hitSound, volume})
 				
-				beatmap.objects.clean[time][key] = {type, time, endtime}
+				beatmap.objects.clean[startTime][key] = {type, startTime, endTime}
 				beatmap.objects.count = beatmap.objects.count + 1
 			end
 		end
 	end
-	for time,note in pairs(beatmap.objects.clean) do
-		if beatmap.timing.all[#beatmap.timing.all].endtime == nil then
-			beatmap.timing.all[#beatmap.timing.all].endtime = time + 100
-		elseif beatmap.timing.all[#beatmap.timing.all].endtime < time + 100 then
-			beatmap.timing.all[#beatmap.timing.all].endtime = time + 100
+	for startTime,note in pairs(beatmap.objects.clean) do
+		if beatmap.timing.all[#beatmap.timing.all].endTime == nil then
+			beatmap.timing.all[#beatmap.timing.all].endTime = startTime + 100
+		elseif beatmap.timing.all[#beatmap.timing.all].endTime < startTime + 100 then
+			beatmap.timing.all[#beatmap.timing.all].endTime = startTime + 100
 		end
 	end
 	
