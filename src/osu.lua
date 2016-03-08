@@ -159,6 +159,13 @@ function osuClass.keyboard(self)
 		data.beatmap.audio:setVolume(1)
 	end
 	
+	if data.stats.x ~= nil and love.keyboard.isDown("left") then
+		data.stats.x = data.stats.x - 750*data.dt
+	end
+	if data.stats.x ~= nil and love.keyboard.isDown("right") then
+		data.stats.x = data.stats.x + 750*data.dt
+	end
+	
 	for act,key in pairs(keyboard.key) do
 		if key[2] ~= nil then
 			if love.keyboard.isDown(key[1]) and love.keyboard.isDown(key[2]) then
@@ -242,6 +249,8 @@ function osuClass.drawObjects(self)
 				self:drawNote(object.data)
 			elseif object.type == "rectangle" then
 				self:drawRectangle(object.data)
+			elseif object.type == "circle" then
+				self:drawCircle(object.data)
 			end
 		end
 	end
@@ -272,7 +281,16 @@ function osuClass.drawRectangle(self, info)
 	lg.rectangle(info.type, info.x, info.y, info.w, info.h)
 end
 
-osuClass.getObjects = require "src.gamemodes.mania.getObjects"
+function osuClass.drawCircle(self, info)
+	if info.type == nil then info.type = "line" end
+	if info.r == nil then info.r = 10 end
+	if info.color == nil then info.color = {255, 255, 255, 255} end
+	
+	lg.setColor(info.color)
+	lg.circle(info.type, info.x, info.y, info.r)
+end
+
+osuClass.getObjects = require "src.objectsHandlers.mania.getObjects"
 
 function osuClass.loadSkin(self, name)
 	skin = data.skin

@@ -79,7 +79,7 @@ function love.load()
 			pitch = 1,
 			preview = 2000,
 			fullscreen = false,
-			skinname = "res/Skins/skin-1",
+			skinname = "res/Skins/skin-1"
 		},
 		cursor = {
 			x = 0,
@@ -190,6 +190,9 @@ function love.draw()
 		lg.setColor(223, 196, 125, 255)
 		lg.circle("line", data.cursor.x, data.cursor.y, data.cursor.radiusin, 90)
 		lg.setColor(255,255,255,255)
+	end
+	if data.stats.x ~= nil then
+		lg.circle("fill", data.stats.x, data.height, 20)
 	end
 end
 
