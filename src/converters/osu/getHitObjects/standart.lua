@@ -100,10 +100,7 @@ local function getHitObjects(fileLines, first, last, cache)
 		if syntax.endTime ~= nil then
 			endTime = tonumber(raw[syntax.endTime])
 		elseif type[1] == 2 then
-			local pixelsPerBeat = data.beatmap.info.sliderMultiplier * data.beatmap.timing.all[getTimingPoint(startTime)].velocity * 100
-			local numberBeats = (raw[syntax.pixelLength] * raw[syntax.numRepeat]) / pixelsPerBeat;
-			local duration = math.ceil(numberBeats * data.beatmap.timing.all[getTimingPoint(startTime)].beatLength);
-			endTime  = startTime + duration;
+			endTime = math.ceil(startTime + tonumber(raw[syntax.pixelLength]) * tonumber(raw[syntax.numRepeat]))
 		end
 		
 		if raw[syntax.addition] ~= nil then
