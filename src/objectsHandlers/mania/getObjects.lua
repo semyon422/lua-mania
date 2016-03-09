@@ -23,7 +23,7 @@ local function getObjects(self)
 	
 	local drawable = {}
 	local scale = {}
-	function update(key)
+	function update(key, note)
 		drawable.note = skin.sprites.mania.note[ColumnColours[key]]
 		drawable.slider = skin.sprites.mania.sustain[ColumnColours[key]]
 		scale.x = globalscale * ColumnWidth[key] / drawable.note:getWidth()
@@ -32,6 +32,12 @@ local function getObjects(self)
 			x = x + ColumnWidth[j] + ColumnLineWidth[j + 1]
 		end
 		x = x * globalscale
+		if note ~= nil then
+			if note.colorScheme ~= nil then
+				drawable.note = skin.sprites.colorScheme[note.colorScheme].NoteImage
+				drawable.slider = skin.sprites.colorScheme[note.colorScheme].NoteImageL
+			end
+		end
 	end
 	function getY(time)
 		local distance = 0
@@ -119,9 +125,9 @@ local function getObjects(self)
 								data.beatmap.objects.current[j] = note[j]
 								note[j] = nil
 							else
-								update(j)
+								update(j, note[j])
 								table.insert(data.objects[2], {type = "note", data = {
-									{drawable = drawable.note, x = x, y = getY(note[j].startTime) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
+									{color = note[j].color, drawable = drawable.note, x = x, y = getY(note[j].startTime) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
 								}})
 							end
 						end
@@ -131,11 +137,11 @@ local function getObjects(self)
 								data.beatmap.objects.current[j] = note[j]
 								note[j] = nil
 							else
-								update(j)
+								update(j, note[j])
 								table.insert(data.objects[2], {type = "note", data = {
-									{drawable = drawable.slider, x = x, y = getY(note[j].endTime) - drawable.note:getHeight()*scale.y/2, sx = scale.x, sy = (getY(note[j].startTime) - getY(note[j].endTime))/drawable.slider:getHeight()},
-									{drawable = drawable.note, x = x, y = getY(note[j].startTime) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y},
-									{drawable = drawable.note, x = x, y = getY(note[j].endTime) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
+									{color = note[j].color, drawable = drawable.slider, x = x, y = getY(note[j].endTime) - drawable.note:getHeight()*scale.y/2, sx = scale.x, sy = (getY(note[j].startTime) - getY(note[j].endTime))/drawable.slider:getHeight()},
+									{color = note[j].color, drawable = drawable.note, x = x, y = getY(note[j].startTime) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y},
+									{color = note[j].color, drawable = drawable.note, x = x, y = getY(note[j].endTime) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
 								}})
 							end
 						end
@@ -183,9 +189,9 @@ local function getObjects(self)
 									end
 									data.keyhits[j] = 0
 								else
-									update(j)
+									update(j, note[j])
 									table.insert(data.objects[2], {type = "note", data = {
-										{drawable = drawable.note, x = x, y = getY(note[j].startTime) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
+										{color = note[j].color, drawable = drawable.note, x = x, y = getY(note[j].startTime) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
 									}})
 								end
 							end
@@ -204,9 +210,9 @@ local function getObjects(self)
 									note[j] = nil
 									table.remove(data.beatmap.hitSounds[j], 1)
 								else
-									update(j)
+									update(j, note[j])
 									table.insert(data.objects[2], {type = "note", data = {
-										{color = {255,255,255,128}, drawable = drawable.note, x = x, y = getY(note[j].startTime) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
+										{color = note[j].color, alpha = 128, drawable = drawable.note, x = x, y = getY(note[j].startTime) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
 									}})
 								end
 							end
@@ -240,11 +246,11 @@ local function getObjects(self)
 									note[j].type[2] = 2
 								end
 							else
-								update(j)
+								update(j, note[j])
 								table.insert(data.objects[2], {type = "note", data = {
-									{drawable = drawable.slider, x = x, y = getY(note[j].endTime) - drawable.note:getHeight()*scale.y/2, sx = scale.x, sy = (getY(note[j].startTime) - getY(note[j].endTime))/drawable.slider:getHeight()},
-									{drawable = drawable.note, x = x, y = getY(note[j].startTime) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y},
-									{drawable = drawable.note, x = x, y = getY(note[j].endTime) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
+									{color = note[j].color, drawable = drawable.slider, x = x, y = getY(note[j].endTime) - drawable.note:getHeight()*scale.y/2, sx = scale.x, sy = (getY(note[j].startTime) - getY(note[j].endTime))/drawable.slider:getHeight()},
+									{color = note[j].color, drawable = drawable.note, x = x, y = getY(note[j].startTime) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y},
+									{color = note[j].color, drawable = drawable.note, x = x, y = getY(note[j].endTime) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
 								}})
 							end
 						end
@@ -270,19 +276,19 @@ local function getObjects(self)
 									table.remove(data.beatmap.hitSounds[j], 1)
 									data.keyhits[j] = 0
 								else
-									update(j)
+									update(j, note[j])
 									if note[j].startTime + offset <= currentTime and note[j].endTime + offset > currentTime then
 										note[j].startTime = currentTime - offset
 										table.insert(data.objects[2], {type = "note", data = {
-											{drawable = drawable.slider, x = x, y = getY(note[j].endTime) - drawable.note:getHeight()*scale.y/2, sx = scale.x, sy = (getY(note[j].startTime) - getY(note[j].endTime))/drawable.slider:getHeight()},
-											{drawable = drawable.note, x = x, y = data.height - hitPosition - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y},
-											{drawable = drawable.note, x = x, y = getY(note[j].endTime) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
+											{color = note[j].color, drawable = drawable.slider, x = x, y = getY(note[j].endTime) - drawable.note:getHeight()*scale.y/2, sx = scale.x, sy = (getY(note[j].startTime) - getY(note[j].endTime))/drawable.slider:getHeight()},
+											{color = note[j].color, drawable = drawable.note, x = x, y = data.height - hitPosition - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y},
+											{color = note[j].color, drawable = drawable.note, x = x, y = getY(note[j].endTime) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
 										}})
 									elseif note[j].startTime + offset > currentTime then
 										table.insert(data.objects[2], {type = "note", data = {
-											{drawable = drawable.slider, x = x, y = getY(note[j].endTime) - drawable.note:getHeight()*scale.y/2, sx = scale.x, sy = (getY(note[j].startTime) - getY(note[j].endTime))/drawable.slider:getHeight()},
-											{drawable = drawable.note, x = x, y = getY(note[j].startTime) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y},
-											{drawable = drawable.note, x = x, y = getY(note[j].endTime) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
+											{color = note[j].color, drawable = drawable.slider, x = x, y = getY(note[j].endTime) - drawable.note:getHeight()*scale.y/2, sx = scale.x, sy = (getY(note[j].startTime) - getY(note[j].endTime))/drawable.slider:getHeight()},
+											{color = note[j].color, drawable = drawable.note, x = x, y = getY(note[j].startTime) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y},
+											{color = note[j].color, drawable = drawable.note, x = x, y = getY(note[j].endTime) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
 										}})
 									end
 								end
@@ -307,11 +313,11 @@ local function getObjects(self)
 									table.remove(data.beatmap.hitSounds[j], 1)
 									data.keyhits[j] = 0
 								else
-									update(j)
+									update(j, note[j])
 									table.insert(data.objects[2], {type = "note", data = {
-										{color = {255, 255, 255, 128}, drawable = drawable.slider, x = x, y = getY(note[j].endTime) - drawable.note:getHeight()*scale.y/2, sx = scale.x, sy = (getY(note[j].startTime) - getY(note[j].endTime))/drawable.slider:getHeight()},
-										{color = {255, 255, 255, 128}, drawable = drawable.note, x = x, y = getY(note[j].startTime) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y},
-										{color = {255, 255, 255, 128}, drawable = drawable.note, x = x, y = getY(note[j].endTime) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
+										{color = note[j].color, alpha = 128, drawable = drawable.slider, x = x, y = getY(note[j].endTime) - drawable.note:getHeight()*scale.y/2, sx = scale.x, sy = (getY(note[j].startTime) - getY(note[j].endTime))/drawable.slider:getHeight()},
+										{color = note[j].color, alpha = 128, drawable = drawable.note, x = x, y = getY(note[j].startTime) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y},
+										{color = note[j].color, alpha = 128, drawable = drawable.note, x = x, y = getY(note[j].endTime) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
 									}})
 								end
 							end
@@ -329,20 +335,20 @@ local function getObjects(self)
 						if getY(note[j].startTime) > data.height then
 							note[j] = nil
 						else
-							update(j)
+							update(j, note[j])
 							table.insert(data.objects[2], {type = "note", data = {
-								{color = {255, 255, 255, 128}, drawable = drawable.note, x = x, y = getY(note[j].startTime) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
+								{color = note[j].color, alpha = 128, drawable = drawable.note, x = x, y = getY(note[j].startTime) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
 							}})
 						end
 					elseif note[j].type[1] == 2 then
 						if getY(note[j].endTime) > data.height then
 							note[j] = nil
 						else
-							update(j)
+							update(j, note[j])
 							table.insert(data.objects[2], {type = "note", data = {
-								{color = {255, 255, 255, 128}, drawable = drawable.slider, x = x, y = getY(note[j].endTime) - drawable.note:getHeight()*scale.y/2, sx = scale.x, sy = (getY(note[j].startTime) - getY(note[j].endTime))/drawable.slider:getHeight()},
-								{color = {255, 255, 255, 128}, drawable = drawable.note, x = x, y = getY(note[j].startTime) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y},
-								{color = {255, 255, 255, 128}, drawable = drawable.note, x = x, y = getY(note[j].endTime) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
+								{color = note[j].color, alpha = 128, drawable = drawable.slider, x = x, y = getY(note[j].endTime) - drawable.note:getHeight()*scale.y/2, sx = scale.x, sy = (getY(note[j].startTime) - getY(note[j].endTime))/drawable.slider:getHeight()},
+								{color = note[j].color, alpha = 128, drawable = drawable.note, x = x, y = getY(note[j].startTime) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y},
+								{color = note[j].color, alpha = 128, drawable = drawable.note, x = x, y = getY(note[j].endTime) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
 							}})
 						end
 					end

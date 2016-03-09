@@ -264,7 +264,12 @@ function osuClass.drawNote(self, info)
 	]]
 	for i = 1, #info do
 		local note = info[i]
-		if note.color == nil then note.color = {255, 255, 255, 255} end
+		if note.alpha == nil then note.alpha = 255 end
+		if note.color == nil then
+			note.color = {255, 255, 255, note.alpha}
+		else
+			table.insert(note.color, note.alpha)
+		end
 		if note.r == nil then note.r = 0 end
 		lg.setColor(note.color)
 		lg.draw(note.drawable, note.x, note.y, note.r, note.sx, note.sy)
@@ -303,7 +308,8 @@ function osuClass.loadSkin(self, name)
 			},
 			sustain = {
 			},
-		}
+		},
+		colorScheme = {}
 	}
 	skin.config = require(name)
 	for i = 1, #skin.config.Colours do
@@ -314,6 +320,13 @@ function osuClass.loadSkin(self, name)
 	end
 	for i = 1, #skin.config.Colours do
 		skin.sprites.mania.sustain[i] = lg.newImage(name .. "/" .. skin.config.Colours[i].NoteImageL)
+	end
+	
+	for index,item in pairs(skin.config.Colours) do
+		skin.sprites.colorScheme[index] = {
+			NoteImage = lg.newImage(name .. "/" .. skin.config.Colours[index].NoteImage),
+			NoteImageL = lg.newImage(name .. "/" .. skin.config.Colours[index].NoteImageL)
+		}
 	end
 	skin.sprites.maniaStageRight = lg.newImage(name .. "/mania-stage-right.png")
 	skin.sprites.maniaStageLeft = lg.newImage(name .. "/mania-stage-left.png")

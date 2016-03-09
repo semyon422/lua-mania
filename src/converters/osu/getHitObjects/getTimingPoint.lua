@@ -4,7 +4,7 @@
 local function getTimingPoint(time)
 	for index,timingPoint in pairs(data.beatmap.timing.all) do
 		if time >= timingPoint.startTime and time <= timingPoint.endTime then
-			return index
+			return data.beatmap.timing.all[index]
 		end
 	end
 end
