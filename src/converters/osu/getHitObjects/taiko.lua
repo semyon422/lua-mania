@@ -127,24 +127,24 @@ local function getHitObjects(fileLines, first, last, cache)
 		if #color == 1 then
 			if color == "b" then
 				key = getKey("blue")
-				data.beatmap.objects.clean[startTime][key] = {{1,0}, startTime, endTime}
+				data.beatmap.objects.clean[startTime][key] = {type = type, startTime = startTime, endTime = endTime}
 				table.insert(data.beatmap.hitSounds[key], {hitSound, volume})
 			elseif color == "r" then
 				key = getKey("red")
-				data.beatmap.objects.clean[startTime][key] = {{1,0}, startTime, endTime}
+				data.beatmap.objects.clean[startTime][key] = {type = type, startTime = startTime, endTime = endTime}
 				table.insert(data.beatmap.hitSounds[key], {hitSound, volume})
 			end
 			
 			data.beatmap.objects.count = data.beatmap.objects.count + 1
 		elseif #color == 2 then
 			if color == "bb" then
-				data.beatmap.objects.clean[startTime][1] = {{1,0}, startTime, endTime}
-				data.beatmap.objects.clean[startTime][4] = {{1,0}, startTime, endTime}
+				data.beatmap.objects.clean[startTime][1] = {type = type, startTime = startTime, endTime = endTime}
+				data.beatmap.objects.clean[startTime][4] = {type = type, startTime = startTime, endTime = endTime}
 				table.insert(data.beatmap.hitSounds[1], {hitSound, volume})
 				table.insert(data.beatmap.hitSounds[4], {hitSound, volume})
 			elseif color == "rr" then
-				data.beatmap.objects.clean[startTime][2] = {{1,0}, startTime, endTime}
-				data.beatmap.objects.clean[startTime][3] = {{1,0}, startTime, endTime}
+				data.beatmap.objects.clean[startTime][2] = {type = type, startTime = startTime, endTime = endTime}
+				data.beatmap.objects.clean[startTime][3] = {type = type, startTime = startTime, endTime = endTime}
 				table.insert(data.beatmap.hitSounds[2], {hitSound, volume})
 				table.insert(data.beatmap.hitSounds[3], {hitSound, volume})
 			end

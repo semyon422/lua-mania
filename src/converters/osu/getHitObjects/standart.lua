@@ -118,7 +118,7 @@ local function getHitObjects(fileLines, first, last, cache)
 		end
 		
 		key = getKey()
-		data.beatmap.objects.clean[startTime][key] = {type, startTime, endTime}
+		data.beatmap.objects.clean[startTime][key] = {type = type, startTime = startTime, endTime = endTime}
 		table.insert(data.beatmap.hitSounds[key], {hitSound, volume})
 		data.beatmap.objects.count = data.beatmap.objects.count + 1
 	end

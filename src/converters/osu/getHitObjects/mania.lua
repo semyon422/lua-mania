@@ -84,7 +84,7 @@ local function getHitObjects(fileLines, first, last, cache)
 		if data.beatmap.hitSounds[key] == nil then data.beatmap.hitSounds[key] = {} end
 		table.insert(data.beatmap.hitSounds[key], {hitSound, volume})
 		
-		data.beatmap.objects.clean[startTime][key] = {type, startTime, endTime}
+		data.beatmap.objects.clean[startTime][key] = {type = type, startTime = startTime, endTime = endTime}
 		data.beatmap.objects.count = data.beatmap.objects.count + 1
 	end
 end

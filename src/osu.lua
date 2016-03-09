@@ -109,7 +109,7 @@ function osuClass.hit(self, ms, key)
 	local beatmap = data.beatmap
 	local currentTime = data.stats.currentTime
 	local offset = data.config.offset
-	if data.beatmap.objects.current[key][1][1] == 2 and data.beatmap.objects.current[key][1][2] == 2 and data.beatmap.objects.current[key][2] + offset <= currentTime + data.od[#data.od] and data.beatmap.objects.current[key][2] + offset > currentTime - data.od[#data.od - 1] then
+	if data.beatmap.objects.current[key].type[1] == 2 and data.beatmap.objects.current[key].type[2] == 2 and data.beatmap.objects.current[key].startTime + offset <= currentTime + data.od[#data.od] and data.beatmap.objects.current[key].startTime + offset > currentTime - data.od[#data.od - 1] then
 	
 	else
 		for i = 1, #data.od do
@@ -138,8 +138,8 @@ function osuClass.hit(self, ms, key)
 		end
 		data.keyhits[key] = 1
 	end
-	if data.beatmap.objects.current[key][1][1] == 2 then
-		if data.beatmap.objects.current[key][2] < data.stats.currentTime - data.od[#data.od - 1] and data.beatmap.objects.current[key][3] > data.stats.currentTime + data.od[#data.od - 1] then
+	if data.beatmap.objects.current[key].type[1] == 2 then
+		if data.beatmap.objects.current[key].startTime < data.stats.currentTime - data.od[#data.od - 1] and data.beatmap.objects.current[key].endTime > data.stats.currentTime + data.od[#data.od - 1] then
 			data.keyhits[key] = 1
 		end
 	end

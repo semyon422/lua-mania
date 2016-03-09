@@ -113,29 +113,29 @@ local function getObjects(self)
 						continue = true
 						break
 					end
-					if note[j][1][1] == 1 then
-						if note[j][1][2] == 0 then
+					if note[j].type[1] == 1 then
+						if note[j].type[2] == 0 then
 							if notestartTime + offset <= currentTime + data.od[#data.od] and notestartTime + offset > currentTime - data.od[#data.od - 1] and data.beatmap.objects.current[j] == nil then
 								data.beatmap.objects.current[j] = note[j]
 								note[j] = nil
 							else
 								update(j)
 								table.insert(data.objects[2], {type = "note", data = {
-									{drawable = drawable.note, x = x, y = getY(note[j][2]) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
+									{drawable = drawable.note, x = x, y = getY(note[j].startTime) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
 								}})
 							end
 						end
-					elseif note[j][1][1] == 2 then
-						if note[j][1][2] == 0 then
+					elseif note[j].type[1] == 2 then
+						if note[j].type[2] == 0 then
 							if notestartTime + offset <= currentTime + data.od[#data.od] and notestartTime + offset > currentTime - data.od[#data.od - 1] and data.beatmap.objects.current[j] == nil then
 								data.beatmap.objects.current[j] = note[j]
 								note[j] = nil
 							else
 								update(j)
 								table.insert(data.objects[2], {type = "note", data = {
-									{drawable = drawable.slider, x = x, y = getY(note[j][3]) - drawable.note:getHeight()*scale.y/2, sx = scale.x, sy = (getY(note[j][2]) - getY(note[j][3]))/drawable.slider:getHeight()},
-									{drawable = drawable.note, x = x, y = getY(note[j][2]) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y},
-									{drawable = drawable.note, x = x, y = getY(note[j][3]) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
+									{drawable = drawable.slider, x = x, y = getY(note[j].endTime) - drawable.note:getHeight()*scale.y/2, sx = scale.x, sy = (getY(note[j].startTime) - getY(note[j].endTime))/drawable.slider:getHeight()},
+									{drawable = drawable.note, x = x, y = getY(note[j].startTime) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y},
+									{drawable = drawable.note, x = x, y = getY(note[j].endTime) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
 								}})
 							end
 						end
@@ -150,10 +150,10 @@ local function getObjects(self)
 		if note ~= nil then
 			for j = 1, keymode do
 				if note[j] ~= nil then
-					if note[j][1][1] == 1 then
-						if note[j][1][2] == 0 then
+					if note[j].type[1] == 1 then
+						if note[j].type[2] == 0 then
 							if data.autoplay == 1 then
-								if note[j][2] + offset <= currentTime then
+								if note[j].startTime + offset <= currentTime then
 									if data.beatmap.hitSounds[j][1] ~= nil then
 										self:playHitSound(self:getHitSound(data.beatmap.hitSounds[j][1]))
 									end
@@ -163,155 +163,155 @@ local function getObjects(self)
 								end
 							end
 							if note[j] ~= nil then
-								if note[j][2] + offset < currentTime - data.od[#data.od - 1] then
+								if note[j].startTime + offset < currentTime - data.od[#data.od - 1] then
 									data.stats.combo = 0
 									data.stats.hits[6] = data.stats.hits[6] + 1
-									if data.beatmap.objects.missed[note[j][2]] == nil then
-										data.beatmap.objects.missed[note[j][2]] = {}
+									if data.beatmap.objects.missed[note[j].startTime] == nil then
+										data.beatmap.objects.missed[note[j].startTime] = {}
 									end
-									data.beatmap.objects.missed[note[j][2]][j] = note[j]
-									data.beatmap.objects.missed[note[j][2]][j][1][2] = 2
+									data.beatmap.objects.missed[note[j].startTime][j] = note[j]
+									data.beatmap.objects.missed[note[j].startTime][j].type[2] = 2
 									note[j] = nil
 									table.remove(data.beatmap.hitSounds[j], 1)
 								elseif data.keyhits[j] == 1 then
-									if note[j][2] + offset > currentTime + data.od[#data.od - 1] then
+									if note[j].startTime + offset > currentTime + data.od[#data.od - 1] then
 										data.stats.combo = 0
 										data.stats.hits[6] = data.stats.hits[6] + 1
-										note[j][1][2] = 2
+										note[j].type[2] = 2
 									else
-										note[j][1][2] = 1
+										note[j].type[2] = 1
 									end
 									data.keyhits[j] = 0
 								else
 									update(j)
 									table.insert(data.objects[2], {type = "note", data = {
-										{drawable = drawable.note, x = x, y = getY(note[j][2]) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
+										{drawable = drawable.note, x = x, y = getY(note[j].startTime) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
 									}})
 								end
 							end
 						end
 						if note[j] ~= nil then
-							if note[j][1][2] == 1 then
+							if note[j].type[2] == 1 then
 								note[j] = nil
 								table.remove(data.beatmap.hitSounds[j], 1)
-							elseif note[j][1][2] == 2 then
-								if note[j][2] + offset <= currentTime then
-									if data.beatmap.objects.missed[note[j][2]] == nil then
-										data.beatmap.objects.missed[note[j][2]] = {}
+							elseif note[j].type[2] == 2 then
+								if note[j].startTime + offset <= currentTime then
+									if data.beatmap.objects.missed[note[j].startTime] == nil then
+										data.beatmap.objects.missed[note[j].startTime] = {}
 									end
-									data.beatmap.objects.missed[note[j][2]][j] = note[j]
-									data.beatmap.objects.missed[note[j][2]][j][1][2] = 2
+									data.beatmap.objects.missed[note[j].startTime][j] = note[j]
+									data.beatmap.objects.missed[note[j].startTime][j].type[2] = 2
 									note[j] = nil
 									table.remove(data.beatmap.hitSounds[j], 1)
 								else
 									update(j)
 									table.insert(data.objects[2], {type = "note", data = {
-										{color = {255,255,255,128}, drawable = drawable.note, x = x, y = getY(note[j][2]) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
+										{color = {255,255,255,128}, drawable = drawable.note, x = x, y = getY(note[j].startTime) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
 									}})
 								end
 							end
 						end
-					elseif note[j][1][1] == 2 then
-						if note[j][1][2] == 0 then
+					elseif note[j].type[1] == 2 then
+						if note[j].type[2] == 0 then
 							if data.autoplay == 1 then
-								if note[j][2] + offset <= currentTime then
+								if note[j].startTime + offset <= currentTime then
 									if data.beatmap.hitSounds[j][1] ~= nil then
 										self:playHitSound(self:getHitSound(data.beatmap.hitSounds[j][1]))
 									end
 									self:hit(-offset, j)
 								end
 							end
-							if note[j][3] + offset < currentTime - data.od[#data.od - 1] then
+							if note[j].endTime + offset < currentTime - data.od[#data.od - 1] then
 								data.stats.combo = 0
 								data.stats.hits[6] = data.stats.hits[6] + 1
-								if data.beatmap.objects.missed[note[j][2]] == nil then
-									data.beatmap.objects.missed[note[j][2]] = {}
+								if data.beatmap.objects.missed[note[j].startTime] == nil then
+									data.beatmap.objects.missed[note[j].startTime] = {}
 								end
-								data.beatmap.objects.missed[note[j][2]][j] = note[j]
-								data.beatmap.objects.missed[note[j][2]][j][1][2] = 2
+								data.beatmap.objects.missed[note[j].startTime][j] = note[j]
+								data.beatmap.objects.missed[note[j].startTime][j].type[2] = 2
 								note[j] = nil
 								table.remove(data.beatmap.hitSounds[j], 1)
 							elseif data.keyhits[j] == 1 then
-								if math.abs(note[j][2] + offset - currentTime) <= data.od[#data.od - 1] then
-									note[j][1][2] = 1
+								if math.abs(note[j].startTime + offset - currentTime) <= data.od[#data.od - 1] then
+									note[j].type[2] = 1
 								else
 									data.stats.combo = 0
 									data.stats.hits[6] = data.stats.hits[6] + 1
-									note[j][1][2] = 2
+									note[j].type[2] = 2
 								end
 							else
 								update(j)
 								table.insert(data.objects[2], {type = "note", data = {
-									{drawable = drawable.slider, x = x, y = getY(note[j][3]) - drawable.note:getHeight()*scale.y/2, sx = scale.x, sy = (getY(note[j][2]) - getY(note[j][3]))/drawable.slider:getHeight()},
-									{drawable = drawable.note, x = x, y = getY(note[j][2]) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y},
-									{drawable = drawable.note, x = x, y = getY(note[j][3]) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
+									{drawable = drawable.slider, x = x, y = getY(note[j].endTime) - drawable.note:getHeight()*scale.y/2, sx = scale.x, sy = (getY(note[j].startTime) - getY(note[j].endTime))/drawable.slider:getHeight()},
+									{drawable = drawable.note, x = x, y = getY(note[j].startTime) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y},
+									{drawable = drawable.note, x = x, y = getY(note[j].endTime) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
 								}})
 							end
 						end
 						if note[j] ~= nil then
-							if note[j][1][2] == 1 then
-								if data.keyhits[j] == 0 and math.abs(note[j][3] + offset - currentTime) > data.od[#data.od - 1] and data.autoplay == 0 then
+							if note[j].type[2] == 1 then
+								if data.keyhits[j] == 0 and math.abs(note[j].endTime + offset - currentTime) > data.od[#data.od - 1] and data.autoplay == 0 then
 									data.stats.combo = 0
 									data.stats.hits[6] = data.stats.hits[6] + 1
-									note[j][1][2] = 2
-								elseif data.autoplay == 1 and note[j][3] + offset <= currentTime then
+									note[j].type[2] = 2
+								elseif data.autoplay == 1 and note[j].endTime + offset <= currentTime then
 									self:hit(-offset, j)
 									note[j] = nil
 									table.remove(data.beatmap.hitSounds[j], 1)
 									data.keyhits[j] = 0
-								elseif data.keyhits[j] == 0 and math.abs(note[j][3] + offset - currentTime) <= data.od[#data.od - 1] and data.autoplay == 0 then
-									self:hit(note[j][3] - currentTime, j)
+								elseif data.keyhits[j] == 0 and math.abs(note[j].endTime + offset - currentTime) <= data.od[#data.od - 1] and data.autoplay == 0 then
+									self:hit(note[j].endTime - currentTime, j)
 									note[j] = nil
 									table.remove(data.beatmap.hitSounds[j], 1)
 									data.keyhits[j] = 0
-								elseif data.keyhits[j] == 1 and note[j][3] + offset - currentTime <= -1 * data.od[#data.od - 2] and data.autoplay == 0 then
-									self:hit(note[j][3] - currentTime, j)
+								elseif data.keyhits[j] == 1 and note[j].endTime + offset - currentTime <= -1 * data.od[#data.od - 2] and data.autoplay == 0 then
+									self:hit(note[j].endTime - currentTime, j)
 									note[j] = nil
 									table.remove(data.beatmap.hitSounds[j], 1)
 									data.keyhits[j] = 0
 								else
 									update(j)
-									if note[j][2] + offset <= currentTime and note[j][3] + offset > currentTime then
-										note[j][2] = currentTime - offset
+									if note[j].startTime + offset <= currentTime and note[j].endTime + offset > currentTime then
+										note[j].startTime = currentTime - offset
 										table.insert(data.objects[2], {type = "note", data = {
-											{drawable = drawable.slider, x = x, y = getY(note[j][3]) - drawable.note:getHeight()*scale.y/2, sx = scale.x, sy = (getY(note[j][2]) - getY(note[j][3]))/drawable.slider:getHeight()},
+											{drawable = drawable.slider, x = x, y = getY(note[j].endTime) - drawable.note:getHeight()*scale.y/2, sx = scale.x, sy = (getY(note[j].startTime) - getY(note[j].endTime))/drawable.slider:getHeight()},
 											{drawable = drawable.note, x = x, y = data.height - hitPosition - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y},
-											{drawable = drawable.note, x = x, y = getY(note[j][3]) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
+											{drawable = drawable.note, x = x, y = getY(note[j].endTime) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
 										}})
-									elseif note[j][2] + offset > currentTime then
+									elseif note[j].startTime + offset > currentTime then
 										table.insert(data.objects[2], {type = "note", data = {
-											{drawable = drawable.slider, x = x, y = getY(note[j][3]) - drawable.note:getHeight()*scale.y/2, sx = scale.x, sy = (getY(note[j][2]) - getY(note[j][3]))/drawable.slider:getHeight()},
-											{drawable = drawable.note, x = x, y = getY(note[j][2]) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y},
-											{drawable = drawable.note, x = x, y = getY(note[j][3]) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
+											{drawable = drawable.slider, x = x, y = getY(note[j].endTime) - drawable.note:getHeight()*scale.y/2, sx = scale.x, sy = (getY(note[j].startTime) - getY(note[j].endTime))/drawable.slider:getHeight()},
+											{drawable = drawable.note, x = x, y = getY(note[j].startTime) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y},
+											{drawable = drawable.note, x = x, y = getY(note[j].endTime) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
 										}})
 									end
 								end
 							end
 						end
 						if note[j] ~= nil then
-							if note[j][1][2] == 2 then
-								if data.keylocks[j] == 0 and math.abs(note[j][3] + offset - currentTime) > data.od[#data.od - 1] then
+							if note[j].type[2] == 2 then
+								if data.keylocks[j] == 0 and math.abs(note[j].endTime + offset - currentTime) > data.od[#data.od - 1] then
 									data.stats.combo = 0
 									data.keyhits[j] = 0
 								end
-								if note[j][3] + offset <= currentTime - data.od[#data.od - 1] then
+								if note[j].endTime + offset <= currentTime - data.od[#data.od - 1] then
 									if data.keyhits[j] == 1 then
 										data.stats.hits[5] = data.stats.hits[5] + 1
 									end
-									if data.beatmap.objects.missed[note[j][2]] == nil then
-										data.beatmap.objects.missed[note[j][2]] = {}
+									if data.beatmap.objects.missed[note[j].startTime] == nil then
+										data.beatmap.objects.missed[note[j].startTime] = {}
 									end
-									data.beatmap.objects.missed[note[j][2]][j] = note[j]
-									data.beatmap.objects.missed[note[j][2]][j][1][2] = 2
+									data.beatmap.objects.missed[note[j].startTime][j] = note[j]
+									data.beatmap.objects.missed[note[j].startTime][j].type[2] = 2
 									note[j] = nil
 									table.remove(data.beatmap.hitSounds[j], 1)
 									data.keyhits[j] = 0
 								else
 									update(j)
 									table.insert(data.objects[2], {type = "note", data = {
-										{color = {255, 255, 255, 128}, drawable = drawable.slider, x = x, y = getY(note[j][3]) - drawable.note:getHeight()*scale.y/2, sx = scale.x, sy = (getY(note[j][2]) - getY(note[j][3]))/drawable.slider:getHeight()},
-										{color = {255, 255, 255, 128}, drawable = drawable.note, x = x, y = getY(note[j][2]) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y},
-										{color = {255, 255, 255, 128}, drawable = drawable.note, x = x, y = getY(note[j][3]) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
+										{color = {255, 255, 255, 128}, drawable = drawable.slider, x = x, y = getY(note[j].endTime) - drawable.note:getHeight()*scale.y/2, sx = scale.x, sy = (getY(note[j].startTime) - getY(note[j].endTime))/drawable.slider:getHeight()},
+										{color = {255, 255, 255, 128}, drawable = drawable.note, x = x, y = getY(note[j].startTime) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y},
+										{color = {255, 255, 255, 128}, drawable = drawable.note, x = x, y = getY(note[j].endTime) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
 									}})
 								end
 							end
@@ -325,24 +325,24 @@ local function getObjects(self)
 		if note ~= nil then
 			for j = 1, keymode do
 				if note[j] ~= nil then
-					if note[j][1][1] == 1 then
-						if getY(note[j][2]) > data.height then
+					if note[j].type[1] == 1 then
+						if getY(note[j].startTime) > data.height then
 							note[j] = nil
 						else
 							update(j)
 							table.insert(data.objects[2], {type = "note", data = {
-								{color = {255, 255, 255, 128}, drawable = drawable.note, x = x, y = getY(note[j][2]) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
+								{color = {255, 255, 255, 128}, drawable = drawable.note, x = x, y = getY(note[j].startTime) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
 							}})
 						end
-					elseif note[j][1][1] == 2 then
-						if getY(note[j][3]) > data.height then
+					elseif note[j].type[1] == 2 then
+						if getY(note[j].endTime) > data.height then
 							note[j] = nil
 						else
 							update(j)
 							table.insert(data.objects[2], {type = "note", data = {
-								{color = {255, 255, 255, 128}, drawable = drawable.slider, x = x, y = getY(note[j][3]) - drawable.note:getHeight()*scale.y/2, sx = scale.x, sy = (getY(note[j][2]) - getY(note[j][3]))/drawable.slider:getHeight()},
-								{color = {255, 255, 255, 128}, drawable = drawable.note, x = x, y = getY(note[j][2]) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y},
-								{color = {255, 255, 255, 128}, drawable = drawable.note, x = x, y = getY(note[j][3]) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
+								{color = {255, 255, 255, 128}, drawable = drawable.slider, x = x, y = getY(note[j].endTime) - drawable.note:getHeight()*scale.y/2, sx = scale.x, sy = (getY(note[j].startTime) - getY(note[j].endTime))/drawable.slider:getHeight()},
+								{color = {255, 255, 255, 128}, drawable = drawable.note, x = x, y = getY(note[j].startTime) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y},
+								{color = {255, 255, 255, 128}, drawable = drawable.note, x = x, y = getY(note[j].endTime) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
 							}})
 						end
 					end
