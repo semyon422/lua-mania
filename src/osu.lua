@@ -192,7 +192,7 @@ function osuClass.keyboard(self)
 						end
 					end
 					if data.beatmap.objects.current[keynumber] ~= nil then
-						self:hit(data.beatmap.objects.current[keynumber][2] - data.stats.currentTime, keynumber)
+						self:hit(data.beatmap.objects.current[keynumber].startTime - data.stats.currentTime, keynumber)
 					end
 				end
 				data.keylocks[keynumber] = 1

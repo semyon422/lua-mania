@@ -20,6 +20,7 @@ local function getHitObjects(fileLines, first, last, cache)
 		end
 	end
 	data.beatmap.info.keymode = 4
+	data.beatmap.info.sampleSet = "Drum"
 	
 	local getHitSound = require("src.converters.osu.getHitObjects.getHitSound")
 	local getTaikoColors = require("src.converters.osu.getHitObjects.getTaikoColors")
@@ -94,14 +95,6 @@ local function getHitObjects(fileLines, first, last, cache)
 		addition = 7
 	}
 	
-	local unknownSyntax = {
-		x = 1,
-		y = 2,
-		startTime = 3,
-		type = 4,
-		hitSound = 5
-	}
-	
 	for numberLine = first, last do
 		local line = fileLines[numberLine]
 		
@@ -112,18 +105,15 @@ local function getHitObjects(fileLines, first, last, cache)
 		
 		type = tonumber(raw[4])
 		
-		if type == 1 or type == 5 then
+		if bit.band(type, 1) == 1 then
 			type = {1, 0}
 			syntax = hitCircleSyntax
-		elseif type == 2 or type == 6 then
+		elseif bit.band(type, 2) == 2 then
 			type = {2, 0}
 			syntax = sliderSyntax
-		elseif type == 8 or type == 12 then
+		elseif bit.band(type, 8) == 8 then
 			type = {2, 0}
 			syntax = spinnerSyntax
-		else
-			type = {1, 0}
-			syntax = unknownSyntax
 		end
 		
 		local startTime = tonumber(raw[syntax.startTime])
@@ -163,7 +153,7 @@ local function getHitObjects(fileLines, first, last, cache)
 				table.insert(data.beatmap.hitSounds[key], {hitSound, volume})
 			elseif color == "y" then
 				local timingPoint = getTimingPoint(startTime)
-				for newStartTime = startTime, endTime, timingPoint.beatLength / 4 do
+				for newStartTime = startTime, endTime, timingPoint.beatLength / 2 do
 					newStartTime = math.ceil(newStartTime)
 					key = getKey("yellow")
 					if data.beatmap.objects.clean[newStartTime] == nil then
@@ -189,7 +179,7 @@ local function getHitObjects(fileLines, first, last, cache)
 				table.insert(data.beatmap.hitSounds[3], {hitSound, volume})
 			elseif color == "yy" then
 				local timingPoint = getTimingPoint(startTime)
-				for newStartTime = startTime, endTime, timingPoint.beatLength / 4 do
+				for newStartTime = startTime, endTime, timingPoint.beatLength / 2 do
 					newStartTime = math.ceil(newStartTime)
 					key1, key2 = getTwoKey()
 					if data.beatmap.objects.clean[newStartTime] == nil then

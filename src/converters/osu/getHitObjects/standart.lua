@@ -78,18 +78,15 @@ local function getHitObjects(fileLines, first, last, cache)
 		
 		type = tonumber(raw[4])
 		
-		if type == 1 or type == 5 then
+		if bit.band(type, 1) == 1 then
 			type = {1, 0}
 			syntax = hitCircleSyntax
-		elseif type == 2 or type == 6 then
+		elseif bit.band(type, 2) == 2 then
 			type = {2, 0}
 			syntax = sliderSyntax
-		elseif type == 8 or type == 12 then
+		elseif bit.band(type, 8) == 8 then
 			type = {2, 0}
 			syntax = spinnerSyntax
-		else
-			type = {2, 0}
-			syntax = sliderSyntax
 		end
 		
 		local startTime = tonumber(raw[syntax.startTime])
