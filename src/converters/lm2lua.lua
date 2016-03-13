@@ -54,9 +54,9 @@ local function lm2lua(self, cache)
 	local subTact = 0
 	local key = 1
 	local type = {1,0}
-	local time = 0
+	local startTime = 0
 	local lenght = 0
-	local endtime = 0
+	local endTime = 0
 	local hitSound = nil
 	local image = nil
 	local tempLine = {}
@@ -87,8 +87,8 @@ local function lm2lua(self, cache)
 			if tempLine[1] ~= nil then
 				subTact = tonumber(string.sub(tempLine[1], 1, -1))
 			end
-			time = math.floor(beatmap.timing.offset + (tact + subTact / beatmap.timing.beatDivisor) * 4 * beatTime)
-			beatmap.objects.clean[time] = {}
+			startTime = math.floor(beatmap.timing.offset + (tact + subTact / beatmap.timing.beatDivisor) * 4 * beatTime)
+			beatmap.objects.clean[startTime] = {}
 			for ikey = 1, #tempLine - 1 do
 				tempKey = explode(":", tempLine[ikey + 1])
 				if tempKey[1] ~= nil then
@@ -99,7 +99,7 @@ local function lm2lua(self, cache)
 				end
 				if tempKey[3] ~= nil then
 					lenght = tonumber(string.sub(tempKey[3], 1, -1))
-					endtime = math.floor(beatmap.timing.offset + (tact + subTact / beatmap.timing.beatDivisor + lenght / beatmap.timing.beatDivisor) * 4 * beatTime)
+					endTime = math.floor(beatmap.timing.offset + (tact + subTact / beatmap.timing.beatDivisor + lenght / beatmap.timing.beatDivisor) * 4 * beatTime)
 				end
 				if tempKey[4] ~= nil then
 					hitSound = string.sub(tempKey[4], 1, -1)
@@ -113,8 +113,8 @@ local function lm2lua(self, cache)
 				
 				
 				tempKey = {}
-				beatmap.objects.clean[time][key] = {type, time, endtime, image}
-				print(time .. " => " .. type[1])
+				beatmap.objects.clean[startTime][key] = {type, startTime, endTime, image}
+				print(startTime .. " => " .. type[1])
 				type = {1,0}
 			end
 		end

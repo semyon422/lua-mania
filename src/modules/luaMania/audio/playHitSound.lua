@@ -1,7 +1,7 @@
 --[[	lua-mania
 		Copyright (C) 2016 Semyon Jolnirov (semyon422)
 		This program licensed under the GNU GPLv3.	]]
-local function playHitsound(self, source)
+local function playHitsound(source)
 	for i,file in pairs(source[1]) do
 		local hitSound = love.audio.newSource(file)
 		local volume = 1
