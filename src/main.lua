@@ -7,7 +7,7 @@ function love.load()
 	luaMania = require("luaMania")
 	luaMania.load()
 	
-	love.mouse.setVisible(false)
+	--love.mouse.setVisible(false)
 end
 function love.update(dt)
 	luaMania.update()

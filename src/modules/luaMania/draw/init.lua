@@ -9,9 +9,11 @@ draw.allObjects = function()
 	local objects = luaMania.graphics.objects
 	
 	for layer = 1, #objects do
-		for index = 1, #objects[layer] do
-			draw[objects[layer][index].class](objects[layer][index])
-			objects[layer][index] = nil
+		if objects[layer] ~= nil then
+			for index = 1, #objects[layer] do
+				draw[objects[layer][index].class](objects[layer][index])
+				objects[layer][index] = nil
+			end
 		end
 	end
 end

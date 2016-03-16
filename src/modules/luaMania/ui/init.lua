@@ -2,8 +2,13 @@ local ui = {
 	state = "mainMenu",
 	mode = 0,
 	
+	states = {
+		mainMenu = require("luaMania.ui.states.mainMenu"),
+		songList = require("luaMania.ui.states.songList"),
+	},
+	
 	update = function()
-		require("luaMania.ui." .. luaMania.ui.state).update()
+		luaMania.ui.states[luaMania.ui.state].update()
 	end,
 	
 	songList = {
