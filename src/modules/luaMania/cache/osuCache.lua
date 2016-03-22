@@ -2,7 +2,7 @@
 		Copyright (C) 2016 Semyon Jolnirov (semyon422)
 		This program licensed under the GNU GPLv3.	]]
 local function osuCache(info)
-	cache = data.cache
+	cache = luaMania.data.cache
 	local raw = io.open("res/Songs/" .. info[1] .. "/" .. info[2], "r")
 	local rawTable = {}
 	for line in raw:lines() do

@@ -10,7 +10,7 @@ mainMenu.states = {
 	[2] = require("luaMania.ui.states.mainMenu.state2")
 }
 mainMenu.update = function()
-	if mainMenu.states[songList.state].actionState == 0 then
+	if mainMenu.states[mainMenu.state].actionState == 0 then
 		mainMenu.states[mainMenu.state].action(mainMenu.states[mainMenu.state].getButtons())
 	end
 	

@@ -6,7 +6,6 @@ local function fLoad()
 	osu = require("osu")
 	
 	luaMania.data = {
-		--keyboard = require(pathprefix .. "keyboard"),
 		play = 0,
 		beatradius = 1,
 		autoplay = 0,
@@ -31,7 +30,15 @@ local function fLoad()
 	
 	--luaMania.graphics.skin = luaMania.graphics.loadSkin(data.config.skinname)
 	--luaMania.graphics.skin.init()
-	--luaMania.data.cache = luaMania.cache.genCache()
+	luaMania.cache.generate()
+	
+	for submoduleIndex, submodule in pairs(luaMania) do
+		if type(submodule) == "table" and submodule.keyboard ~= nil then
+			for eventIndex, event in pairs(submodule.keyboard) do
+				table.insert(luaMania.keyboard.events, event)
+			end
+		end
+	end
 end
 
 return fLoad

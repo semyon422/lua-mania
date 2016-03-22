@@ -31,4 +31,29 @@ local ui = {
 	
 }
 
+ui.keyboard = {
+	{
+		keys = {"return"},
+		actionHit = function()
+			
+		end
+	},
+	{
+		keys = {"up"},
+		actionHit = function()
+			if ui.states.songList.cachePosition < #luaMania.data.cache then
+				ui.states.songList.cachePosition = ui.states.songList.cachePosition + 1
+			end
+		end
+	},
+	{
+		keys = {"down"},
+		actionHit = function()
+			if ui.states.songList.cachePosition > 1 then
+				ui.states.songList.cachePosition = ui.states.songList.cachePosition - 1
+			end
+		end
+	}
+}
+
 return ui

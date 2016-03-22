@@ -3,18 +3,31 @@
 		This program licensed under the GNU GPLv3.	]]
 local songList = {}
 
-songList.state = 1
-
-songList.states = {
-	[1] = require("luaMania.ui.states.songList.state1")
-}
+songList.cachePosition = 1
 
 songList.update = function()
-	if songList.states[songList.state].actionState == 0 then
-		songList.states[songList.state].action(songList.states[songList.state].getButtons())
-	end
+	local buttons = {}
+		for i = 1, #luaMania.data.cache do
+			if i == songList.cachePosition then
+				table.insert(buttons, {objects = {
+						[2] = {{
+								class = "text",
+								align = "left",
+								text = luaMania.data.cache[i].title,
+								color = {223, 196, 125}
+							}}}})
+			else
+				table.insert(buttons, {objects = {
+						[2] = {{
+								class = "text",
+								align = "left",
+								y = 100,
+								text = luaMania.data.cache[i].title,
+								color = {223, 196, 125}
+							}}}})
+			end
+		end
 	
-	local buttons = songList.states[songList.state].getButtons()
 	for buttonIndex, button in pairs(buttons) do
 		for layerIndex, layer in pairs(button.objects) do
 			for objectIndex, object in pairs(layer) do
@@ -24,7 +37,11 @@ songList.update = function()
 		end
 	end
 	luaMania.graphics.objects[1] = luaMania.graphics.objects[1] or {}
-	table.insert(luaMania.graphics.objects[1], songList.states[songList.state].getBackground())
+	table.insert(luaMania.graphics.objects[1], {
+		class = "rectangle",
+		w = love.graphics.getWidth(),
+		h = love.graphics.getHeight(),
+		color = {47, 47, 47}})
 end
 
 return songList
