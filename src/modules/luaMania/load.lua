@@ -3,7 +3,11 @@ local function fLoad()
 	lm = love.mouse
 	lt = love.timer
 	
-	osu = require("osu")
+	luaMania.games = {}
+	
+	luaMania.games.osu = require("osu")
+	
+	luaMania.games.current = "osu"
 	
 	luaMania.data = {
 		play = 0,

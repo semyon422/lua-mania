@@ -14,7 +14,7 @@ state2.getButtons = function()
 			x = love.graphics.getWidth()/2 + 1.1 * radius,
 			y = love.graphics.getHeight()/2 - 1.1 * radius,
 			r = radius,
-			action = function() luaMania.ui.state = "songList" end,
+			action = function() luaMania.ui.state = "mapList" end,
 			objects = {
 				[2] = {
 					{

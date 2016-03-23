@@ -1,41 +1,23 @@
-local ui = {
-	state = "mainMenu",
-	mode = 0,
-	
-	states = {
-		mainMenu = require("luaMania.ui.states.mainMenu"),
-		songList = require("luaMania.ui.states.songList"),
-	},
-	
-	update = function()
-		luaMania.ui.states[luaMania.ui.state].update()
-	end,
-	
-	songList = {
-		playbutton = {
-			radius = 1/6 * love.graphics.getHeight(),
-			fontsize = love.graphics.getHeight() / 18,
-			font = love.graphics.newFont("res/fonts/OpenSans/OpenSansLight/OpenSansLight.ttf", love.graphics.getHeight() / 18),
-			x = love.graphics.getWidth() / 6,
-			y = love.graphics.getHeight() / 2,
-			scale = 1
-		},
-		scroll = 0,
-		height = 1/8,
-		offset = 16,
-		buttonCount = 5,
-		fontsize = love.graphics.getHeight() / 27,
-		font = love.graphics.newFont("res/fonts/OpenSans/OpenSansLight/OpenSansLight.ttf", love.graphics.getHeight() / 27),
-		current = 1,
-	},
-	
+local ui = {}
+
+ui.state = "mainMenu"
+ui.mode = 0
+
+ui.states = {
+	mainMenu = require("luaMania.ui.states.mainMenu"),
+	mapList = require("luaMania.ui.states.mapList"),
+	playing = require("luaMania.ui.states.playing")
 }
+
+ui.update = function()
+	ui.states[ui.state].update()
+end
 
 ui.keyboard = {
 	{
 		keys = {"return"},
 		actionHit = function()
-			
+			luaMania.ui.state = "playing"
 		end
 	},
 	{
