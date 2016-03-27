@@ -3,17 +3,19 @@
 		This program licensed under the GNU GPLv3.	]]
 local playing = {}
 
-playing.load = function()
-	luaMania.map = luaMania.games[luaMania.games.current].beatmap.import(luaMania.data.cache[1].pathFile)
+playing.load = function(position)
+	luaMania.state.map = luaMania.games.osu.beatmap.import(luaMania.data.cache[luaMania.state.cachePosition].pathFile)
 end
 playing.isLoaded = false
 
 playing.update = function()
+	luaMania.state.cachePosition = 1
 	if not playing.isLoaded then
 		playing.isLoaded = true
-		playing.load()
+		playing.load(luaMania.state.cachePosition)
+		luaMania.modes[luaMania.modes.current].convert()
 	end
-	luaMania.games[luaMania.games.current].getObjects()
+	luaMania.modes[luaMania.modes.current].getObjects()
 	
 	luaMania.graphics.objects[1] = luaMania.graphics.objects[1] or {}
 	table.insert(luaMania.graphics.objects[1], {

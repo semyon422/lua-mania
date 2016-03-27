@@ -3,6 +3,8 @@ local ui = {}
 ui.state = "mainMenu"
 ui.mode = 0
 
+ui.skin = require("res.skin")
+
 ui.states = {
 	mainMenu = require("luaMania.ui.states.mainMenu"),
 	mapList = require("luaMania.ui.states.mapList"),
@@ -23,16 +25,16 @@ ui.keyboard = {
 	{
 		keys = {"up"},
 		actionHit = function()
-			if ui.states.songList.cachePosition < #luaMania.data.cache then
-				ui.states.songList.cachePosition = ui.states.songList.cachePosition + 1
+			if ui.states.mapList.cachePosition < #luaMania.data.cache then
+				ui.states.mapList.cachePosition = ui.states.mapList.cachePosition + 1
 			end
 		end
 	},
 	{
 		keys = {"down"},
 		actionHit = function()
-			if ui.states.songList.cachePosition > 1 then
-				ui.states.songList.cachePosition = ui.states.songList.cachePosition - 1
+			if ui.states.mapList.cachePosition > 1 then
+				ui.states.mapList.cachePosition = ui.states.mapList.cachePosition - 1
 			end
 		end
 	}
