@@ -3,60 +3,83 @@ local convert = function()
 	
 	newMap.info = newMap.info or {}
 	
-	newMap.info.audioFilename = luaMania.state.map.General["AudioFilename"]
-	newMap.info.audioLeadIn = luaMania.state.map.General["AudioLeadIn"]
-	newMap.info.previewTime = luaMania.state.map.General["PreviewTime"]
-	newMap.info.sampleSet = luaMania.state.map.General["SampleSet"]
-	newMap.info.mode = luaMania.state.map.General["Mode"]
+	newMap.info.audioFilename = luaMania.map.General["AudioFilename"]
+	newMap.info.audioLeadIn = luaMania.map.General["AudioLeadIn"]
+	newMap.info.previewTime = luaMania.map.General["PreviewTime"]
+	newMap.info.sampleSet = luaMania.map.General["SampleSet"]
+	newMap.info.mode = luaMania.map.General["Mode"]
 	
-	newMap.info.title = luaMania.state.map.Metadata["TitleUnicode"]
-	newMap.info.artist = luaMania.state.map.Metadata["ArtistUnicode"]
-	newMap.info.creator = luaMania.state.map.Metadata["Creator"]
-	newMap.info.version = luaMania.state.map.Metadata["Version"]
-	newMap.info.source = luaMania.state.map.Metadata["Source"]
-	newMap.info.tags = luaMania.state.map.Metadata["Tags"]
+	newMap.info.title = luaMania.map.Metadata["TitleUnicode"]
+	newMap.info.artist = luaMania.map.Metadata["ArtistUnicode"]
+	newMap.info.creator = luaMania.map.Metadata["Creator"]
+	newMap.info.version = luaMania.map.Metadata["Version"]
+	newMap.info.source = luaMania.map.Metadata["Source"]
+	newMap.info.tags = luaMania.map.Metadata["Tags"]
 	
-	newMap.info.keymode = luaMania.state.map.Difficulty["CircleSize"]
-	newMap.info.overallDifficulty = luaMania.state.map.Difficulty["OverallDifficulty"]
-	newMap.info.sliderMultiplier = luaMania.state.map.Difficulty["SliderMultiplier"]
+	newMap.info.keymode = luaMania.map.Difficulty["CircleSize"]
+	newMap.info.overallDifficulty = luaMania.map.Difficulty["OverallDifficulty"]
+	newMap.info.sliderMultiplier = luaMania.map.Difficulty["SliderMultiplier"]
 	
 	newMap.timing = newMap.timing or {all = {}}
-	for timingPointIndex = 1, #luaMania.state.map.TimingPoints do
-		local oldTimingPoint = luaMania.state.map.TimingPoints[timingPointIndex]
+	for timingPointIndex = 1, #luaMania.map.TimingPoints do
+		local oldTimingPoint = luaMania.map.TimingPoints[timingPointIndex]
 		local timingPoint = {}
 		
-		timingPoint.offset = oldTimingPoint.offset
-		timingPoint.beatLength = oldTimingPoint.beatLength
-		timingPoint.timingSignature = oldTimingPoint.timingSignature
+		timingPoint.startTime = oldTimingPoint.offset
+		if oldTimingPoint.timingChange == 0 then
+			timingPoint.beatLength = newMap.timing.all[#newMap.timing.all].beatLength
+			timingPoint.velocity = -100 / oldTimingPoint.beatLength
+		else
+			timingPoint.beatLength = oldTimingPoint.beatLength
+			timingPoint.velocity = 1
+		end
+		timingPoint.signature = oldTimingPoint.timingSignature
 		timingPoint.sampleSetId = oldTimingPoint.sampleSetId
 		timingPoint.customSampleIndex = oldTimingPoint.customSampleIndex
-		timingPoint.sampleVolume = oldTimingPoint.sampleVolume
-		timingPoint.timingChange = oldTimingPoint.timingChange
-		timingPoint.kiaiTimeActive = oldTimingPoint.kiaiTimeActive
+		timingPoint.volume = oldTimingPoint.sampleVolume
+		timingPoint.kiai = oldTimingPoint.kiaiTimeActive
 		
+		if #newMap.timing.all ~= 0 then
+			newMap.timing.all[#newMap.timing.all].endTime = timingPoint.startTime - 1
+		end
 		table.insert(newMap.timing.all, timingPoint)
 	end
+	newMap.timing.all[#newMap.timing.all].endTime = 3600000
 	
 	local cache = luaMania.data.cache[luaMania.state.cachePosition]
-	newMap.objects = newMap.objects or {clean = {}, current = {}, missed = {}, count = 0}
+	newMap.objects = newMap.objects or {clean = {}, current = {}, missed = {}, hitSounds = {}, count = 0}
 	newMap.hitSounds = {}
 	newMap.path = cache.path
 	newMap.pathFile = cache.pathFile
 	newMap.pathAudio = cache.pathAudio
 	newMap.audio = love.audio.newSource(cache.pathAudio)
-	for hitObjectIndex = 1, #luaMania.state.map.HitObjects do
-		local oldHitObject = luaMania.state.map.HitObjects[hitObjectIndex]
+	local interval = 512 / newMap.info.keymode
+	for hitObjectIndex = 1, #luaMania.map.HitObjects do
+		local oldHitObject = luaMania.map.HitObjects[hitObjectIndex]
 		local hitObject = {}
 		
-		hitObject.x = hitObject.x
-		hitObject.y = hitObject.x
-		hitObject.type = hitObject.x
-		hitObject.startTime = hitObject.x
-		hitObject.hitSound = hitObject.x
+		hitObject.key = 0
+		for newKey = 1, newMap.info.keymode do
+			if oldHitObject.x >= interval * (newKey - 1) and oldHitObject.x < newKey * interval then
+				hitObject.key = newKey
+			end
+		end
 		
-		table.insert(newMap.objects.clean, hitObject)
+		if bit.band(oldHitObject.type, 1) == 1 then
+			hitObject.type = 1
+		else
+			hitObject.type = 2
+		end
+		hitObject.state = 0
+		
+		hitObject.startTime = oldHitObject.startTime
+		hitObject.endTime = oldHitObject.endTime
+		
+		newMap.objects.clean[hitObject.startTime] = newMap.objects.clean[hitObject.startTime] or {}
+		newMap.objects.clean[hitObject.startTime][hitObject.key] = newMap.objects.clean[hitObject.startTime][hitObject.key] or {}
+		newMap.objects.clean[hitObject.startTime][hitObject.key] = hitObject
 	end
-	
+	luaMania.map = newMap
 end
 
 return convert

@@ -4,7 +4,7 @@
 local playing = {}
 
 playing.load = function(position)
-	luaMania.state.map = luaMania.games.osu.beatmap.import(luaMania.data.cache[luaMania.state.cachePosition].pathFile)
+	luaMania.map = luaMania.games.osu.beatmap.import(luaMania.data.cache[luaMania.state.cachePosition].pathFile)
 end
 playing.isLoaded = false
 

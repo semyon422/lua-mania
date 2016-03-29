@@ -2,7 +2,7 @@
 		Copyright (C) 2016 Semyon Jolnirov (semyon422)
 		This program licensed under the GNU GPLv3.	]]
 local function getObjects()
-	local beatmap = luaMania.state.map
+	local beatmap = luaMania.map
 	local currentTime = 0
 	local skin = luaMania.ui.skin
 	local offset = 0
@@ -12,8 +12,8 @@ local function getObjects()
 	
 	local columns = {}
 	for i = 1, keymode do
-		local column = skin.modes.mania.keymodes[keymode][key]
-		local x = mania.columnStart
+		local column = skin.modes.mania.keymodes[keymode][i]
+		local x = skin.modes.mania.columnStart
 		for j = 1, i - 1 do
 			x = x + column.width
 		end
@@ -27,55 +27,81 @@ local function getObjects()
 		return love.graphics.getHeight() - hitPosition
 	end
 	
-	for index,point in pairs(luaMania.map.timing.all) do
-		if point.startTime <= currentTime then
-			if luaMania.map.timing.current ~= nil then
-				if luaMania.map.timing.current.startTime <= currentTime and point.startTime <= currentTime and luaMania.map.timing.current.startTime < point.startTime then
-					luaMania.map.timing.current = point
-					data.stats.speed = point.velocity
-				end
-			else
-				luaMania.map.timing.current = point
-				data.stats.speed = point.velocity
-			end
-		end
-	end
+	-- for index,point in pairs(luaMania.map.timing.all) do
+		-- if point.startTime <= currentTime then
+			-- if luaMania.map.timing.current ~= nil then
+				-- if luaMania.map.timing.current.startTime <= currentTime and point.startTime <= currentTime and luaMania.map.timing.current.startTime < point.startTime then
+					-- luaMania.map.timing.current = point
+					-- data.stats.speed = point.velocity
+				-- end
+			-- else
+				-- luaMania.map.timing.current = point
+				-- data.stats.speed = point.velocity
+			-- end
+		-- end
+	-- end
 	
-	local limit = math.ceil(currentTime + love.graphics.getHeight() / (data.config.speed * 0.1))
-	for notestartTime = currentTime - data.od[#data.od - 1], limit do --HitObjects
-		continue = false
-		note = luaMania.map.objects.clean[notestartTime]
-		if note ~= nil then
+	local limit = math.ceil(currentTime + love.graphics.getHeight() / (luaMania.config.speed * 0.1))
+	for objectTime = currentTime - luaMania.config.hitTiming[#luaMania.config.hitTiming - 1], limit do --HitObjects
+		local continue = false
+		if luaMania.map.objects.clean[objectTime] ~= nil then
 			for j = 1, keymode do
-				if note[j] ~= nil then
-					if getY(notestartTime) + drawable.note:getHeight()*scale.y < 0 then
+				local note = luaMania.map.objects.clean[objectTime][j]
+				if note ~= nil then
+					if getY(objectTime) < 0 then
 						continue = true
 						break
 					end
-					if note[j].type[1] == 1 then
-						if note[j].type[2] == 0 then
-							if notestartTime + offset <= currentTime + data.od[#data.od] and notestartTime + offset > currentTime - data.od[#data.od - 1] and luaMania.map.objects.current[j] == nil then
-								luaMania.map.objects.current[j] = note[j]
-								note[j] = nil
+					if note.type == 1 then
+						if note.state == 0 then
+							if objectTime + offset <= currentTime + luaMania.config.hitTiming[#luaMania.config.hitTiming] and objectTime + offset > currentTime - luaMania.config.hitTiming[#luaMania.config.hitTiming - 1] and luaMania.map.objects.current[j] == nil then
+								luaMania.map.objects.current[j] = note
+								note = nil
 							else
-								update(j, note[j])
-								table.insert(data.objects[2], {type = "note", data = {
-									{color = note[j].color, drawable = drawable.note, x = x, y = getY(note[j].startTime) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
-								}})
+								table.insert(luaMania.graphics.objects[2], {
+									class = "drawable",
+									color = note.color,
+									drawable = columns[note.key].column.note[note.type].drawable,
+									x = columns[note.key].x,
+									y = getY(note.startTime),
+									sx = columns[note.key].column.note[note.type].sx,
+									sy = columns[note.key].column.note[note.type].sy
+								})
 							end
 						end
-					elseif note[j].type[1] == 2 then
-						if note[j].type[2] == 0 then
-							if notestartTime + offset <= currentTime + data.od[#data.od] and notestartTime + offset > currentTime - data.od[#data.od - 1] and luaMania.map.objects.current[j] == nil then
-								luaMania.map.objects.current[j] = note[j]
-								note[j] = nil
+					elseif note.type == 2 then
+						if note.state == 0 then
+							if objectTime + offset <= currentTime + luaMania.config.hitTiming[#luaMania.config.hitTiming] and objectTime + offset > currentTime - luaMania.config.hitTiming[#luaMania.config.hitTiming - 1] and luaMania.map.objects.current[j] == nil then
+								luaMania.map.objects.current[j] = note
+								note = nil
 							else
-								update(j, note[j])
-								table.insert(data.objects[2], {type = "note", data = {
-									{color = note[j].color, drawable = drawable.slider, x = x, y = getY(note[j].endTime) - drawable.note:getHeight()*scale.y/2, sx = scale.x, sy = (getY(note[j].startTime) - getY(note[j].endTime))/drawable.slider:getHeight()},
-									{color = note[j].color, drawable = drawable.note, x = x, y = getY(note[j].startTime) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y},
-									{color = note[j].color, drawable = drawable.note, x = x, y = getY(note[j].endTime) - drawable.note:getHeight()*scale.y, sx = scale.x, sy = scale.y}
-								}})
+								table.insert(luaMania.graphics.objects[2], {
+									class = "drawable",
+									color = note.color,
+									drawable = columns[note.key].column.note[note.type].drawable,
+									x = columns[note.key].x,
+									y = getY(note.startTime),
+									sx = columns[note.key].column.note[note.type].sx,
+									sy = columns[note.key].column.note[note.type].sy
+								})
+								table.insert(luaMania.graphics.objects[2], {
+									class = "drawable",
+									color = note.color,
+									drawable = columns[note.key].column.note[note.type].drawable,
+									x = columns[note.key].x,
+									y = getY(note.startTime),
+									sx = columns[note.key].column.note[1].sx,
+									sy = columns[note.key].column.note[1].sy
+								})
+								table.insert(luaMania.graphics.objects[2], {
+									class = "drawable",
+									color = note.color,
+									drawable = columns[note.key].column.note[note.type].drawable,
+									x = columns[note.key].x,
+									y = getY(note.endTime),
+									sx = columns[note.key].column.note[1].sx,
+									sy = columns[note.key].column.note[1].sy
+								})
 							end
 						end
 					end
@@ -93,7 +119,7 @@ local function getObjects()
 		end
 		coveerWidth = coveerWidth + ColumnWidth[i] + ColumnLineWidth[i + 1]
 		
-		table.insert(data.objects[1], {
+		table.insert(luaMania.graphics.objects[1], {
 			type = "rectangle",
 			data = {
 				preset = "maniaColumn",
@@ -102,7 +128,7 @@ local function getObjects()
 				w = globalscale * ColumnWidth[i],
 			}
 		})
-		table.insert(data.objects[1], {
+		table.insert(luaMania.graphics.objects[1], {
 			type = "rectangle",
 			data = {
 				preset = "maniaColumn",
@@ -112,7 +138,7 @@ local function getObjects()
 			}
 		})
 	end
-	table.insert(data.objects[1], {
+	table.insert(luaMania.graphics.objects[1], {
 		type = "rectangle",
 		data = {
 			preset = "maniaColumn",

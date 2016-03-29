@@ -6,7 +6,8 @@ local config = {
 	hitPosition = 100,
 	pitch = 1,
 	fullscreen = false,
-	skinPath = "res/Skins/skin-1"
+	skinPath = "res/Skins/skin-1",
+	hitTiming = {16,32,64,128}
 }
 
 return config
