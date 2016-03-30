@@ -10,6 +10,9 @@ luaMania.modes = require("luaMania.modes")
 luaMania.load = require("luaMania.load")
 luaMania.update = require("luaMania.update")
 luaMania.draw = require("luaMania.draw") -- OK
-luaMania.state = {}
+luaMania.state = {
+	cachePosition = 1,
+	stats = {}
+}
 
 return luaMania

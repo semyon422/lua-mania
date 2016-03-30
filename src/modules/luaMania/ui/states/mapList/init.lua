@@ -1,19 +1,17 @@
 --[[	lua-mania
 		Copyright (C) 2016 Semyon Jolnirov (semyon422)
 		This program licensed under the GNU GPLv3.	]]
-local songList = {}
+local mapList = {}
 
-songList.cachePosition = 1
-
-songList.update = function()
+mapList.update = function()
 	local buttons = {}
 		for i = 1, #luaMania.data.cache do
-			if i == songList.cachePosition then
+			if i == luaMania.state.cachePosition then
 				table.insert(buttons, {objects = {
 						[2] = {{
 								class = "text",
 								align = "left",
-								text = luaMania.data.cache[i].title,
+								text = luaMania.data.cache[i].title .. " - " .. luaMania.data.cache[i].version,
 								color = {223, 196, 125}
 							}}}})
 			else
@@ -44,4 +42,4 @@ songList.update = function()
 		color = {47, 47, 47}})
 end
 
-return songList
+return mapList

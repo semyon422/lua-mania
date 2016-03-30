@@ -13,7 +13,6 @@ end
 playing.isLoaded = false
 
 playing.update = function()
-	luaMania.state.cachePosition = 1
 	if not playing.isLoaded then
 		playing.isLoaded = true
 		playing.load(luaMania.state.cachePosition)

@@ -1,4 +1,18 @@
 local function text(source)
+	if source.object then
+		source.x = source.object.x
+		source.y = source.object.y
+		source.sx = source.object.sx
+		source.sy = source.object.sy
+		source.kx = source.object.kx
+		source.ky = source.object.ky
+		source.r = source.object.r
+		source.w = source.object.w
+		source.h = source.object.h
+		source.color = source.object.color
+		source.alpha = source.object.alpha
+		source.text = source.object.text
+	end
 	source.x = tonumber(source.x) or 0
 	source.y = tonumber(source.y) or 0
 	source.limit = tonumber(source.limit) or love.graphics.getWidth()

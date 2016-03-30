@@ -19,22 +19,30 @@ ui.keyboard = {
 	{
 		keys = {"return"},
 		actionHit = function()
-			luaMania.ui.state = "playing"
+			if luaMania.ui.state == "mapList" then
+				luaMania.ui.state = "playing"
+			elseif luaMania.ui.state == "mainMenu" then
+				luaMania.ui.state = "mapList"
+			end
 		end
 	},
 	{
 		keys = {"up"},
 		actionHit = function()
-			if ui.states.mapList.cachePosition < #luaMania.data.cache then
-				ui.states.mapList.cachePosition = ui.states.mapList.cachePosition + 1
+			if luaMania.ui.state == "mapList" then
+				if luaMania.state.cachePosition < #luaMania.data.cache then
+					luaMania.state.cachePosition = luaMania.state.cachePosition + 1
+				end
 			end
 		end
 	},
 	{
 		keys = {"down"},
 		actionHit = function()
-			if ui.states.mapList.cachePosition > 1 then
-				ui.states.mapList.cachePosition = ui.states.mapList.cachePosition - 1
+			if luaMania.ui.state == "mapList" then
+				if luaMania.state.cachePosition > 1 then
+					luaMania.state.cachePosition = luaMania.state.cachePosition - 1
+				end
 			end
 		end
 	}

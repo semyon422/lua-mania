@@ -1,4 +1,11 @@
 local function circle(source)
+	if source.object then
+		source.x = source.object.x
+		source.y = source.object.y
+		source.r = source.object.r
+		source.color = source.object.color
+		source.alpha = source.object.alpha
+	end
 	source.type = source.type or "fill"
 	source.x = tonumber(source.x) or 0
 	source.y = tonumber(source.y) or 0

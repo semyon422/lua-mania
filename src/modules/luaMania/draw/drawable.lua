@@ -1,4 +1,13 @@
 local function drawable(source)
+	if source.object then
+		source.x = source.object.x
+		source.y = source.object.y
+		source.r = source.object.r
+		source.sx = source.object.sx
+		source.sy = source.object.sy
+		source.color = source.object.color
+		source.alpha = source.object.alpha
+	end
 	source.x = tonumber(source.x) or 0
 	source.y = tonumber(source.y) or 0
 	source.r = tonumber(source.r) or 0
