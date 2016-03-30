@@ -4,7 +4,7 @@ local graphics = {
 		x = 0,
 		y = 0
 	},
-	objects = {},
+	objects = {{},{},{},{},{},{},{},{},{}},
 	fonts = require("luaMania.graphics.fonts"),
 	printDebugInfo = require("luaMania.graphics.printDebugInfo"),
 	update = function(source)

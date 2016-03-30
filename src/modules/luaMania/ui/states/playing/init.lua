@@ -5,6 +5,10 @@ local playing = {}
 
 playing.load = function(position)
 	luaMania.map = luaMania.games.osu.beatmap.import(luaMania.data.cache[luaMania.state.cachePosition].pathFile)
+	luaMania.modes[luaMania.modes.current].convert()
+	luaMania.audio.soundData = love.sound.newSoundData(luaMania.map.pathAudio)
+	luaMania.audio.source = love.audio.newSource(luaMania.audio.soundData)
+	luaMania.audio.source:play()
 end
 playing.isLoaded = false
 
@@ -13,7 +17,6 @@ playing.update = function()
 	if not playing.isLoaded then
 		playing.isLoaded = true
 		playing.load(luaMania.state.cachePosition)
-		luaMania.modes[luaMania.modes.current].convert()
 	end
 	luaMania.modes[luaMania.modes.current].getObjects()
 	
