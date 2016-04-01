@@ -40,6 +40,7 @@ local function fLoad()
 		if type(submodule) == "table" and submodule.keyboard ~= nil then
 			for eventIndex, event in pairs(submodule.keyboard) do
 				table.insert(luaMania.keyboard.events, event)
+				
 			end
 		end
 	end

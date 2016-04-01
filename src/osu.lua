@@ -12,46 +12,6 @@ end
 
 osuClass.printDebugInfo = require "src.functions.printDebugInfo"
 
-function osuClass.hit(self, ms, key)
-	local trueMs = ms + data.config.offset
-	local beatmap = data.beatmap
-	local currentTime = data.stats.currentTime
-	local offset = data.config.offset
-	if data.beatmap.objects.current[key].type[1] == 2 and data.beatmap.objects.current[key].type[2] == 2 and data.beatmap.objects.current[key].startTime + offset <= currentTime + data.od[#data.od] and data.beatmap.objects.current[key].startTime + offset > currentTime - data.od[#data.od - 1] then
-	
-	else
-		for i = 1, #data.od do
-			if math.abs(trueMs) <= data.od[i] then 
-				data.stats.lastHit = i
-				data.stats.hits[i] = data.stats.hits[i] + 1
-				if i == #data.od then data.stats.combo = 0 end
-				break
-			end
-		end
-	end
-	if math.abs(trueMs) <= data.od[#data.od] then 
-		if data.stats.averageMismatch.count >= data.stats.averageMismatch.maxCount then
-			data.stats.averageMismatch.value =  math.floor((data.stats.averageMismatch.value * (data.stats.averageMismatch.count - 1) + ms) / (data.stats.averageMismatch.count))
-		else
-			data.stats.averageMismatch.value = math.floor((data.stats.averageMismatch.value * data.stats.averageMismatch.count + ms) / (data.stats.averageMismatch.count + 1))
-			data.stats.averageMismatch.count = data.stats.averageMismatch.count + 1
-		end
-		
-		--data.config.offset = -1 * data.stats.averageMismatch.value
-		table.insert(data.stats.mismatch, trueMs)
-		
-		data.stats.combo = data.stats.combo + 1
-		if data.stats.maxcombo < data.stats.combo then
-			data.stats.maxcombo = data.stats.combo
-		end
-		data.keyhits[key] = 1
-	end
-	if data.beatmap.objects.current[key].type[1] == 2 then
-		if data.beatmap.objects.current[key].startTime < data.stats.currentTime - data.od[#data.od - 1] and data.beatmap.objects.current[key].endTime > data.stats.currentTime + data.od[#data.od - 1] then
-			data.keyhits[key] = 1
-		end
-	end
-end
 
 function osuClass.keyboard(self)
 	local dt = data.dt

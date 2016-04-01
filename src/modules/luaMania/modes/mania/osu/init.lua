@@ -79,6 +79,16 @@ local convert = function()
 		newMap.objects.clean[hitObject.startTime][hitObject.key] = newMap.objects.clean[hitObject.startTime][hitObject.key] or {}
 		newMap.objects.clean[hitObject.startTime][hitObject.key] = hitObject
 	end
+	
+	newMap.stats = {
+		hits = {},
+		combo = {
+			current = 0,
+			max = 0
+		},
+		currentTime = -newMap.info.audioLeadIn,
+		startTime = love.timer.getTime()
+	}
 	luaMania.map = newMap
 end
 

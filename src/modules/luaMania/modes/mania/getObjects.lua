@@ -3,11 +3,11 @@
 		This program licensed under the GNU GPLv3.	]]
 local function getObjects()
 	local beatmap = luaMania.map
-	local currentTime = math.floor(luaMania.audio.source:tell() * 1000)
+	local currentTime = luaMania.map.stats.currentTime
 	local skin = luaMania.ui.skin
-	local offset = 0
-	local hitPosition = 100
-	local noteLayer = 3
+	local offset = luaMania.config.offset
+	local hitPosition = luaMania.config.hitPosition
+	local noteLayer = luaMania.config.noteLayer
 	
 	local oClean = luaMania.map.objects.clean
 	local oCurrent = luaMania.map.objects.current

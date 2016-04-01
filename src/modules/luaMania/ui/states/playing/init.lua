@@ -3,19 +3,10 @@
 		This program licensed under the GNU GPLv3.	]]
 local playing = {}
 
-playing.load = function(position)
-	luaMania.map = luaMania.games.osu.beatmap.import(luaMania.data.cache[luaMania.state.cachePosition].pathFile)
-	luaMania.modes[luaMania.modes.current].convert()
-	luaMania.audio.soundData = love.sound.newSoundData(luaMania.map.pathAudio)
-	luaMania.audio.source = love.audio.newSource(luaMania.audio.soundData)
-	luaMania.audio.source:play()
-end
-playing.isLoaded = false
-
 playing.update = function()
-	if not playing.isLoaded then
-		playing.isLoaded = true
-		playing.load(luaMania.state.cachePosition)
+	if not luaMania.modes[luaMania.modes.current].isLoaded then
+		luaMania.modes[luaMania.modes.current].isLoaded = true
+		luaMania.modes[luaMania.modes.current].load()
 	end
 	luaMania.modes[luaMania.modes.current].getObjects()
 	

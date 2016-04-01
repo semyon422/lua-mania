@@ -40,6 +40,40 @@ mapList.update = function()
 		w = love.graphics.getWidth(),
 		h = love.graphics.getHeight(),
 		color = {47, 47, 47}})
+
+	table.insert(luaMania.keyboard.events,
+	{
+		keys = {"return"},
+		actionHit = function()
+			if luaMania.ui.state == "mapList" then
+				luaMania.ui.state = "playing"
+			elseif luaMania.ui.state == "mainMenu" then
+				luaMania.ui.state = "mapList"
+			end
+		end
+	})
+	table.insert(luaMania.keyboard.events,
+	{
+		keys = {"up"},
+		actionHit = function()
+			if luaMania.ui.state == "mapList" then
+				if luaMania.state.cachePosition < #luaMania.data.cache then
+					luaMania.state.cachePosition = luaMania.state.cachePosition + 1
+				end
+			end
+		end
+	})
+	table.insert(luaMania.keyboard.events,
+	{
+		keys = {"down"},
+		actionHit = function()
+			if luaMania.ui.state == "mapList" then
+				if luaMania.state.cachePosition > 1 then
+					luaMania.state.cachePosition = luaMania.state.cachePosition - 1
+				end
+			end
+		end
+	})
 end
 
 return mapList

@@ -31,6 +31,7 @@ keyboard.update = function()
 			end
 		end
 	end
+	keyboard.events = {}
 end
 
 return keyboard

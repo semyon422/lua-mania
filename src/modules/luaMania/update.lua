@@ -1,8 +1,9 @@
 local function update()
-	luaMania.ui.update()
-	luaMania.graphics.update()
-	luaMania.audio.update()
-	luaMania.keyboard.update()
+	for submoduleIndex, submodule in pairs(luaMania) do
+		if type(submodule) == "table" and type(submodule.update) == "function" then
+			submodule.update()
+		end
+	end
 end
 
 return update
