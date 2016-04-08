@@ -1,8 +1,8 @@
 local hit = function(mismatch, key)
 	print(mismatch, key)
-	local trueMismatch = mismatch + luaMania.config.offset
-	local currentTime = luaMania.map.stats.currentTime
 	local offset = luaMania.config.offset
+	local trueMismatch = mismatch + offset
+	local currentTime = luaMania.map.stats.currentTime
 	local hitTiming = luaMania.config.hitTiming
 	local oCurrent = luaMania.map.objects.current
 	local kHitted = luaMania.keyboard.keys.hitted
@@ -29,11 +29,11 @@ local hit = function(mismatch, key)
 		if combo.max < combo.current then
 			combo.max = combo.current
 		end
-		kHitted[key] = 1
+		kHitted[key] = true
 	end
 	if oCurrent[key].type == 2 then
 		if oCurrent[key].startTime < currentTime - hitTiming[#hitTiming - 1] and oCurrent[key].endTime > currentTime + hitTiming[#hitTiming - 1] then
-			kHitted[key] = 1
+			kHitted[key] = true
 		end
 	end
 end

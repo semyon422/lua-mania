@@ -108,11 +108,11 @@ local function getObjects()
 			if note.type == 1 then
 				if note.startTime + offset < currentTime - hitTiming[#hitTiming - 1] then
 					-- combo = 0, miss++, remove hitSound
-					luaMania.map.objects.missed[note.startTime] = luaMania.map.objects.missed[note.startTime] or {}
-					luaMania.map.objects.missed[note.startTime][j] = note
-					luaMania.map.objects.current[j] = nil
-				elseif kHitted[j] == 1 then
-					kHitted[j] = 0
+					oMissed[note.startTime] = oMissed[note.startTime] or {}
+					oMissed[note.startTime][j] = note
+					oCurrent[j] = nil
+				elseif kHitted[j] then
+					kHitted[j] = nil
 					if note.startTime + offset > currentTime + hitTiming[#hitTiming - 1] then
 						-- combo = 0, miss++
 						note.state = 2
@@ -134,7 +134,7 @@ local function getObjects()
 					luaMania.map.objects.missed[note.startTime] = luaMania.map.objects.missed[note.startTime] or {}
 					luaMania.map.objects.missed[note.startTime][j] = note
 					oCurrent[j] = nil
-				elseif kHitted[j] == 1 then
+				elseif kHitted[j] then
 					if math.abs(note.startTime + offset - currentTime) <= hitTiming[#hitTiming - 1] then
 						note.state = 1
 					else
@@ -164,14 +164,14 @@ local function getObjects()
 		----------------------------------------------------------------
 		if note ~= nil and note.state == 1 then
 			if note.type == 2 then
-				if kHitted[j] == 0 and math.abs(note.endTime + offset - currentTime) > hitTiming[#hitTiming - 1] then
+				if not kHitted[j] and math.abs(note.endTime + offset - currentTime) > hitTiming[#hitTiming - 1] then
 					-- combo = 0,  miss++
 					note.state = 2
-				elseif kHitted[j] == 0 and math.abs(note.endTime + offset - currentTime) <= hitTiming[#hitTiming - 1] then
+				elseif not kHitted[j] and math.abs(note.endTime + offset - currentTime) <= hitTiming[#hitTiming - 1] then
 					--miss++, remove hitSound
 					oCurrent[j] = nil
-				elseif kHitted[j] == 1 and note.endTime + offset - currentTime <= -1 * hitTiming[#hitTiming - 2] then
-					kHitted[j] = 0
+				elseif kHitted[j] and note.endTime + offset - currentTime <= -1 * hitTiming[#hitTiming - 2] then
+					kHitted[j] = nil
 					--hit(note.endTime - currentTime, j), remove hitSound
 					oCurrent[j] = nil
 				else
@@ -231,19 +231,19 @@ local function getObjects()
 					})
 				end
 			elseif note.type == 2 then
-				if kPressed[j] == 0 and math.abs(note.endTime + offset - currentTime) > hitTiming[#hitTiming - 1] then
+				if not kPressed[j] and math.abs(note.endTime + offset - currentTime) > hitTiming[#hitTiming - 1] then
 					--combo = 0
-					kHitted[j] = 0
+					kHitted[j] = nil
 				end
 				if note.endTime + offset <= currentTime - hitTiming[#hitTiming - 1] then
-					if kHitted[j] == 1 then
+					if kHitted[j] then
 						--50++
 					end
 					luaMania.map.objects.missed[note.startTime] = luaMania.map.objects.missed[note.startTime] or {}
 					luaMania.map.objects.missed[note.startTime][j] = note
 					oCurrent[j] = nil
 					--remove hitSound
-					kHitted[j] = 0
+					kHitted[j] = nil
 				else
 					local preset = columns[note.key].column.note
 					table.insert(luaMania.graphics.objects[noteLayer], {
@@ -324,6 +324,15 @@ local function getObjects()
 			h = love.graphics.getHeight()
 		})
 	end
+	
+	table.insert(luaMania.graphics.objects[3], {
+		class = "rectangle",
+		color = {255,255,255},
+		x = columns[1].x,
+		y = love.graphics.getHeight() - luaMania.config.hitPosition,
+		w = 4 * columns[1].column.width,
+		h = 5
+	})
 end
 
 return getObjects
