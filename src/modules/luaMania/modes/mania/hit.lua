@@ -1,5 +1,4 @@
 local hit = function(mismatch, key)
-	print(mismatch, key)
 	local offset = luaMania.config.offset
 	local trueMismatch = mismatch + offset
 	local currentTime = luaMania.map.stats.currentTime

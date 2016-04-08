@@ -16,6 +16,12 @@ playing.update = function()
 		w = love.graphics.getWidth(),
 		h = love.graphics.getHeight(),
 		color = {47, 47, 47}})
+	table.insert(luaMania.graphics.objects[3], {
+		class = "text",
+		x = 0,
+		y = 0,
+		text = love.timer.getFPS()
+	})
 end
 
 return playing

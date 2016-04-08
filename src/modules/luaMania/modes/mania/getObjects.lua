@@ -13,6 +13,8 @@ local function getObjects()
 	local oCurrent = luaMania.map.objects.current
 	local oMissed = luaMania.map.objects.missed
 	
+	local tAll = luaMania.map.timing.all
+	
 	local hitTiming = luaMania.config.hitTiming
 	
 	local kHitted = luaMania.keyboard.keys.hitted
@@ -34,22 +36,55 @@ local function getObjects()
 	end
 	
 	function getY(time)
-		return love.graphics.getHeight() - hitPosition - (time - currentTime)
+		local distance = 0
+		for timingPointIndex = 1, #tAll do
+			local timingPoint = tAll[timingPointIndex]
+			if time > currentTime then
+				if timingPoint.startTime < time and timingPoint.endTime > currentTime then
+					if timingPoint.startTime <= currentTime and timingPoint.endTime > currentTime then
+						if time > timingPoint.startTime and time <= timingPoint.endTime then
+							distance = distance + (time - currentTime) * timingPoint.velocity
+						else
+							distance = distance + (timingPoint.endTime - currentTime) * timingPoint.velocity
+						end
+					elseif timingPoint.startTime > currentTime and timingPoint.endTime <= time then
+						distance = distance + (timingPoint.endTime - timingPoint.startTime) * timingPoint.velocity
+					elseif timingPoint.startTime < time and timingPoint.endTime > time then
+						distance = distance + (time - timingPoint.startTime) * timingPoint.velocity
+					elseif timingPoint.endTime <= currentTime then
+					
+					else
+						print("e1")
+						print("i: " .. index .. " p.t:" .. timingPoint.startTime .. " p.et:" .. timingPoint.endTime .. " p.v:" .. timingPoint.velocity .. " d:" .. distance .. " t: " .. time .. " cT: " .. currentTime)
+					end
+				end
+			elseif time < currentTime then
+				if timingPoint.endTime > time and timingPoint.startTime < currentTime then
+					if timingPoint.startTime <= currentTime and timingPoint.endTime > currentTime then
+						if time > timingPoint.startTime and time <= timingPoint.endTime then
+							distance = distance + (time - currentTime) * timingPoint.velocity
+						else
+							distance = distance + (timingPoint.startTime - currentTime) * timingPoint.velocity
+						end
+					elseif timingPoint.endTime < currentTime and timingPoint.startTime >= time then
+						distance = distance + (timingPoint.startTime - timingPoint.endTime) * timingPoint.velocity
+					elseif timingPoint.startTime < time and timingPoint.endTime > time then
+						distance = distance + (time - timingPoint.endTime) * timingPoint.velocity
+					elseif timingPoint.endTime <= currentTime then
+					
+					else
+						print("e2")
+						print("i: " .. index .. " p.t:" .. timingPoint.startTime .. " p.et:" .. timingPoint.endTime .. " p.v:" .. timingPoint.velocity .. " d:" .. distance .. " t: " .. time .. " cT: " .. currentTime)
+					end
+				end
+			end
+		end
+		if currentTime >= 0 then
+			return love.graphics.getHeight() - hitPosition - offset * luaMania.config.speed - distance * luaMania.config.speed
+		else
+			return love.graphics.getHeight() - hitPosition - offset * luaMania.config.speed - distance * luaMania.config.speed + currentTime * luaMania.config.speed
+		end
 	end
-	
-	-- for index,point in pairs(luaMania.map.timing.all) do
-		-- if point.startTime <= currentTime then
-			-- if luaMania.map.timing.current ~= nil then
-				-- if luaMania.map.timing.current.startTime <= currentTime and point.startTime <= currentTime and luaMania.map.timing.current.startTime < point.startTime then
-					-- luaMania.map.timing.current = point
-					-- data.stats.speed = point.velocity
-				-- end
-			-- else
-				-- luaMania.map.timing.current = point
-				-- data.stats.speed = point.velocity
-			-- end
-		-- end
-	-- end
 	
 	for objectTime = currentTime - hitTiming[#hitTiming - 1], math.huge do
 		if getY(objectTime) < 0 then
@@ -68,7 +103,7 @@ local function getObjects()
 							local preset = columns[note.key].column.note
 							table.insert(luaMania.graphics.objects[noteLayer], {
 								class = "drawable", drawable = preset[1].drawable,
-								x = columns[note.key].x, y = getY(note.startTime),
+								x = columns[note.key].x, y = getY(note.startTime) - preset[1].drawable:getHeight() * preset[1].sy,
 								sx = preset[1].sx, sy = preset[1].sy
 							})
 						end
@@ -80,17 +115,17 @@ local function getObjects()
 							local preset = columns[note.key].column.note
 							table.insert(luaMania.graphics.objects[noteLayer], {
 								class = "drawable", drawable = preset[2].drawable,
-								x = columns[note.key].x, y = getY(note.endTime),
+								x = columns[note.key].x, y = getY(note.endTime) - preset[1].drawable:getHeight() * preset[1].sy / 2,
 								sx = preset[2].sx, sy = (getY(note.startTime) - getY(note.endTime)) / preset[2].drawable:getHeight()
 							})
 							table.insert(luaMania.graphics.objects[noteLayer], {
 								class = "drawable", drawable = preset[1].drawable,
-								x = columns[note.key].x, y = getY(note.startTime),
+								x = columns[note.key].x, y = getY(note.startTime) - preset[1].drawable:getHeight() * preset[1].sy,
 								sx = preset[1].sx, sy = preset[1].sy
 							})
 							table.insert(luaMania.graphics.objects[noteLayer], {
 								class = "drawable", drawable = preset[1].drawable,
-								x = columns[note.key].x, y = getY(note.endTime),
+								x = columns[note.key].x, y = getY(note.endTime) - preset[1].drawable:getHeight() * preset[1].sy,
 								sx = preset[1].sx, sy = preset[1].sy
 							})
 						end
@@ -124,7 +159,7 @@ local function getObjects()
 					local preset = columns[note.key].column.note
 					table.insert(luaMania.graphics.objects[noteLayer], {
 						class = "drawable", drawable = preset[1].drawable,
-						x = columns[note.key].x, y = getY(note.startTime),
+						x = columns[note.key].x, y = getY(note.startTime) - preset[1].drawable:getHeight() * preset[1].sy,
 						sx = preset[1].sx, sy = preset[1].sy
 					})
 				end
@@ -145,17 +180,17 @@ local function getObjects()
 					local preset = columns[note.key].column.note
 					table.insert(luaMania.graphics.objects[noteLayer], {
 						class = "drawable", drawable = preset[2].drawable,
-						x = columns[note.key].x, y = getY(note.endTime),
+						x = columns[note.key].x, y = getY(note.endTime) - preset[1].drawable:getHeight() * preset[1].sy / 2,
 						sx = preset[2].sx, sy = (getY(note.startTime) - getY(note.endTime)) / preset[2].drawable:getHeight()
 					})
 					table.insert(luaMania.graphics.objects[noteLayer], {
 						class = "drawable", drawable = preset[1].drawable,
-						x = columns[note.key].x, y = getY(note.startTime),
+						x = columns[note.key].x, y = getY(note.startTime) - preset[1].drawable:getHeight() * preset[1].sy,
 						sx = preset[1].sx, sy = preset[1].sy
 					})
 					table.insert(luaMania.graphics.objects[noteLayer], {
 						class = "drawable", drawable = preset[1].drawable,
-						x = columns[note.key].x, y = getY(note.endTime),
+						x = columns[note.key].x, y = getY(note.endTime) - preset[1].drawable:getHeight() * preset[1].sy,
 						sx = preset[1].sx, sy = preset[1].sy
 					})
 				end
@@ -180,34 +215,34 @@ local function getObjects()
 						local preset = columns[note.key].column.note
 						table.insert(luaMania.graphics.objects[noteLayer], {
 							class = "drawable", drawable = preset[2].drawable,
-							x = columns[note.key].x, y = getY(note.endTime),
+							x = columns[note.key].x, y = getY(note.endTime) - preset[1].drawable:getHeight() * preset[1].sy / 2,
 							sx = preset[2].sx, sy = (getY(note.startTime) - getY(note.endTime)) / preset[2].drawable:getHeight()
 						})
 						table.insert(luaMania.graphics.objects[noteLayer], {
 							class = "drawable", drawable = preset[1].drawable,
-							x = columns[note.key].x, y = love.graphics.getHeight() - hitPosition,
+							x = columns[note.key].x, y = love.graphics.getHeight() - hitPosition - preset[1].drawable:getHeight() * preset[1].sy,
 							sx = preset[1].sx, sy = preset[1].sy
 						})
 						table.insert(luaMania.graphics.objects[noteLayer], {
 							class = "drawable", drawable = preset[1].drawable,
-							x = columns[note.key].x, y = getY(note.endTime),
+							x = columns[note.key].x, y = getY(note.endTime) - preset[1].drawable:getHeight() * preset[1].sy,
 							sx = preset[1].sx, sy = preset[1].sy
 						})
 					elseif note.startTime + offset > currentTime then
 						local preset = columns[note.key].column.note
 						table.insert(luaMania.graphics.objects[noteLayer], {
 							class = "drawable", drawable = preset[2].drawable,
-							x = columns[note.key].x, y = getY(note.endTime),
+							x = columns[note.key].x, y = getY(note.endTime) - preset[1].drawable:getHeight() * preset[1].sy / 2,
 							sx = preset[2].sx, sy = (getY(note.startTime) - getY(note.endTime)) / preset[2].drawable:getHeight()
 						})
 						table.insert(luaMania.graphics.objects[noteLayer], {
 							class = "drawable", drawable = preset[1].drawable,
-							x = columns[note.key].x, y = getY(note.startTime),
+							x = columns[note.key].x, y = getY(note.startTime) - preset[1].drawable:getHeight() * preset[1].sy,
 							sx = preset[1].sx, sy = preset[1].sy
 						})
 						table.insert(luaMania.graphics.objects[noteLayer], {
 							class = "drawable", drawable = preset[1].drawable,
-							x = columns[note.key].x, y = getY(note.endTime),
+							x = columns[note.key].x, y = getY(note.endTime) - preset[1].drawable:getHeight() * preset[1].sy,
 							sx = preset[1].sx, sy = preset[1].sy
 						})
 					end
@@ -226,7 +261,7 @@ local function getObjects()
 					local preset = columns[note.key].column.note
 					table.insert(luaMania.graphics.objects[noteLayer], {
 						class = "drawable", drawable = preset[1].drawable, alpha = 128,
-						x = columns[note.key].x, y = getY(note.startTime),
+						x = columns[note.key].x, y = getY(note.startTime) - preset[1].drawable:getHeight() * preset[1].sy,
 						sx = preset[1].sx, sy = preset[1].sy
 					})
 				end
@@ -248,17 +283,17 @@ local function getObjects()
 					local preset = columns[note.key].column.note
 					table.insert(luaMania.graphics.objects[noteLayer], {
 						class = "drawable", drawable = preset[2].drawable, alpha = 128,
-						x = columns[note.key].x, y = getY(note.endTime),
+						x = columns[note.key].x, y = getY(note.endTime) - preset[1].drawable:getHeight() * preset[1].sy / 2,
 						sx = preset[2].sx, sy = (getY(note.startTime) - getY(note.endTime)) / preset[2].drawable:getHeight()
 					})
 					table.insert(luaMania.graphics.objects[noteLayer], {
 						class = "drawable", drawable = preset[1].drawable, alpha = 128,
-						x = columns[note.key].x, y = getY(note.startTime),
+						x = columns[note.key].x, y = getY(note.startTime) - preset[1].drawable:getHeight() * preset[1].sy,
 						sx = preset[1].sx, sy = preset[1].sy
 					})
 					table.insert(luaMania.graphics.objects[noteLayer], {
 						class = "drawable", drawable = preset[1].drawable, alpha = 128,
-						x = columns[note.key].x, y = getY(note.endTime),
+						x = columns[note.key].x, y = getY(note.endTime) - preset[1].drawable:getHeight() * preset[1].sy,
 						sx = preset[1].sx, sy = preset[1].sy
 					})
 				end
@@ -278,7 +313,7 @@ local function getObjects()
 						local preset = columns[note.key].column.note
 						table.insert(luaMania.graphics.objects[noteLayer], {
 							class = "drawable", drawable = preset[1].drawable, alpha = 128,
-							x = columns[note.key].x, y = getY(note.startTime),
+							x = columns[note.key].x, y = getY(note.startTime) - preset[1].drawable:getHeight() * preset[1].sy,
 							sx = preset[1].sx, sy = preset[1].sy
 						})
 					end
@@ -289,17 +324,17 @@ local function getObjects()
 						local preset = columns[note.key].column.note
 						table.insert(luaMania.graphics.objects[noteLayer], {
 							class = "drawable", drawable = preset[2].drawable, alpha = 128,
-							x = columns[note.key].x, y = getY(note.endTime),
+							x = columns[note.key].x, y = getY(note.endTime) - preset[1].drawable:getHeight() * preset[1].sy,
 							sx = preset[2].sx, sy = (getY(note.startTime) - getY(note.endTime)) / preset[2].drawable:getHeight()
 						})
 						table.insert(luaMania.graphics.objects[noteLayer], {
 							class = "drawable", drawable = preset[1].drawable, alpha = 128,
-							x = columns[note.key].x, y = getY(note.startTime),
+							x = columns[note.key].x, y = getY(note.startTime) - preset[1].drawable:getHeight() * preset[1].sy,
 							sx = preset[1].sx, sy = preset[1].sy
 						})
 						table.insert(luaMania.graphics.objects[noteLayer], {
 							class = "drawable", drawable = preset[1].drawable, alpha = 128,
-							x = columns[note.key].x, y = getY(note.endTime),
+							x = columns[note.key].x, y = getY(note.endTime) - preset[1].drawable:getHeight() * preset[1].sy,
 							sx = preset[1].sx, sy = preset[1].sy
 						})
 					end
