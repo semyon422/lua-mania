@@ -3,6 +3,8 @@
 		This program licensed under the GNU GPLv3.	]]
 local cache = {}
 
+cache.data = {}
+
 cache.lmCache = require "luaMania.cache.lmCache"
 cache.osuCache = require "luaMania.cache.osuCache"
 cache.songsPath = "res/Songs"
