@@ -1,5 +1,5 @@
 local function rectangle(source)
-	source.mode = tonumber(source.mode) or "fill"
+	source.mode = source.mode or "fill"
 	source.x = tonumber(source.x) or 0
 	source.y = tonumber(source.y) or 0
 	source.w = tonumber(source.w) or 0

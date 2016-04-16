@@ -9,7 +9,7 @@ local function text(source)
 	source.kx = tonumber(source.kx) or 0
 	source.ky = tonumber(source.ky) or 0
 
-	source.font = source.font or luaMania.graphics.fonts.default.font
+	source.font = source.font or luaMania.graphics.fonts.default
 	
 	source.multipleColors = source.multipleColors or false
 	

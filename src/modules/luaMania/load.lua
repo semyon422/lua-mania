@@ -1,4 +1,5 @@
 local function fLoad()
+	luaMania.ui.classes = require("luaMania.ui.classes")
 	luaMania.ui.objects.all = require("luaMania.ui.objects.all")
 	luaMania.ui.objects.current = require("luaMania.ui.objects.current")
 	
