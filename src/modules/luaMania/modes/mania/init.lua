@@ -5,7 +5,7 @@ mania.getObjects = require("luaMania.modes.mania.getObjects")
 mania.hit = require("luaMania.modes.mania.hit")
 mania.load = require("luaMania.modes.mania.load")
 
-mania.update = function()
+mania.tupdate = function()
 	local keys = {"e","r","o","p"}
 	for i,v in pairs(keys) do
 		table.insert(luaMania.keyboard.events, 

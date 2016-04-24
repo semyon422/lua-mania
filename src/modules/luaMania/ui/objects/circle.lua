@@ -11,18 +11,23 @@ circle.data = {
 }
 circle.update = function()
 	local data = circle.data
-	table.insert(luaMania.ui.output.objects[data.layer], {
+	loveio.output.objects[data.name .. "circle"] = {
 		class = "circle",
 		x = data.x, y = data.y,
-		r = data.r
-	})
-	table.insert(luaMania.ui.output.objects[data.layer], {
+		r = data.r,
+		layer = data.layer,
+		color = {31,31,31}
+	}
+	loveio.output.objects[data.name .. "text"] = {
 		class = "text",
-		x = data.x - love.graphics.getWidth()/2, y = data.y,
-		text = "\nmove me",
-		align = "center"
-	})
-	luaMania.ui.input.callbacks[data.name] = {
+		x = data.x, y = data.y,
+		text = "move me",
+		xAlign = "center",
+		yAlign = "center",
+		color = {255,255,255},
+		layer = data.layer
+	}
+	loveio.input.callbacks[data.name] = {
 		mousepressed = function(x, y, button)
 			if (x - data.x)^2 + (y - data.y)^2 <= data.r^2 then
 				data.isPressed = true

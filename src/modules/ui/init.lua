@@ -1,30 +1,17 @@
 local ui = {}
 
-ui.input = require("ui.input") -- keyBinds, mouseBinds (pairs)
-ui.output = require("ui.output") -- objects (ipairs)
-
-ui.objects = {
-	all = {},
-	current = {}
+ui.classes = require("ui.classes")
+ui.fonts = {
+	default = love.graphics.newFont("res/fonts/OpenSans/OpenSansRegular/OpenSansRegular.ttf", 14)
 }
 
-ui.update = function()
-	for _, object in pairs(ui.objects.current) do
-		object.update()
+ui.update = function(dt)
+	if ui.loaded then
+	
+	else
+		objects["fpsCounter"] = ui.classes.fpsCounter:new({x = 20, y = 20, r = 18, font = ui.fonts.default})
+		ui.loaded = true
 	end
 end
-
---[[
-keyBind = {
-	press(key)
-	release(key)
-}
-mouseBind = {
-	press(x, y, button)
-	move(x, y, button)
-	release(x, y, button)
-	wheel(x, y)
-}
-]]
 
 return ui

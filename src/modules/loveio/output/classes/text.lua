@@ -1,34 +1,27 @@
 local function text(source)
-	if source.object then
-		source.x = source.object.x
-		source.y = source.object.y
-		source.sx = source.object.sx
-		source.sy = source.object.sy
-		source.kx = source.object.kx
-		source.ky = source.object.ky
-		source.r = source.object.r
-		source.w = source.object.w
-		source.h = source.object.h
-		source.color = source.object.color
-		source.alpha = source.object.alpha
-		source.text = source.object.text
-	end
 	source.x = tonumber(source.x) or 0
 	source.y = tonumber(source.y) or 0
 	source.limit = tonumber(source.limit) or love.graphics.getWidth()
-	source.align = source.align or "left"
+	source.xAlign = source.xAlign or "left"
+	source.yAlign = source.yAlign or "bottom"
 	source.r = tonumber(source.r) or 0
 	source.sx = tonumber(source.sx) or 1
 	source.sy = tonumber(source.sy) or source.sy
 	source.kx = tonumber(source.kx) or 0
 	source.ky = tonumber(source.ky) or 0
 
-	source.font = source.font or luaMania.graphics.fonts.default.font
+	source.text = source.text or ""
+	source.font = source.font or love.graphics.getFont()
+	if source.yAlign == "center" then
+		source.y = source.y - source.font:getHeight() / 2
+	elseif source.yAlign == "top" then
+		source.y = source.y - source.font:getHeight()
+	end
+	if source.xAlign == "center" then
+		source.x = source.x - love.graphics.getWidth() / 2
+	end
 	
 	source.multipleColors = source.multipleColors or false
-	
-	source.text = source.text or ""
-	
 	source.alpha = tonumber(source.alpha) or 255
 	source.color = source.color or {}
 	source.color[1] = tonumber(source.color[1]) or 255
@@ -40,7 +33,7 @@ local function text(source)
 	local oldFont = love.graphics.getFont()
 	love.graphics.setFont(source.font)
 	local multipleColors = source.multipleColors or love.graphics.setColor(255, 255, 255, 255)
-	lg.printf({source.color, source.text}, source.x, source.y, source.limit, source.align, source.r, source.sx, source.sy, source.ox, source.oy, source.kx, source.ky)
+	love.graphics.printf({source.color, source.text}, source.x, source.y, source.limit, source.xAlign, source.r, source.sx, source.sy, source.ox, source.oy, source.kx, source.ky)
 	love.graphics.setColor(oldColor)
 	love.graphics.setFont(oldFont)
 end

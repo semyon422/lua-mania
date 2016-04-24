@@ -6,10 +6,7 @@ local graphics = {
 	},
 	objects = {{},{},{},{},{},{},{},{},{}},
 	fonts = require("luaMania.graphics.fonts"),
-	printDebugInfo = require("luaMania.graphics.printDebugInfo"),
-	update = function(source)
-		
-	end,
+	printDebugInfo = require("luaMania.graphics.printDebugInfo")
 }
 
 return graphics

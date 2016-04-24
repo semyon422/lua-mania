@@ -5,13 +5,7 @@ ui.mode = 0
 
 ui.skin = require("res.skin")
 
-ui.states = {
-	mainMenu = require("luaMania.ui.states.mainMenu"),
-	mapList = require("luaMania.ui.states.mapList"),
-	playing = require("luaMania.ui.states.playing")
-}
-
-ui.update = function()
+ui.tupdate = function()
 	ui.states[ui.state].update()
 end
 
