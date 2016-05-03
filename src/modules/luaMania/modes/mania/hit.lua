@@ -4,7 +4,7 @@ local hit = function(mismatch, key)
 	local currentTime = luaMania.map.stats.currentTime
 	local hitTiming = luaMania.config.hitTiming
 	local oCurrent = luaMania.map.objects.current
-	local kHitted = luaMania.keyboard.keys.hitted
+	local kHitted = objects.mania.data.keys.hitted
 	local stats = luaMania.map.stats
 	local combo = stats.combo
 		

@@ -5,6 +5,8 @@ local cache = {}
 
 cache.data = {}
 
+cache.position = 1
+
 cache.lmCache = require "luaMania.cache.lmCache"
 cache.osuCache = require "luaMania.cache.osuCache"
 cache.songsPath = "res/Songs"

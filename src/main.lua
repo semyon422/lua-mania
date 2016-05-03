@@ -1,4 +1,5 @@
 function love.load()
+	osu = require("osu")
 	ui = require("ui")
 	luaMania = require("luaMania")
 	loveio = require("loveio")

@@ -22,6 +22,7 @@ output.run = function()
 		for objectIndex, object in pairs(objects) do
 			if object.layer == layer then
 				output.classes[object.class](object)
+				if object.remove then objects[objectIndex] = nil end
 				objects[objectIndex] = nil
 			end
 		end
@@ -29,6 +30,7 @@ output.run = function()
 	for objectIndex, object in pairs(objects) do
 		if type(tonumber(object.layer)) ~= "number" then
 			output.classes[object.class](object)
+			if object.remove then objects[objectIndex] = nil end
 		end
 	end
 end

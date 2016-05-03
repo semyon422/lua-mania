@@ -7,12 +7,14 @@ button.new = function(self, data)
 	object.data.y = data.y or 0
 	object.data.layer = data.layer or 2
 	object.data.class = data.form or "circle"
+	object.data.lineWidth = data.lineWidth or 2
 	object.data.pressed = false
 	object.data.font = object.data.font or ui.fonts.default
 	object.data.text = data.text or ""
 	object.data.mode = data.mode or "line"
 	object.data.name = data.name or "unnamedButton"
 	object.data.action = data.action or function() end
+	object.data.alpha = 63
 	if object.data.class == "circle" then
 		object.data.r = data.r or 16
 	elseif object.data.class == "rectangle" then
@@ -20,15 +22,16 @@ button.new = function(self, data)
 		object.data.h = data.h or 32
 	end
 		
-	object.update = function(dt, command)
+	object.update = function(command)
 		if object.data.class == "circle" then
 			loveio.output.objects[object.data.name .. object.data.class] = {
-				class = object.data.class,
+				class = "circle",
 				x = object.data.x,
 				y = object.data.y,
 				r = object.data.r,
 				color = object.data.color,
-				mode = object.data.mode
+				alpha = object.data.alpha,
+				mode = "fill"
 			}
 			loveio.output.objects[object.data.name .. "text"] = {
 				class = "text",
@@ -42,13 +45,14 @@ button.new = function(self, data)
 			}
 		elseif object.data.class == "rectangle" then
 			loveio.output.objects[object.data.name .. object.data.class] = {
-				class = object.data.class,
+				class = "rectangle",
 				x = object.data.x - object.data.w / 2,
 				y = object.data.y - object.data.h / 2,
 				w = object.data.w,
 				h = object.data.h,
 				color = object.data.color,
-				mode = object.data.mode
+				alpha = object.data.alpha,
+				mode = "fill"
 			}
 			loveio.output.objects[object.data.name .. "text"] = {
 				class = "text",
@@ -66,12 +70,12 @@ button.new = function(self, data)
 				if object.data.class == "circle" then
 					if (x - object.data.x)^2 + (y - object.data.y)^2 <= object.data.r^2 then
 						object.data.pressed = true
-						object.data.mode = "fill"
+						object.data.alpha = 127
 					end
 				elseif object.data.class == "rectangle" then
 					if x >= object.data.x - object.data.w / 2 and x <= object.data.x + object.data.w / 2 and y >= object.data.y - object.data.h / 2 and y <= object.data.y + object.data.h / 2 then
 						object.data.pressed = true
-						object.data.mode = "fill"
+						object.data.alpha = 127
 					end
 				end
 			end,
@@ -79,12 +83,12 @@ button.new = function(self, data)
 				if object.data.class == "circle" then
 					if not ((x - object.data.x)^2 + (y - object.data.y)^2 <= object.data.r^2) then
 						object.data.pressed = false
-						object.data.mode = "line"
+						object.data.alpha = 63
 					end
 				elseif object.data.class == "rectangle" then
 					if not (x >= object.data.x - object.data.w / 2 and x <= object.data.x + object.data.w / 2 and y >= object.data.y - object.data.h / 2 and y <= object.data.y + object.data.h / 2) then
 						object.data.pressed = false
-						object.data.mode = "line"
+						object.data.alpha = 63
 					end
 				end
 			end,
@@ -92,13 +96,13 @@ button.new = function(self, data)
 				if object.data.class == "circle" then
 					if (x - object.data.x)^2 + (y - object.data.y)^2 <= object.data.r^2 then
 						object.data.pressed = false
-						object.data.mode = "line"
+						object.data.alpha = 63
 						object.data.action()
 					end
 				elseif object.data.class == "rectangle" then
 					if x >= object.data.x - object.data.w / 2 and x <= object.data.x + object.data.w / 2 and y >= object.data.y - object.data.h / 2 and y <= object.data.y + object.data.h / 2 then
 						object.data.pressed = false
-						object.data.mode = "line"
+						object.data.alpha = 63
 						object.data.action()
 					end
 				end

@@ -46,7 +46,7 @@ local convert = function()
 	end
 	newMap.timing.all[#newMap.timing.all].endTime = 3600000
 	
-	local cache = luaMania.data.cache[luaMania.state.cachePosition]
+	local cache = luaMania.cache.data[luaMania.cache.position]
 	newMap.objects = newMap.objects or {clean = {}, current = {}, missed = {}, hitSounds = {}, count = 0}
 	newMap.hitSounds = {}
 	newMap.path = cache.path

@@ -8,8 +8,5 @@ luaMania.cache = require("luaMania.cache")
 luaMania.modes = require("luaMania.modes")
 luaMania.load = require("luaMania.load")
 luaMania.update = require("luaMania.update")
-luaMania.state = {
-	cachePosition = 1
-}
 
 return luaMania

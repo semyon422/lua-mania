@@ -4,23 +4,21 @@
 local function getObjects()
 	local beatmap = luaMania.map
 	local currentTime = luaMania.map.stats.currentTime
-	local skin = luaMania.ui.skin
-	local offset = luaMania.config.offset
-	local hitPosition = luaMania.config.hitPosition
-	local noteLayer = luaMania.config.noteLayer
-	
 	local oClean = luaMania.map.objects.clean
 	local oCurrent = luaMania.map.objects.current
 	local oMissed = luaMania.map.objects.missed
-	
 	local tAll = luaMania.map.timing.all
+	local keymode = luaMania.map.info.keymode
 	
+	local skin = luaMania.ui.skin
+	
+	local offset = luaMania.config.offset
+	local hitPosition = luaMania.config.hitPosition
+	local noteLayer = luaMania.config.noteLayer
 	local hitTiming = luaMania.config.hitTiming
 	
-	local kHitted = luaMania.keyboard.keys.hitted
-	local kPressed = luaMania.keyboard.keys.pressed
-	
-	local keymode = luaMania.map.info.keymode
+	local kHitted = objects.mania.data.keys.hitted
+	local kPressed = objects.mania.data.keys.pressed
 	
 	local columns = {}
 	for i = 1, keymode do
@@ -101,7 +99,7 @@ local function getObjects()
 							oClean[objectTime][j] = nil
 						else
 							local preset = columns[note.key].column.note
-							table.insert(luaMania.graphics.objects[noteLayer], {
+							table.insert(loveio.output.objects, { remove = true,
 								class = "drawable", drawable = preset[1].drawable,
 								x = columns[note.key].x, y = getY(note.startTime) - preset[1].drawable:getHeight() * preset[1].sy,
 								sx = preset[1].sx, sy = preset[1].sy
@@ -113,17 +111,17 @@ local function getObjects()
 							oClean[objectTime][j] = nil
 						else
 							local preset = columns[note.key].column.note
-							table.insert(luaMania.graphics.objects[noteLayer], {
+							table.insert(loveio.output.objects, { remove = true,
 								class = "drawable", drawable = preset[2].drawable,
 								x = columns[note.key].x, y = getY(note.endTime) - preset[1].drawable:getHeight() * preset[1].sy / 2,
 								sx = preset[2].sx, sy = (getY(note.startTime) - getY(note.endTime)) / preset[2].drawable:getHeight()
 							})
-							table.insert(luaMania.graphics.objects[noteLayer], {
+							table.insert(loveio.output.objects, { remove = true,
 								class = "drawable", drawable = preset[1].drawable,
 								x = columns[note.key].x, y = getY(note.startTime) - preset[1].drawable:getHeight() * preset[1].sy,
 								sx = preset[1].sx, sy = preset[1].sy
 							})
-							table.insert(luaMania.graphics.objects[noteLayer], {
+							table.insert(loveio.output.objects, { remove = true,
 								class = "drawable", drawable = preset[1].drawable,
 								x = columns[note.key].x, y = getY(note.endTime) - preset[1].drawable:getHeight() * preset[1].sy,
 								sx = preset[1].sx, sy = preset[1].sy
@@ -157,7 +155,7 @@ local function getObjects()
 					end
 				else
 					local preset = columns[note.key].column.note
-					table.insert(luaMania.graphics.objects[noteLayer], {
+					table.insert(loveio.output.objects, { remove = true,
 						class = "drawable", drawable = preset[1].drawable,
 						x = columns[note.key].x, y = getY(note.startTime) - preset[1].drawable:getHeight() * preset[1].sy,
 						sx = preset[1].sx, sy = preset[1].sy
@@ -178,17 +176,17 @@ local function getObjects()
 					end
 				else
 					local preset = columns[note.key].column.note
-					table.insert(luaMania.graphics.objects[noteLayer], {
+					table.insert(loveio.output.objects, { remove = true,
 						class = "drawable", drawable = preset[2].drawable,
 						x = columns[note.key].x, y = getY(note.endTime) - preset[1].drawable:getHeight() * preset[1].sy / 2,
 						sx = preset[2].sx, sy = (getY(note.startTime) - getY(note.endTime)) / preset[2].drawable:getHeight()
 					})
-					table.insert(luaMania.graphics.objects[noteLayer], {
+					table.insert(loveio.output.objects, { remove = true,
 						class = "drawable", drawable = preset[1].drawable,
 						x = columns[note.key].x, y = getY(note.startTime) - preset[1].drawable:getHeight() * preset[1].sy,
 						sx = preset[1].sx, sy = preset[1].sy
 					})
-					table.insert(luaMania.graphics.objects[noteLayer], {
+					table.insert(loveio.output.objects, { remove = true,
 						class = "drawable", drawable = preset[1].drawable,
 						x = columns[note.key].x, y = getY(note.endTime) - preset[1].drawable:getHeight() * preset[1].sy,
 						sx = preset[1].sx, sy = preset[1].sy
@@ -213,34 +211,34 @@ local function getObjects()
 					if note.startTime + offset <= currentTime and note.endTime + offset > currentTime then
 						note.startTime = currentTime - offset
 						local preset = columns[note.key].column.note
-						table.insert(luaMania.graphics.objects[noteLayer], {
+						table.insert(loveio.output.objects, { remove = true,
 							class = "drawable", drawable = preset[2].drawable,
 							x = columns[note.key].x, y = getY(note.endTime) - preset[1].drawable:getHeight() * preset[1].sy / 2,
 							sx = preset[2].sx, sy = (getY(note.startTime) - getY(note.endTime)) / preset[2].drawable:getHeight()
 						})
-						table.insert(luaMania.graphics.objects[noteLayer], {
+						table.insert(loveio.output.objects, { remove = true,
 							class = "drawable", drawable = preset[1].drawable,
 							x = columns[note.key].x, y = love.graphics.getHeight() - hitPosition - preset[1].drawable:getHeight() * preset[1].sy,
 							sx = preset[1].sx, sy = preset[1].sy
 						})
-						table.insert(luaMania.graphics.objects[noteLayer], {
+						table.insert(loveio.output.objects, { remove = true,
 							class = "drawable", drawable = preset[1].drawable,
 							x = columns[note.key].x, y = getY(note.endTime) - preset[1].drawable:getHeight() * preset[1].sy,
 							sx = preset[1].sx, sy = preset[1].sy
 						})
 					elseif note.startTime + offset > currentTime then
 						local preset = columns[note.key].column.note
-						table.insert(luaMania.graphics.objects[noteLayer], {
+						table.insert(loveio.output.objects, { remove = true,
 							class = "drawable", drawable = preset[2].drawable,
 							x = columns[note.key].x, y = getY(note.endTime) - preset[1].drawable:getHeight() * preset[1].sy / 2,
 							sx = preset[2].sx, sy = (getY(note.startTime) - getY(note.endTime)) / preset[2].drawable:getHeight()
 						})
-						table.insert(luaMania.graphics.objects[noteLayer], {
+						table.insert(loveio.output.objects, { remove = true,
 							class = "drawable", drawable = preset[1].drawable,
 							x = columns[note.key].x, y = getY(note.startTime) - preset[1].drawable:getHeight() * preset[1].sy,
 							sx = preset[1].sx, sy = preset[1].sy
 						})
-						table.insert(luaMania.graphics.objects[noteLayer], {
+						table.insert(loveio.output.objects, { remove = true,
 							class = "drawable", drawable = preset[1].drawable,
 							x = columns[note.key].x, y = getY(note.endTime) - preset[1].drawable:getHeight() * preset[1].sy,
 							sx = preset[1].sx, sy = preset[1].sy
@@ -259,7 +257,7 @@ local function getObjects()
 					--remove hitSound
 				else
 					local preset = columns[note.key].column.note
-					table.insert(luaMania.graphics.objects[noteLayer], {
+					table.insert(loveio.output.objects, { remove = true,
 						class = "drawable", drawable = preset[1].drawable, alpha = 128,
 						x = columns[note.key].x, y = getY(note.startTime) - preset[1].drawable:getHeight() * preset[1].sy,
 						sx = preset[1].sx, sy = preset[1].sy
@@ -281,17 +279,17 @@ local function getObjects()
 					kHitted[j] = nil
 				else
 					local preset = columns[note.key].column.note
-					table.insert(luaMania.graphics.objects[noteLayer], {
+					table.insert(loveio.output.objects, { remove = true,
 						class = "drawable", drawable = preset[2].drawable, alpha = 128,
 						x = columns[note.key].x, y = getY(note.endTime) - preset[1].drawable:getHeight() * preset[1].sy / 2,
 						sx = preset[2].sx, sy = (getY(note.startTime) - getY(note.endTime)) / preset[2].drawable:getHeight()
 					})
-					table.insert(luaMania.graphics.objects[noteLayer], {
+					table.insert(loveio.output.objects, { remove = true,
 						class = "drawable", drawable = preset[1].drawable, alpha = 128,
 						x = columns[note.key].x, y = getY(note.startTime) - preset[1].drawable:getHeight() * preset[1].sy,
 						sx = preset[1].sx, sy = preset[1].sy
 					})
-					table.insert(luaMania.graphics.objects[noteLayer], {
+					table.insert(loveio.output.objects, { remove = true,
 						class = "drawable", drawable = preset[1].drawable, alpha = 128,
 						x = columns[note.key].x, y = getY(note.endTime) - preset[1].drawable:getHeight() * preset[1].sy,
 						sx = preset[1].sx, sy = preset[1].sy
@@ -311,7 +309,7 @@ local function getObjects()
 						oMissed[objectTime][j] = nil
 					else
 						local preset = columns[note.key].column.note
-						table.insert(luaMania.graphics.objects[noteLayer], {
+						table.insert(loveio.output.objects, { remove = true,
 							class = "drawable", drawable = preset[1].drawable, alpha = 128,
 							x = columns[note.key].x, y = getY(note.startTime) - preset[1].drawable:getHeight() * preset[1].sy,
 							sx = preset[1].sx, sy = preset[1].sy
@@ -322,17 +320,17 @@ local function getObjects()
 						oMissed[objectTime][j] = nil
 					else
 						local preset = columns[note.key].column.note
-						table.insert(luaMania.graphics.objects[noteLayer], {
+						table.insert(loveio.output.objects, { remove = true,
 							class = "drawable", drawable = preset[2].drawable, alpha = 128,
 							x = columns[note.key].x, y = getY(note.endTime) - preset[1].drawable:getHeight() * preset[1].sy,
 							sx = preset[2].sx, sy = (getY(note.startTime) - getY(note.endTime)) / preset[2].drawable:getHeight()
 						})
-						table.insert(luaMania.graphics.objects[noteLayer], {
+						table.insert(loveio.output.objects, { remove = true,
 							class = "drawable", drawable = preset[1].drawable, alpha = 128,
 							x = columns[note.key].x, y = getY(note.startTime) - preset[1].drawable:getHeight() * preset[1].sy,
 							sx = preset[1].sx, sy = preset[1].sy
 						})
-						table.insert(luaMania.graphics.objects[noteLayer], {
+						table.insert(loveio.output.objects, { remove = true,
 							class = "drawable", drawable = preset[1].drawable, alpha = 128,
 							x = columns[note.key].x, y = getY(note.endTime) - preset[1].drawable:getHeight() * preset[1].sy,
 							sx = preset[1].sx, sy = preset[1].sy
