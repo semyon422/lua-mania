@@ -1,12 +1,9 @@
---[[	lua-mania
-		Copyright (C) 2016 Semyon Jolnirov (semyon422)
-		This program licensed under the GNU GPLv3.	]]
 local function getHitSound(hitSound)
 	local pathHitSound = nil
 	local out = {{}, 0}
 	
-	for i,format in pairs(data.audioFormats) do
-		for i,file in pairs(hitSound[1]) do
+	for _,format in pairs({"wav", "mp3", "ogg"}) do
+		for _,file in pairs(hitSound[1]) do
 			if love.filesystem.exists(data.beatmap.path .. "/" .. file .. "." .. format) then
 				pathHitSound = data.beatmap.path .. "/" .. file .. "." .. format
 				out[2] = hitSound[2]

@@ -1,6 +1,3 @@
---[[	lua-mania
-		Copyright (C) 2016 Semyon Jolnirov (semyon422)
-		This program licensed under the GNU GPLv3.	]]
 local function getObjects()
 	local beatmap = luaMania.map
 	local currentTime = luaMania.map.stats.currentTime
@@ -140,17 +137,20 @@ local function getObjects()
 		if note ~= nil and note.state == 0 then
 			if note.type == 1 then
 				if note.startTime + offset < currentTime - hitTiming[#hitTiming - 1] then
-					-- combo = 0, miss++, remove hitSound
+					-- miss++
+					table.remove(beatmap.hitSounds[j], 1)
+					beatmap.stats.combo = 0
 					oMissed[note.startTime] = oMissed[note.startTime] or {}
 					oMissed[note.startTime][j] = note
 					oCurrent[j] = nil
 				elseif kHitted[j] then
 					kHitted[j] = nil
 					if note.startTime + offset > currentTime + hitTiming[#hitTiming - 1] then
-						-- combo = 0, miss++
+						--miss++
+						beatmap.stats.combo = 0
 						note.state = 2
 					else
-						-- remove hitSound
+						table.remove(beatmap.hitSounds[j], 1)
 						oCurrent[j] = nil
 					end
 				else
@@ -163,7 +163,9 @@ local function getObjects()
 				end
 			elseif note.type == 2 then
 				if note.endTime + offset < currentTime - hitTiming[#hitTiming - 1] then
-					-- combo = 0, miss++, remove hitSound
+					--miss++
+					table.remove(beatmap.hitSounds[j], 1)
+					beatmap.stats.combo = 0
 					luaMania.map.objects.missed[note.startTime] = luaMania.map.objects.missed[note.startTime] or {}
 					luaMania.map.objects.missed[note.startTime][j] = note
 					oCurrent[j] = nil
@@ -171,7 +173,8 @@ local function getObjects()
 					if math.abs(note.startTime + offset - currentTime) <= hitTiming[#hitTiming - 1] then
 						note.state = 1
 					else
-						-- combo = 0, miss++
+						--miss++
+						beatmap.stats.combo = 0
 						note.state = 2
 					end
 				else
@@ -198,14 +201,17 @@ local function getObjects()
 		if note ~= nil and note.state == 1 then
 			if note.type == 2 then
 				if not kHitted[j] and math.abs(note.endTime + offset - currentTime) > hitTiming[#hitTiming - 1] then
-					-- combo = 0,  miss++
+					--miss++
+					beatmap.stats.combo = 0
 					note.state = 2
 				elseif not kHitted[j] and math.abs(note.endTime + offset - currentTime) <= hitTiming[#hitTiming - 1] then
-					--miss++, remove hitSound
+					--miss++
+					table.remove(beatmap.hitSounds[j], 1)
 					oCurrent[j] = nil
 				elseif kHitted[j] and note.endTime + offset - currentTime <= -1 * hitTiming[#hitTiming - 2] then
 					kHitted[j] = nil
-					--hit(note.endTime - currentTime, j), remove hitSound
+					--hit(note.endTime - currentTime, j)
+					table.remove(beatmap.hitSounds[j], 1)
 					oCurrent[j] = nil
 				else
 					if note.startTime + offset <= currentTime and note.endTime + offset > currentTime then
@@ -254,7 +260,7 @@ local function getObjects()
 					luaMania.map.objects.missed[note.startTime] = luaMania.map.objects.missed[note.startTime] or {}
 					luaMania.map.objects.missed[note.startTime][j] = note
 					oCurrent[j] = nil
-					--remove hitSound
+					table.remove(beatmap.hitSounds[j], 1)
 				else
 					local preset = columns[note.key].column.note
 					table.insert(loveio.output.objects, { remove = true,
@@ -265,7 +271,7 @@ local function getObjects()
 				end
 			elseif note.type == 2 then
 				if not kPressed[j] and math.abs(note.endTime + offset - currentTime) > hitTiming[#hitTiming - 1] then
-					--combo = 0
+					beatmap.stats.combo = 0
 					kHitted[j] = nil
 				end
 				if note.endTime + offset <= currentTime - hitTiming[#hitTiming - 1] then
@@ -275,7 +281,7 @@ local function getObjects()
 					luaMania.map.objects.missed[note.startTime] = luaMania.map.objects.missed[note.startTime] or {}
 					luaMania.map.objects.missed[note.startTime][j] = note
 					oCurrent[j] = nil
-					--remove hitSound
+					table.remove(beatmap.hitSounds[j], 1)
 					kHitted[j] = nil
 				else
 					local preset = columns[note.key].column.note
@@ -348,24 +354,25 @@ local function getObjects()
 	
 	local coveerWidth = 0
 	for key = 1, keymode do
-		table.insert(luaMania.graphics.objects[2], {
+		table.insert(loveio.output.objects, {
 			class = "rectangle",
 			color = columns[key].column.background,
 			x = columns[key].x,
 			y = 0,
 			w = columns[key].column.width,
-			h = love.graphics.getHeight()
+			h = love.graphics.getHeight(),
+			layer = 2
 		})
 	end
 	
-	table.insert(luaMania.graphics.objects[3], {
-		class = "rectangle",
-		color = {255,255,255},
-		x = columns[1].x,
-		y = love.graphics.getHeight() - luaMania.config.hitPosition,
-		w = 4 * columns[1].column.width,
-		h = 5
-	})
+	-- table.insert(loveio.output.objects, {
+		-- class = "rectangle",
+		-- color = {255,255,255},
+		-- x = columns[1].x,
+		-- y = love.graphics.getHeight() - luaMania.config.hitPosition,
+		-- w = 4 * columns[1].column.width,
+		-- h = 5
+	-- })
 end
 
 return getObjects

@@ -26,6 +26,8 @@ mania.update = function()
 			for keybind, keynum in pairs(data.keys.binds) do
 				if key == keybind then
 					data.keys.pressed[keynum] = true
+					-- play hitSound
+					print(luaMania.map.hitSounds[keynum][1][1][1])
 					if luaMania.map.objects.current[keynum] then
 						data.keys.hitted[keynum] = true
 						mania.hit(luaMania.map.objects.current[keynum].startTime - luaMania.map.stats.currentTime, keynum)
@@ -38,9 +40,6 @@ mania.update = function()
 				if key == keybind then
 					data.keys.pressed[keynum] = nil
 					data.keys.hitted[keynum] = nil
-					if luaMania.map.objects.current[keynum] then
-						mania.hit(luaMania.map.objects.current[keynum].startTime - luaMania.map.stats.currentTime, keynum)
-					end
 				end
 			end
 		end,

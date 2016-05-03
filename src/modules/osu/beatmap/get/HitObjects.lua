@@ -22,7 +22,7 @@ local function HitObjects(blockLines)
 		hitObject.y = tonumber(trim(tblHitObject[syntax.y]))
 		hitObject.type = tonumber(trim(tblHitObject[syntax.type]))
 		hitObject.startTime = tonumber(trim(tblHitObject[syntax.startTime]))
-		hitObject.hitSound = tonumber(trim(tblHitObject[syntax.hitSound]))
+		-- hitObject.hitSound = tonumber(trim(tblHitObject[syntax.hitSound]))
 		
 		if bit.band(hitObject.type, 1) == 1 then
 			syntax = syntaxes.circle
@@ -43,6 +43,10 @@ local function HitObjects(blockLines)
 			hitObject.newCombo = true
 		end
 		
+		local sample = "normal"
+		local additionalSample = nil
+		local hitSound = ""
+		hitObject.hitSoundVolume = 1
 		if tblHitObject[syntax.addition] ~= nil then
 			local tblAddition = explode(":", tblHitObject[syntax.addition])
 			hitObject.addition = {}
@@ -50,11 +54,56 @@ local function HitObjects(blockLines)
 			hitObject.addition.additionalSample = tonumber(trim(tblAddition[addition.additionalSample]))
 			hitObject.addition.customSampleIndex = tonumber(trim(tblAddition[addition.customSampleIndex]))
 			hitObject.addition.hitSoundVolume = tonumber(trim(tblAddition[addition.hitSoundVolume]))
+			if hitObject.addition.hitSoundVolume > 0 then
+				hitObject.hitSoundVolume = hitObject.addition.hitSoundVolume / 100
+			end
 			hitObject.addition.hitSound = trim(tblAddition[addition.hitSound])
+			hitSound = hitObject.addition.hitSound
+			
+			if hitObject.addition.sample ~= 0 then
+				if hitObject.addition.sample == 1 then sample = "normal"
+				elseif hitObject.addition.sample == 2 then sample = "soft"
+				elseif hitObject.addition.sample == 3 then sample = "drum"
+				end
+			end
+			if hitObject.addition.additionalSample ~= 0 then
+				if hitObject.addition.sample == 1 then additionalSample = "normal"
+				elseif hitObject.addition.sample == 2 then additionalSample = "soft"
+				elseif hitObject.addition.sample == 3 then additionalSample = "drum"
+				end
+			end
 			
 			if addition.endTime ~= nil then
 				hitObject.endTime = tonumber(trim(tblAddition[addition.endTime]))
 			end
+		end
+		hitObject.hitSound = {}
+		if bit.band(tonumber(trim(tblHitObject[syntax.hitSound])), 2) then
+			table.insert(hitObject.hitSound, sample .. "-whistle")
+			if additionalSample then
+				table.insert(hitObject.hitSound, additionalSample .. "-whistle")
+			end
+		end
+		if bit.band(tonumber(trim(tblHitObject[syntax.hitSound])), 4) then
+			table.insert(hitObject.hitSound, sample .. "-finnish")
+			if additionalSample then
+				table.insert(hitObject.hitSound, additionalSample .. "-finnish")
+			end
+		end
+		if bit.band(tonumber(trim(tblHitObject[syntax.hitSound])), 8) then
+			table.insert(hitObject.hitSound, sample .. "-clap")
+			if additionalSample then
+				table.insert(hitObject.hitSound, additionalSample .. "-clap")
+			end
+		end
+		if #hitObject.hitSound == 0 then
+			table.insert(hitObject.hitSound, sample .. "-normal")
+			if additionalSample then
+				table.insert(hitObject.hitSound, additionalSample .. "-normal")
+			end
+		end
+		if hitSound ~= "" then
+			hitObject.hitSound = {hitSound}
 		end
 		
 		table.insert(out, hitObject)

@@ -18,16 +18,16 @@ local hit = function(mismatch, key)
 				stats.lastHit = i
 				stats.hits[i] = stats.hits[i] or 0
 				stats.hits[i] = stats.hits[i] + 1
-				if i == #hitTiming then combo.current = 0 end
+				--if i == #hitTiming then combo.current = 0 end
 				break
 			end
 		end
 	end
 	if math.abs(trueMismatch) <= hitTiming[#hitTiming] then
-		combo.current = combo.current + 1
-		if combo.max < combo.current then
-			combo.max = combo.current
-		end
+		-- combo.current = combo.current + 1
+		-- if combo.max < combo.current then
+			-- combo.max = combo.current
+		-- end
 		kHitted[key] = true
 	end
 	if oCurrent[key].type == 2 then

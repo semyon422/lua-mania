@@ -76,8 +76,10 @@ local convert = function()
 		hitObject.endTime = oldHitObject.endTime
 		
 		newMap.objects.clean[hitObject.startTime] = newMap.objects.clean[hitObject.startTime] or {}
-		newMap.objects.clean[hitObject.startTime][hitObject.key] = newMap.objects.clean[hitObject.startTime][hitObject.key] or {}
 		newMap.objects.clean[hitObject.startTime][hitObject.key] = hitObject
+		
+		newMap.hitSounds[hitObject.key] = newMap.hitSounds[hitObject.key] or {}
+		table.insert(newMap.hitSounds[hitObject.key], {oldHitObject.hitSound, oldHitObject.hitSoundVolume})
 	end
 	
 	newMap.stats = {
