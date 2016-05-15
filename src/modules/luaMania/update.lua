@@ -4,6 +4,7 @@ local function update()
 			submodule.update()
 		end
 	end
+	love.window.setTitle("FPS: " .. love.timer.getFPS())
 end
 
 return update

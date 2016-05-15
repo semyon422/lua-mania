@@ -49,6 +49,7 @@ local convert = function()
 	local cache = luaMania.cache.data[luaMania.cache.position]
 	newMap.objects = newMap.objects or {clean = {}, current = {}, missed = {}, hitSounds = {}, count = 0}
 	newMap.hitSounds = {}
+	newMap.hitSoundsQueue = {}
 	newMap.path = cache.path
 	newMap.pathFile = cache.pathFile
 	newMap.pathAudio = cache.pathAudio
@@ -78,8 +79,13 @@ local convert = function()
 		newMap.objects.clean[hitObject.startTime] = newMap.objects.clean[hitObject.startTime] or {}
 		newMap.objects.clean[hitObject.startTime][hitObject.key] = hitObject
 		
-		newMap.hitSounds[hitObject.key] = newMap.hitSounds[hitObject.key] or {}
-		table.insert(newMap.hitSounds[hitObject.key], {oldHitObject.hitSound, oldHitObject.hitSoundVolume})
+		newMap.hitSoundsQueue[hitObject.key] = newMap.hitSoundsQueue[hitObject.key] or {}
+		table.insert(newMap.hitSoundsQueue[hitObject.key], {oldHitObject.hitSound, oldHitObject.hitSoundVolume})
+		for _, filename in pairs(oldHitObject.hitSound) do
+			if not newMap.hitSounds[filename] then
+				newMap.hitSounds[filename] = love.audio.newSource(loveio.getFilePath(filename))
+			end
+		end
 	end
 	
 	newMap.stats = {

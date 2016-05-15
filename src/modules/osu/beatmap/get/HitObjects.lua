@@ -78,28 +78,31 @@ local function HitObjects(blockLines)
 			end
 		end
 		hitObject.hitSound = {}
-		if bit.band(tonumber(trim(tblHitObject[syntax.hitSound])), 2) then
-			table.insert(hitObject.hitSound, sample .. "-whistle")
-			if additionalSample then
-				table.insert(hitObject.hitSound, additionalSample .. "-whistle")
+		if tonumber(trim(tblHitObject[syntax.hitSound])) ~= 0 then
+			if bit.band(tonumber(trim(tblHitObject[syntax.hitSound])), 2) then
+				table.insert(hitObject.hitSound, sample .. "-hitwhistle")
+				if additionalSample then
+					table.insert(hitObject.hitSound, additionalSample .. "-hitwhistle")
+				end
 			end
-		end
-		if bit.band(tonumber(trim(tblHitObject[syntax.hitSound])), 4) then
-			table.insert(hitObject.hitSound, sample .. "-finnish")
-			if additionalSample then
-				table.insert(hitObject.hitSound, additionalSample .. "-finnish")
+			if bit.band(tonumber(trim(tblHitObject[syntax.hitSound])), 4) then
+				table.insert(hitObject.hitSound, sample .. "-hitfinish")
+				if additionalSample then
+					table.insert(hitObject.hitSound, additionalSample .. "-hitfinish")
+				end
 			end
-		end
-		if bit.band(tonumber(trim(tblHitObject[syntax.hitSound])), 8) then
-			table.insert(hitObject.hitSound, sample .. "-clap")
-			if additionalSample then
-				table.insert(hitObject.hitSound, additionalSample .. "-clap")
+			if bit.band(tonumber(trim(tblHitObject[syntax.hitSound])), 8) then
+				table.insert(hitObject.hitSound, sample .. "-hitclap")
+				if additionalSample then
+					table.insert(hitObject.hitSound, additionalSample .. "-hitclap")
+				end
 			end
-		end
-		if #hitObject.hitSound == 0 then
-			table.insert(hitObject.hitSound, sample .. "-normal")
-			if additionalSample then
-				table.insert(hitObject.hitSound, additionalSample .. "-normal")
+		else
+			if #hitObject.hitSound == 0 then
+				table.insert(hitObject.hitSound, sample .. "-hitnormal")
+				if additionalSample then
+					table.insert(hitObject.hitSound, additionalSample .. "-hitnormal")
+				end
 			end
 		end
 		if hitSound ~= "" then

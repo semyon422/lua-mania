@@ -3,6 +3,8 @@ local loveio = {}
 loveio.input = require("loveio.input")
 loveio.output = require("loveio.output")
 
+loveio.getFilePath = require("loveio.getFilePath")
+
 loveio.init = function(objects)
 	loveio.objects = objects or {}
 	local objects = loveio.objects
