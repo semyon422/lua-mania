@@ -38,6 +38,7 @@ gameState.update = function(dt)
 		for _, key in pairs(data.states[data.state].open) do
 			objects[key] = luaMania.ui.objects[key]
 		end
+		log("gameState: " .. data.state)
 		data.switched = true
 	end
 end

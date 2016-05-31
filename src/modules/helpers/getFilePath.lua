@@ -1,15 +1,15 @@
 local function getFilePath(filename, rules)
 	local filePath = nil
-	if not rules then
-		rules = {
-			formats = {"wav", "mp3", "ogg"},
-			paths = {"res/skin/hitSounds"}
-		}
-	end
+	
+	local rules = rules or {
+		formats = {"wav", "mp3", "ogg"},
+		paths = {"res/skin/hitSounds"},
+		--default = "res/default"
+	}
 	
 	for _, format in ipairs(rules.formats) do
-		if string.sub(filename, -3, -1) == format then
-			filename = string.sub(filename, 1, -4)
+		if string.sub(filename, -4, -1) == "." .. format then
+			filename = string.sub(filename, 1, -5)
 			break
 		end
 	end
@@ -28,6 +28,7 @@ local function getFilePath(filename, rules)
 	end
 	
 	if not filePath then print("file " .. filename .. " not found!") end
+	--if not filePath then filePath = rules.default end
 	return filePath
 end
 

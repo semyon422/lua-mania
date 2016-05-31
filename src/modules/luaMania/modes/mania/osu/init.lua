@@ -83,7 +83,7 @@ local convert = function()
 		table.insert(newMap.hitSoundsQueue[hitObject.key], {oldHitObject.hitSound, oldHitObject.hitSoundVolume})
 		for _, filename in pairs(oldHitObject.hitSound) do
 			if not newMap.hitSounds[filename] then
-				newMap.hitSounds[filename] = love.audio.newSource(loveio.getFilePath(filename))
+				newMap.hitSounds[filename] = love.audio.newSource(helpers.getFilePath(filename))
 			end
 		end
 	end

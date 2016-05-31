@@ -361,7 +361,8 @@ local function getObjects()
 			y = 0,
 			w = columns[key].column.width,
 			h = love.graphics.getHeight(),
-			layer = 2
+			layer = 2,
+			remove = true
 		})
 	end
 	

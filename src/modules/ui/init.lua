@@ -9,7 +9,10 @@ ui.update = function(dt)
 	if ui.loaded then
 	
 	else
-		objects["fpsCounter"] = ui.classes.fpsCounter:new({x = 20, y = 20, r = 18, font = ui.fonts.default})
+		objects["fpsCounter"] = ui.classes.fpsCounter:new({x = 20, y = 20, r = 18, font = love.graphics.getFont()})
+		objects["someSlider"] = ui.classes.slider:new({x = 30, y = 300, action = function(value)
+			objects.background.color = {255 * value, 255 * value, 255 * value}
+		end})
 		ui.loaded = true
 	end
 end

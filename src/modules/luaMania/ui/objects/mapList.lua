@@ -10,7 +10,7 @@ mapList.update = function(command)
 		objects[data.name] = nil
 		return
 	end
-	for button = 1, data.buttonCount do
+	for button = 0, data.buttonCount do
 		local position = luaMania.cache.position + button
 		if luaMania.cache.data[position] ~= nil then
 			loveio.output.objects[data.name .. "button" .. button] = {
@@ -38,7 +38,7 @@ mapList.update = function(command)
 					luaMania.cache.position = luaMania.cache.position + 1
 				end
 			elseif key == "down" then
-				if luaMania.cache.position > 2 then
+				if luaMania.cache.position >= 2 then
 					luaMania.cache.position = luaMania.cache.position - 1
 				end
 			end

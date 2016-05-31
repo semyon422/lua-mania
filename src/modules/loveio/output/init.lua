@@ -23,7 +23,6 @@ output.run = function()
 			if object.layer == layer then
 				output.classes[object.class](object)
 				if object.remove then objects[objectIndex] = nil end
-				objects[objectIndex] = nil
 			end
 		end
 	end

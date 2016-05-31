@@ -1,6 +1,8 @@
 function love.load()
 	osu = require("osu")
 	ui = require("ui")
+	helpers = require("helpers")
+	log = helpers.logger.log
 	luaMania = require("luaMania")
 	loveio = require("loveio")
 	objects = {

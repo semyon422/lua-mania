@@ -43,7 +43,7 @@ local function HitObjects(blockLines)
 			hitObject.newCombo = true
 		end
 		
-		local sample = "normal"
+		local sample = "soft"
 		local additionalSample = nil
 		local hitSound = ""
 		hitObject.hitSoundVolume = 1
