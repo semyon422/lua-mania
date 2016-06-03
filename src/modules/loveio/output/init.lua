@@ -2,6 +2,8 @@ local output = {}
 
 output.objects = {}
 
+output.position = require("loveio.output.position")
+
 output.classes = {
 	drawable = require("loveio.output.classes.drawable"),
 	rectangle = require("loveio.output.classes.rectangle"),

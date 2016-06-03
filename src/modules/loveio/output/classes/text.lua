@@ -1,10 +1,10 @@
 local function text(source)
-	local x = tonumber(source.x) or 0
-	local y = tonumber(source.y) or 0
-	local limit = tonumber(source.limit) or love.graphics.getWidth()
+	local x = pos.x2X(tonumber(source.x), true) or 0
+	local y = pos.y2Y(tonumber(source.y), true) or 0
+	local limit = pos.x2X(tonumber(source.limit)) or loveio.output.position.w
+	local r = tonumber(source.r) or 0
 	local xAlign = source.xAlign or "left"
 	local yAlign = source.yAlign or "bottom"
-	local r = tonumber(source.r) or 0
 	local sx = tonumber(source.sx) or 1
 	local sy = tonumber(source.sy) or source.sy
 	local kx = tonumber(source.kx) or 0
@@ -13,12 +13,12 @@ local function text(source)
 	local text = source.text or ""
 	local font = source.font or love.graphics.getFont()
 	if source.yAlign == "center" then
-		y = source.y - font:getHeight() / 2
+		y = math.floor(y - font:getHeight() / 2)
 	elseif source.yAlign == "top" then
-		y = source.y - font:getHeight()
+		y = math.floor(y - font:getHeight())
 	end
 	if source.xAlign == "center" then
-		x = source.x - love.graphics.getWidth() / 2
+		x = math.floor(x - loveio.output.position.w / 2)
 	end
 	
 	local multipleColors = source.multipleColors or false

@@ -1,8 +1,8 @@
 local function circle(source)
 	local mode = source.mode or "fill"
-	local x = tonumber(source.x) or 0
-	local y = tonumber(source.y) or 0
-	local r = tonumber(source.r) or 0
+	local x = pos.x2X(tonumber(source.x), true) or 0
+	local y = pos.y2Y(tonumber(source.y), true) or 0
+	local r = pos.x2X(tonumber(source.r)) or 0
 
 	local alpha = tonumber(source.alpha) or 255
 	local color = source.color or {}
