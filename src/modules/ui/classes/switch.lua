@@ -1,33 +1,57 @@
 local switch = {}
 
-switch.new = function(self, data)
-	local object = {}
-	object.x = data.x or 0
-	object.y = data.y or 0
-	object.w = data.w or 1
-	object.h = data.h or 1
-	object.layer = data.layer or 2
-	object.loaded = false
-	object.oldValue = data.value or false
-	object.value = data.value or object.oldValue
-	object.getValue = data.getValue or function() return object.value end
-	object.value = object.getValue()
-	object.action = data.action or function() end
-	object.name = data.name or "switch" .. math.random()
-	object.objectCount = 2
+switch.x = 0
+switch.y = 0
+switch.w = 1
+switch.h = 1
+switch.layer = 2
+switch.loaded = false
+switch.oldValue = false
+switch.value = switch.oldValue
+switch.xAlign = "center"
+switch.yAlign = "center"
+switch.action = function() end
+switch.objectCount = 2
+switch.textColor = {255, 255, 255, 255}
+switch.backgroundColor = {0, 0, 0, 127}
+switch.update = function() end
+switch.apply = false
+
+switch.new = function(self, object)
+	setmetatable(object, self)
+	self.__index = self
+	
+	object.name = object.name or "switch" .. math.random()
+	object.getValue = object.getValue or function() return object.value end
 		
 	object.update = function(command)
 		local x, y, w, h = object.x, object.y, object.w, object.h
-		object.value = object.getValue()
-		local oldValue = object.oldValue
-		local value = object.value
 		local name = object.name
+		local oldValue = object.oldValue
+		object.value = object.getValue()
+		local value = object.value
+		if command == "activate" then
+			object.action(value)
+			return
+		elseif command == "close" then
+			loveio.input.callbacks[name] = nil
+			for i = 1, object.objectCount do
+				loveio.output.objects[name .. i] = nil
+			end
+			loveio.objects[name] = nil
+			return
+		elseif command == "reload" then
+			object.loaded = false
+			return
+		end
+		
 		if oldValue ~= value or not object.loaded then
 			loveio.output.objects[name .. 2] = {
 				class = "text",
 				x = x + w / 2, y = y + h / 2,
-				text = tostring(object.value), xAlign = "center", yAlign = "center",
-				layer = object.layer + 1
+				text = tostring(object.value), xAlign = object.xAlign, yAlign = object.yAlign,
+				layer = object.layer + 1,
+				color = object.textColor
 			}
 		end
 		if not object.loaded then
@@ -35,7 +59,7 @@ switch.new = function(self, data)
 				class = "rectangle",
 				x = x, y = y,
 				w = w, h = h,
-				mode = "fill", color = {0,0,0,127},
+				mode = "fill", color = object.backgroundColor,
 				layer = object.layer
 			}
 			loveio.input.callbacks[object.name] = {
@@ -43,33 +67,17 @@ switch.new = function(self, data)
 					if mx >= x and mx <= x + w and my >= y and my <= y + h then
 						local mx = pos.X2x(mx, true)
 						local my = pos.Y2y(my, true)
-						if object.value == true then
-							object.value = false
-							loveio.output.objects[name .. 2].text = tostring(object.value)
-						else
-							object.value = true
-							loveio.output.objects[name .. 2].text = tostring(object.value)
-						end
-						object.action(object.value)
+						object.update("activate")
 					end
 				end
 			}
 			object.loaded = true
 		end
-		if command == "close" then
-			loveio.input.callbacks[name] = nil
-			for i = 1, object.objectCount do
-				loveio.output.objects[name .. i] = nil
-			end
-			objects[object.name] = nil
-		end
-		if command == "reload" then
-			object.loaded = false
-		end
 	end
 	
-	setmetatable(object, self)
-	self.__index = self
+	if object.apply then
+		loveio.objects[object.name] = object
+	end
 	return object
 end
 

@@ -1,30 +1,50 @@
 local button = {}
 
-button.new = function(self, data)
-	local object = {}
-	object.x = data.x or 0
-	object.y = data.y or 0
-	object.w = data.w or 1
-	object.h = data.h or 1
-	object.layer = data.layer or 2
-	object.loaded = false
-	object.oldValue = data.value or ""
-	object.value = data.value or object.oldValue
-	object.getValue = data.getValue or function() return object.value end
-	object.value = object.getValue()
-	object.xAlign = data.xAlign or "center"
-	object.action = data.action or function() end
-	object.name = data.name or "button" .. math.random()
-	object.objectCount = 2
-	object.textColor = data.textColor
-	object.BGColor = data.BGColor or {0,0,0,127}
+button.x = 0
+button.y = 0
+button.w = 1
+button.h = 1
+button.layer = 2
+button.loaded = false
+button.oldValue = ""
+button.value = button.oldValue
+button.xAlign = "center"
+button.yAlign = "center"
+button.action = function() end
+button.objectCount = 2
+button.textColor = {255, 255, 255, 255}
+button.backgroundColor = {0, 0, 0, 127}
+button.update = function() end
+button.apply = false
+
+button.new = function(self, object)
+	setmetatable(object, self)
+	self.__index = self
+	
+	object.name = object.name or "button" .. math.random()
+	object.getValue = object.getValue or function() return object.value end
 		
 	object.update = function(command)
 		local x, y, w, h = object.x, object.y, object.w, object.h
-		object.value = object.getValue()
-		local oldValue = object.oldValue
-		local value = object.value
 		local name = object.name
+		local oldValue = object.oldValue
+		object.value = object.getValue()
+		local value = object.value
+		if command == "activate" then
+			object.action(object.value)
+			return
+		elseif command == "close" then
+			loveio.input.callbacks[name] = nil
+			for i = 1, object.objectCount do
+				loveio.output.objects[name .. i] = nil
+			end
+			loveio.objects[name] = nil
+			return
+		elseif command == "reload" then
+			object.loaded = false
+			return
+		end
+		
 		
 		if oldValue ~= value or not object.loaded then
 			loveio.output.objects[name .. 2] = {
@@ -42,7 +62,7 @@ button.new = function(self, data)
 				class = "rectangle",
 				x = x, y = y,
 				w = w, h = h,
-				mode = "fill", color = object.BGColor,
+				mode = "fill", color = object.backgroundColor,
 				layer = object.layer
 			}
 			loveio.input.callbacks[object.name] = {
@@ -56,21 +76,11 @@ button.new = function(self, data)
 			}
 			object.loaded = true
 		end
-		if command == "activate" then
-			object.action(object.value)
-		elseif command == "close" then
-			loveio.input.callbacks[name] = nil
-			for i = 1, object.objectCount do
-				loveio.output.objects[name .. i] = nil
-			end
-			objects[object.name] = nil
-		elseif command == "reload" then
-			object.loaded = false
-		end
 	end
 	
-	setmetatable(object, self)
-	self.__index = self
+	if object.apply then
+		loveio.objects[object.name] = object
+	end
 	return object
 end
 

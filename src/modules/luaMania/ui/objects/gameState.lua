@@ -8,12 +8,12 @@ gameState.data = {
 			close = {},
 			open = {
 				"background",
-				"buttonPlay"
+				"playButton"
 			}
 		},
 		["mapList"] = {
 			close = {
-				"buttonPlay",
+				"playButton",
 			},
 			open = {
 				"mapList"

@@ -1,29 +1,48 @@
 local picture = {}
 
-picture.new = function(self, data)
-	local object = {}
-	object.x = data.x or 0
-	object.y = data.y or 0
-	object.w = data.w or 1
-	object.h = data.h or 1
-	object.layer = data.layer or 2
-	object.loaded = false
-	object.oldValue = data.value or false
-	object.value = data.value or object.oldValue
-	object.getValue = data.getValue or function() return object.value end
-	object.value = object.getValue()
-	object.action = data.action or function() end
-	object.name = data.name or "picture" .. math.random()
-	object.objectCount = 1
-	object.callbacks = data.callbacks or {}
-	object.mode = data.mode or "fill" --center - центр, fill - заполн, fit - по размЫ, stretch - раст, tile - тайл, span
+picture.x = 0
+picture.y = 0
+picture.w = 1
+picture.h = 1
+picture.layer = 2
+picture.loaded = false
+picture.oldValue = false
+picture.value = picture.oldValue
+picture.action = function() end
+picture.objectCount = 1
+picture.mode = "fill" --center - центр, fill - заполн, fit - по размЫ, stretch - раст, tile - тайл, span
+picture.update = function() end
+picture.apply = false
+
+picture.new = function(self, object)
+	setmetatable(object, self)
+	self.__index = self
+	
+	object.name = object.name or "picture" .. math.random()
+	object.getValue = object.getValue or function() return object.value end
 	
 	object.update = function(command)
+		local name = object.name
+		if command == "activate" then
+			object.action(object.value)
+			return
+		elseif command == "close" then
+			loveio.input.callbacks[name] = nil
+			for i = 1, object.objectCount do
+				loveio.output.objects[name .. i] = nil
+			end
+			loveio.objects[name] = nil
+			return
+		elseif command == "reload" then
+			object.loaded = false
+			return
+		end
+		
 		local x, y, w, h = object.x, object.y, object.w, object.h
 		object.value = object.getValue()
 		local oldValue = object.oldValue
 		local value = object.value
-		local name = object.name
+		
 		if oldValue ~= value or not object.loaded then
 			local drawable = love.graphics.newImage(object.value)
 			local sx = 1
@@ -59,25 +78,17 @@ picture.new = function(self, data)
 					layer = object.layer
 				}
 			end
+			object.oldValue = value
 		end
 		if not object.loaded then
 			loveio.input.callbacks[object.name] = object.callbacks
 			object.loaded = true
 		end
-		if command == "close" then
-			loveio.input.callbacks[name] = nil
-			for i = 1, object.objectCount do
-				loveio.output.objects[name .. i] = nil
-			end
-			objects[object.name] = nil
-		end
-		if command == "reload" then
-			object.loaded = false
-		end
 	end
 	
-	setmetatable(object, self)
-	self.__index = self
+	if object.apply then
+		loveio.objects[object.name] = object
+	end
 	return object
 end
 

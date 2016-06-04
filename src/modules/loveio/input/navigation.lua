@@ -5,12 +5,11 @@ navigation.buttons = {
 	["down"] = "down",
 	["left"] = "left",
 	["right"] = "right",
-	["activate"] = "return",
-	["back"] = "escape"
+	["activate"] = "return"
 }
 navigation.currentPosition = {1, 1}
 navigation.oldPosition = {0, 0}
-navigation.map = {{"fpsDisplay", "latencyDisplay", "buttonPlay"}}
+navigation.map = {{"playButton"}}
 navigation.move = function(direction)
 	local curPos = navigation.currentPosition
 	local map = navigation.map
@@ -22,19 +21,19 @@ navigation.move = function(direction)
 		end
 	end
 	if direction == "up" then
-		if map[curPos[1] + 1] and map[curPos[1] + 1][curPos[2]] then
+		if map[curPos[1] + 1] and map[curPos[1] + 1][curPos[2]] and objects[map[curPos[1] + 1][curPos[2]]] then
 			curPos[1] = curPos[1] + 1
 		end
 	elseif direction == "down" then
-		if map[curPos[1] - 1] and map[curPos[1] - 1][curPos[2]] then
+		if map[curPos[1] - 1] and map[curPos[1] - 1][curPos[2]] and objects[map[curPos[1] - 1][curPos[2]]] then
 			curPos[1] = curPos[1] - 1
 		end
 	elseif direction == "left" then
-		if map[curPos[1]] and map[curPos[1]][curPos[2] - 1] then
+		if map[curPos[1]] and map[curPos[1]][curPos[2] - 1] and objects[map[curPos[1]][curPos[2] - 1]] then
 			curPos[2] = curPos[2] - 1
 		end
 	elseif direction == "right" then
-		if map[curPos[1]] and map[curPos[1]][curPos[2] + 1] then
+		if map[curPos[1]] and map[curPos[1]][curPos[2] + 1] and objects[map[curPos[1]][curPos[2] + 1]] then
 			curPos[2] = curPos[2] + 1
 		end
 	end
@@ -62,6 +61,8 @@ navigation.object.update = function(command)
 			oldPos[1] = curPos[1]
 			oldPos[2] = curPos[2]
 		end
+	else
+		loveio.output.objects.selectionObject = nil
 	end
 	if not navigation.loaded then
 		loveio.input.callbacks.navigation = {
