@@ -9,7 +9,16 @@ ui.update = function(dt)
 	if ui.loaded then
 	
 	else
-		objects["fpsCounter"] = ui.classes.button:new({x = 0, y = 0, w = 0.05, h = pos.x2y(0.05), getValue = love.timer.getFPS, action = function(value) print("FPS: " .. value) end})
+		objects["fpsDisplay"] = ui.classes.button:new({
+			x = 0, y = 0, w = 0.08, h = pos.x2y(0.05),
+			getValue = function() return love.timer.getFPS() .. "fps" end,
+			action = function(value) print("FPS: " .. value) end
+		})
+		objects["latencyDisplay"] = ui.classes.button:new({
+			x = 0, y = pos.x2y(0.05), w = 0.08, h = pos.x2y(0.05),
+			getValue = function() return math.floor((1000 / love.timer.getFPS()) * 10) / 10 .. "ms" end,
+			action = function(value) print("Latency: " .. value) end
+		})
 		ui.loaded = true
 	end
 end

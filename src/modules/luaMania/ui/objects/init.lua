@@ -5,6 +5,10 @@ objects.mapList = require("luaMania.ui.objects.mapList")
 objects.background = ui.classes.picture:new({layer = 1, x = 0, y = 0, w = 1, h = 1, value = "res/skin/background.png", mode = "fill",
 	callbacks = {
 		resize = function()
+			objects.background.x = pos.X2x(0, true)
+			objects.background.y = pos.Y2y(0, true)
+			objects.background.w = pos.X2x(love.graphics.getWidth())
+			objects.background.h = pos.Y2y(love.graphics.getHeight())
 			objects.background.loaded = false
 		end
 	}

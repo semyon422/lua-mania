@@ -1,5 +1,7 @@
 local input = {}
 
+input.navigation = require("loveio.input.navigation")
+
 input.callbacks = {}
 
 input.init = function()

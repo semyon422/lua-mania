@@ -41,8 +41,8 @@ switch.new = function(self, data)
 			loveio.input.callbacks[object.name] = {
 				mousepressed = function(mx, my)
 					if mx >= x and mx <= x + w and my >= y and my <= y + h then
-						local mx = pos.X2x(mx)
-						local my = pos.Y2y(my)
+						local mx = pos.X2x(mx, true)
+						local my = pos.Y2y(my, true)
 						if object.value == true then
 							object.value = false
 							loveio.output.objects[name .. 2].text = tostring(object.value)

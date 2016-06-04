@@ -64,15 +64,15 @@ slider.new = function(self, data)
 			loveio.input.callbacks[name] = {
 				mousepressed = function(mx, my)
 					if mx >= x and mx <= x + w and my >= y and my <= y + h then
-						local mx = pos.X2x(mx)
-						local my = pos.Y2y(my)
+						local mx = pos.X2x(mx, true)
+						local my = pos.Y2y(my, true)
 						object.pressed = true
 						loveio.input.callbacks[name].mousemoved(mx, my)
 					end
 				end,
 				mousemoved = function(mx, my)
-					local mx = pos.X2x(mx)
-					local my = pos.Y2y(my)
+					local mx = pos.X2x(mx, true)
+					local my = pos.Y2y(my, true)
 					if object.pressed then
 						object.value = (mx - (x + h / 2)) * (maxvalue - minvalue) / (w - h)
 						if type(object.round) == "function" then

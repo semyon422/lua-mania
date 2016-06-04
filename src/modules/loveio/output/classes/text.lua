@@ -18,7 +18,7 @@ local function text(source)
 		y = math.floor(y - font:getHeight())
 	end
 	if source.xAlign == "center" then
-		x = math.floor(x - loveio.output.position.w / 2)
+		-- x = math.floor(x - limit / 2)
 	end
 	
 	local multipleColors = source.multipleColors or false
