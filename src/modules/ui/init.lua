@@ -26,13 +26,30 @@ ui.update = function(dt)
 		ui.classes.button:new({
 			name = "printObjectsList",
 			x = 0, y = pos.x2y(0.1), w = 0.08, h = pos.x2y(0.05),
-			value = "print objects",
+			value = "print\nobjects",
 			action = function()
 				print("--objects = {")
 				for key, object in pairs(objects) do
 					print("--\t[" .. key .. "] = " .. tostring(object))
 				end
 				print("--}")
+			end,
+			apply = true
+		})
+		ui.classes.button:new({
+			name = "goFullscreen",
+			x = 1 - 0.08, y = 0, w = 0.08, h = pos.x2y(0.05),
+			value = "full\nscreen",
+			action = function(value) love.window.setFullscreen(not (love.window.getFullscreen())) end,
+			apply = true
+		})
+		ui.classes.button:new({
+			name = "hideLogo",
+			x = 1 - 0.08, y = pos.x2y(0.05), w = 0.08, h = pos.x2y(0.05),
+			value = "switch",
+			action = function(value) 
+				if objects.luaManiaLogo.hidden then objects.luaManiaLogo.update("show")
+				else objects.luaManiaLogo.update("hide") end
 			end,
 			apply = true
 		})

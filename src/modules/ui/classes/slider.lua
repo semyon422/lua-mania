@@ -19,6 +19,7 @@ slider.textColor = {255, 255, 255, 255}
 slider.backgroundColor = {0, 0, 0, 127}
 slider.update = function() end
 slider.pressed = false
+slider.hidden = false
 slider.apply = false
 slider.round = false
 
@@ -30,13 +31,13 @@ slider.new = function(self, object)
 	object.getValue = object.getValue or function() return object.value end
 		
 	object.update = function(command)
-		local x, y, w, h, r = object.x, object.y, object.w, object.h, object.r
-		object.value = object.getValue()
+		local x, y, w, h = object.x, object.y, object.w, object.h
+		local name = object.name
 		local oldValue = object.oldValue
+		object.value = object.getValue()
 		local value = object.value
 		local minvalue = object.minvalue
 		local maxvalue = object.maxvalue
-		local name = object.name
 		if command == "activate" then
 			object.action(value)
 			return
@@ -50,7 +51,18 @@ slider.new = function(self, object)
 		elseif command == "reload" then
 			object.loaded = false
 			return
+		elseif command == "hide" then
+			loveio.input.callbacks[name] = nil
+			for i = 1, object.objectCount do
+				loveio.output.objects[name .. i] = nil
+			end
+			object.hidden = true
+			return
+		elseif command == "show" then
+			object.hidden = false
+			object.loaded = false
 		end
+		if object.hidden then return end
 		
 		if oldValue ~= value or not object.loaded then
 			loveio.output.objects[name .. 3] = {

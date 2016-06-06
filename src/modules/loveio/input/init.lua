@@ -37,7 +37,7 @@ input.init = function()
 	end
 	function love.resize(w, h)
 		for _, callback in pairs(input.callbacks) do
-			if callback.resize then callback.resize(x, y) end
+			if callback.resize then callback.resize(w, h) end
 		end
 	end
 end

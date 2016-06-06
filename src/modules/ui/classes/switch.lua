@@ -15,6 +15,7 @@ switch.objectCount = 2
 switch.textColor = {255, 255, 255, 255}
 switch.backgroundColor = {0, 0, 0, 127}
 switch.update = function() end
+switch.hidden = false
 switch.apply = false
 
 switch.new = function(self, object)
@@ -43,15 +44,27 @@ switch.new = function(self, object)
 		elseif command == "reload" then
 			object.loaded = false
 			return
+		elseif command == "hide" then
+			loveio.input.callbacks[name] = nil
+			for i = 1, object.objectCount do
+				loveio.output.objects[name .. i] = nil
+			end
+			object.hidden = true
+			return
+		elseif command == "show" then
+			object.hidden = false
+			object.loaded = false
 		end
+		if object.hidden then return end
 		
 		if oldValue ~= value or not object.loaded then
 			loveio.output.objects[name .. 2] = {
 				class = "text",
-				x = x + w / 2, y = y + h / 2,
-				text = tostring(object.value), xAlign = object.xAlign, yAlign = object.yAlign,
-				layer = object.layer + 1,
-				color = object.textColor
+				x = x, y = y + h / 2,
+				limit = w,
+				text = object.value, xAlign = object.xAlign, yAlign = "center",
+				color = object.textColor,
+				layer = object.layer + 1
 			}
 		end
 		if not object.loaded then
@@ -64,6 +77,8 @@ switch.new = function(self, object)
 			}
 			loveio.input.callbacks[object.name] = {
 				mousepressed = function(mx, my)
+					local mx = pos.X2x(mx, true)
+					local my = pos.Y2y(my, true)
 					if mx >= x and mx <= x + w and my >= y and my <= y + h then
 						local mx = pos.X2x(mx, true)
 						local my = pos.Y2y(my, true)

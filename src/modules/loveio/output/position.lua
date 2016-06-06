@@ -31,10 +31,6 @@ position.object.update = function(command)
 			position.y = 0
 			position.x = 0
 		end
-		position.w = math.floor(position.w)
-		position.h = math.floor(position.h)
-		position.y = math.floor(position.y)
-		position.x = math.floor(position.x)
 	end
 end
 
@@ -52,18 +48,18 @@ position.X2Y = function(X, g)
 	if not X then return end
 	position.object.update()
 	if g then
-		return math.floor((X - position.x) * position.dimensions)
+		return (X - position.x) * position.dimensions
 	else
-		return math.floor(X * position.dimensions)
+		return X * position.dimensions
 	end
 end
 position.Y2X = function(Y, g)
 	if not Y then return end
 	position.object.update()
 	if g then
-		return math.floor((Y - position.y) / position.dimensions)
+		return (Y - position.y) / position.dimensions
 	else
-		return math.floor(Y / position.dimensions)
+		return Y / position.dimensions
 	end
 end
 position.X2x = function(X, g)
@@ -88,18 +84,18 @@ position.x2X = function(x, g)
 	if not x then return end
 	position.object.update()
 	if g then
-		return math.floor(position.x + x * position.w)
+		return position.x + x * position.w
 	else
-		return math.floor(x * position.w)
+		return x * position.w
 	end
 end
 position.y2Y = function(y, g)
 	if not y then return end
 	position.object.update()
 	if g then
-		return math.floor(position.y + y * position.h)
+		return position.y + y * position.h
 	else
-		return math.floor(y * position.h)
+		return y * position.h
 	end
 end
 

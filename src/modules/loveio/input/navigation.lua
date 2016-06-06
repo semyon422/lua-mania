@@ -9,7 +9,7 @@ navigation.buttons = {
 }
 navigation.currentPosition = {1, 1}
 navigation.oldPosition = {0, 0}
-navigation.map = {{"playButton"}}
+navigation.map = {{}}
 navigation.move = function(direction)
 	local curPos = navigation.currentPosition
 	local map = navigation.map

@@ -22,5 +22,12 @@ objects.playButton = ui.classes.button:new({
 	value = "play",
 	action = function() objects.gameState.data.state = "mapList"; objects.gameState.data.switched = false end
 })
+objects.luaManiaLogo = ui.classes.button:new({
+	name = "luaManiaLogo",
+	x = 0.5 - 0.15 / 2,
+	y = 1 / 6 - pos.x2y(0.05) / 2,
+	w = 0.15, h = pos.x2y(0.05),
+	value = "lua-mania"
+})
 
 return objects

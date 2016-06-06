@@ -15,6 +15,7 @@ button.objectCount = 2
 button.textColor = {255, 255, 255, 255}
 button.backgroundColor = {0, 0, 0, 127}
 button.update = function() end
+button.hidden = false
 button.apply = false
 
 button.new = function(self, object)
@@ -43,8 +44,18 @@ button.new = function(self, object)
 		elseif command == "reload" then
 			object.loaded = false
 			return
+		elseif command == "hide" then
+			loveio.input.callbacks[name] = nil
+			for i = 1, object.objectCount do
+				loveio.output.objects[name .. i] = nil
+			end
+			object.hidden = true
+			return
+		elseif command == "show" then
+			object.hidden = false
+			object.loaded = false
 		end
-		
+		if object.hidden then return end
 		
 		if oldValue ~= value or not object.loaded then
 			loveio.output.objects[name .. 2] = {

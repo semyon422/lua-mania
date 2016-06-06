@@ -12,6 +12,7 @@ picture.action = function() end
 picture.objectCount = 1
 picture.mode = "fill" --center - центр, fill - заполн, fit - по размЫ, stretch - раст, tile - тайл, span
 picture.update = function() end
+picture.hidden = false
 picture.apply = false
 
 picture.new = function(self, object)
@@ -22,7 +23,11 @@ picture.new = function(self, object)
 	object.getValue = object.getValue or function() return object.value end
 	
 	object.update = function(command)
+		local x, y, w, h = object.x, object.y, object.w, object.h
 		local name = object.name
+		local oldValue = object.oldValue
+		object.value = object.getValue()
+		local value = object.value
 		if command == "activate" then
 			object.action(object.value)
 			return
@@ -36,12 +41,18 @@ picture.new = function(self, object)
 		elseif command == "reload" then
 			object.loaded = false
 			return
+		elseif command == "hide" then
+			loveio.input.callbacks[name] = nil
+			for i = 1, object.objectCount do
+				loveio.output.objects[name .. i] = nil
+			end
+			object.hidden = true
+			return
+		elseif command == "show" then
+			object.hidden = false
+			object.loaded = false
 		end
-		
-		local x, y, w, h = object.x, object.y, object.w, object.h
-		object.value = object.getValue()
-		local oldValue = object.oldValue
-		local value = object.value
+		if object.hidden then return end
 		
 		if oldValue ~= value or not object.loaded then
 			local drawable = love.graphics.newImage(object.value)
