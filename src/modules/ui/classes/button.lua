@@ -14,6 +14,7 @@ button.action = function() end
 button.objectCount = 2
 button.textColor = {255, 255, 255, 255}
 button.backgroundColor = {0, 0, 0, 127}
+button.font = nil
 button.update = function() end
 button.hidden = false
 button.apply = false
@@ -63,6 +64,7 @@ button.new = function(self, object)
 				x = x, y = y + h / 2,
 				limit = w,
 				text = object.value, xAlign = object.xAlign, yAlign = "center",
+				font = object.font,
 				color = object.textColor,
 				layer = object.layer + 1
 			}
@@ -76,15 +78,13 @@ button.new = function(self, object)
 				mode = "fill", color = object.backgroundColor,
 				layer = object.layer
 			}
-			loveio.input.callbacks[object.name] = {
-				mousepressed = function(mx, my)
-					local mx = pos.X2x(mx, true)
-					local my = pos.Y2y(my, true)
-					if mx >= x and mx <= x + w and my >= y and my <= y + h then
-						object.update("activate")
-					end
+			loveio.input.callbacks.mousepressed[object.name] = function(mx, my)
+				local mx = pos.X2x(mx, true)
+				local my = pos.Y2y(my, true)
+				if mx >= x and mx <= x + w and my >= y and my <= y + h then
+					object.update("activate")
 				end
-			}
+			end
 			object.loaded = true
 		end
 	end

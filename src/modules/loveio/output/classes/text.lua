@@ -2,13 +2,13 @@ local function text(source)
 	local x = math.floor(pos.x2X(tonumber(source.x), true)) or 0
 	local y = math.floor(pos.y2Y(tonumber(source.y), true)) or 0
 	local limit = math.floor(pos.x2X(tonumber(source.limit)) or loveio.output.position.w)
-	local r = tonumber(source.r) or 0
+	local r = tonumber(source.r)
 	local xAlign = source.xAlign or "left"
 	local yAlign = source.yAlign or "bottom"
-	local sx = tonumber(source.sx) or 1
+	local sx = tonumber(source.sx)
 	local sy = tonumber(source.sy) or source.sy
-	local kx = tonumber(source.kx) or 0
-	local ky = tonumber(source.ky) or 0
+	local kx = tonumber(source.kx)
+	local ky = tonumber(source.ky)
 
 	local text = tostring(source.text) or ""
 	local lineCount = #explode("\n", text)

@@ -12,7 +12,7 @@ output.classes = {
 	polygon = require("loveio.output.classes.polygon")
 }
 
-output.run = function()
+output.draw = function()
 	local objects = output.objects
 	local minLayer = 1
 	local maxLayer = 1
@@ -37,9 +37,7 @@ output.run = function()
 end
 
 output.init = function()
-	function love.draw()
-		output.run()
-	end
+	love.draw = output.draw
 end
 
 return output

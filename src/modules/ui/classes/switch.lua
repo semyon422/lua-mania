@@ -14,6 +14,7 @@ switch.action = function() end
 switch.objectCount = 2
 switch.textColor = {255, 255, 255, 255}
 switch.backgroundColor = {0, 0, 0, 127}
+switch.font = nil
 switch.update = function() end
 switch.hidden = false
 switch.apply = false
@@ -63,6 +64,7 @@ switch.new = function(self, object)
 				x = x, y = y + h / 2,
 				limit = w,
 				text = object.value, xAlign = object.xAlign, yAlign = "center",
+				font = object.font,
 				color = object.textColor,
 				layer = object.layer + 1
 			}
@@ -75,17 +77,15 @@ switch.new = function(self, object)
 				mode = "fill", color = object.backgroundColor,
 				layer = object.layer
 			}
-			loveio.input.callbacks[object.name] = {
-				mousepressed = function(mx, my)
+			loveio.input.callbacks[callbackName][object.name] = function(mx, my)
+				local mx = pos.X2x(mx, true)
+				local my = pos.Y2y(my, true)
+				if mx >= x and mx <= x + w and my >= y and my <= y + h then
 					local mx = pos.X2x(mx, true)
 					local my = pos.Y2y(my, true)
-					if mx >= x and mx <= x + w and my >= y and my <= y + h then
-						local mx = pos.X2x(mx, true)
-						local my = pos.Y2y(my, true)
-						object.update("activate")
-					end
+					object.update("activate")
 				end
-			}
+			end
 			object.loaded = true
 		end
 	end

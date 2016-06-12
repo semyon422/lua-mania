@@ -17,6 +17,7 @@ slider.action = function() end
 slider.objectCount = 4
 slider.textColor = {255, 255, 255, 255}
 slider.backgroundColor = {0, 0, 0, 127}
+slider.font = nil
 slider.update = function() end
 slider.pressed = false
 slider.hidden = false
@@ -78,6 +79,7 @@ slider.new = function(self, object)
 				x = x, y = y + h / 2 - r, limit = (h / 2 + value / (maxvalue - minvalue) * (w - h)) * 2,
 				xAlign = object.xAlign, yAlign = object.yAlign,
 				text = object.value,
+				font = object.font,
 				layer = object.layer + 1,
 				color = object.textColor
 			}
@@ -99,35 +101,33 @@ slider.new = function(self, object)
 				layer = object.layer + 1,
 				color = object.textColor
 			}
-			loveio.input.callbacks[name] = {
-				mousepressed = function(mx, my)
-					local oldmx = mx
-					local oldmy = my
-					local mx = pos.X2x(mx, true)
-					local my = pos.Y2y(my, true)
-					if mx >= x and mx <= x + w and my >= y and my <= y + h then
-						object.pressed = true
-						loveio.input.callbacks[name].mousemoved(oldmx, oldmy)
+			loveio.input.callbacks[callbackName][object.name] = function(mx, my)
+				local oldmx = mx
+				local oldmy = my
+				local mx = pos.X2x(mx, true)
+				local my = pos.Y2y(my, true)
+				if mx >= x and mx <= x + w and my >= y and my <= y + h then
+					object.pressed = true
+					loveio.input.callbacks[name].mousemoved(oldmx, oldmy)
+				end
+			end
+			loveio.input.callbacks[callbackName][object.name] = function(mx, my)
+				local mx = pos.X2x(mx, true)
+				local my = pos.Y2y(my, true)
+				if object.pressed then
+					object.value = (mx - (x + h / 2)) / (w - h) * (maxvalue - minvalue)
+					if type(object.round) == "function" then
+						object.value = object.round(object.value)
 					end
-				end,
-				mousemoved = function(mx, my)
-					local mx = pos.X2x(mx, true)
-					local my = pos.Y2y(my, true)
-					if object.pressed then
-						object.value = (mx - (x + h / 2)) / (w - h) * (maxvalue - minvalue)
-						if type(object.round) == "function" then
-							object.value = object.round(object.value)
-						end
-						if object.value > maxvalue then object.value = maxvalue
-						elseif object.value < minvalue then object.value = minvalue
-						end
-						object.action(object.value)
+					if object.value > maxvalue then object.value = maxvalue
+					elseif object.value < minvalue then object.value = minvalue
 					end
-				end,
-				mousereleased = function(mx, my)
-					if object.pressed then object.pressed = false end
-				end,
-			}
+					object.action(object.value)
+				end
+			end
+			loveio.input.callbacks[callbackName][object.name] = function(mx, my)
+				if object.pressed then object.pressed = false end
+			end
 			object.loaded = true
 		end
 	end

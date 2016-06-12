@@ -92,7 +92,9 @@ picture.new = function(self, object)
 			object.oldValue = value
 		end
 		if not object.loaded then
-			loveio.input.callbacks[object.name] = object.callbacks
+			for callbackName, callback in pairs(object.callbacks) do
+				loveio.input.callbacks[callbackName][object.name] = callback
+			end
 			object.loaded = true
 		end
 	end

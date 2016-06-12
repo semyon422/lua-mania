@@ -2,7 +2,7 @@ local ui = {}
 
 ui.classes = require("ui.classes")
 ui.fonts = {
-	default = love.graphics.newFont("res/fonts/OpenSans/OpenSansRegular/OpenSansRegular.ttf", 14)
+	default = love.graphics.newFont("res/fonts/OpenSans/OpenSansRegular/OpenSansRegular.ttf", 12)
 }
 
 ui.update = function(dt)
