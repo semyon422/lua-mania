@@ -6,9 +6,9 @@ loveio.output = require("loveio.output")
 loveio.init = function(objects)
 	loveio.objects = objects or {}
 	local objects = loveio.objects
-	function love.update(dt)
+	love.update = function(dt)
 		for _, object in pairs(objects) do
-			object.update(dt)
+			if object.update then object.update() end
 		end
 	end
 	loveio.input.init()

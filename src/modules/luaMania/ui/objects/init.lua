@@ -29,5 +29,6 @@ objects.luaManiaLogo = ui.classes.button:new({
 	w = 0.15, h = pos.x2y(0.05),
 	value = "lua-mania"
 })
+objects.cursor = require("luaMania.ui.objects.cursor")
 
 return objects

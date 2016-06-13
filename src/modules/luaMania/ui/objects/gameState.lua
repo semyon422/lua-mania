@@ -9,7 +9,8 @@ gameState.data = {
 			open = {
 				"background",
 				"playButton",
-				"luaManiaLogo"
+				"luaManiaLogo",
+				"cursor"
 			}
 		},
 		["mapList"] = {

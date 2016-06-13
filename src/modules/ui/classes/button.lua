@@ -5,41 +5,31 @@ button.y = 0
 button.w = 1
 button.h = 1
 button.layer = 2
-button.loaded = false
-button.oldValue = ""
-button.value = button.oldValue
 button.xAlign = "center"
 button.yAlign = "center"
-button.action = function() end
 button.objectCount = 2
 button.textColor = {255, 255, 255, 255}
 button.backgroundColor = {0, 0, 0, 127}
-button.font = nil
-button.update = function() end
-button.hidden = false
-button.apply = false
+button.accesable = true
+--nil/false values: loaded, oldValue, value, action, font, update, hidden, apply
 
 button.new = function(self, object)
 	setmetatable(object, self)
 	self.__index = self
 	
 	object.name = object.name or "button" .. math.random()
-	object.getValue = object.getValue or function() return object.value end
 		
 	object.update = function(command)
 		local x, y, w, h = object.x, object.y, object.w, object.h
 		local name = object.name
 		local oldValue = object.oldValue
-		object.value = object.getValue()
+		if object.getValue then object.value = object.getValue() end
 		local value = object.value
 		if command == "activate" then
-			object.action(object.value)
+			if object.action then object.action(object) end
 			return
 		elseif command == "close" then
-			loveio.input.callbacks[name] = nil
-			for i = 1, object.objectCount do
-				loveio.output.objects[name .. i] = nil
-			end
+			object.update("hide")
 			loveio.objects[name] = nil
 			return
 		elseif command == "reload" then
@@ -58,7 +48,7 @@ button.new = function(self, object)
 		end
 		if object.hidden then return end
 		
-		if oldValue ~= value or not object.loaded then
+		if value ~= nil and (oldValue ~= value or not object.loaded) then
 			loveio.output.objects[name .. 2] = {
 				class = "text",
 				x = x, y = y + h / 2,
@@ -78,7 +68,7 @@ button.new = function(self, object)
 				mode = "fill", color = object.backgroundColor,
 				layer = object.layer
 			}
-			loveio.input.callbacks.mousepressed[object.name] = function(mx, my)
+			loveio.input.callbacks.mousepressed[name] = function(mx, my)
 				local mx = pos.X2x(mx, true)
 				local my = pos.Y2y(my, true)
 				if mx >= x and mx <= x + w and my >= y and my <= y + h then

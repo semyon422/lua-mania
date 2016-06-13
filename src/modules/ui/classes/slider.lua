@@ -4,49 +4,39 @@ slider.x = 0
 slider.y = 0
 slider.w = 1
 slider.h = 1
-slider.r = pos.X2x(4)
+slider.r = 0.005
 slider.layer = 2
-slider.loaded = false
 slider.minvalue = 0
 slider.maxvalue = 1
 slider.oldValue = slider.minvalue
 slider.value = slider.oldValue
 slider.xAlign = "center"
 slider.yAlign = "top"
-slider.action = function() end
 slider.objectCount = 4
 slider.textColor = {255, 255, 255, 255}
 slider.backgroundColor = {0, 0, 0, 127}
-slider.font = nil
-slider.update = function() end
-slider.pressed = false
-slider.hidden = false
-slider.apply = false
-slider.round = false
+slider.accesable = true
+--nil/false values: loaded, action, font, update, pressed, hidden, apply, round
 
 slider.new = function(self, object)
 	setmetatable(object, self)
 	self.__index = self
 	
 	object.name = object.name or "slider" .. math.random()
-	object.getValue = object.getValue or function() return object.value end
 		
 	object.update = function(command)
-		local x, y, w, h = object.x, object.y, object.w, object.h
+		local x, y, w, h, r = object.x, object.y, object.w, object.h, object.r
 		local name = object.name
 		local oldValue = object.oldValue
-		object.value = object.getValue()
+		if object.getValue then object.value = object.getValue() end
 		local value = object.value
 		local minvalue = object.minvalue
 		local maxvalue = object.maxvalue
 		if command == "activate" then
-			object.action(value)
+			object.action(object)
 			return
 		elseif command == "close" then
-			loveio.input.callbacks[name] = nil
-			for i = 1, object.objectCount do
-				loveio.output.objects[name .. i] = nil
-			end
+			object.update("hide")
 			loveio.objects[name] = nil
 			return
 		elseif command == "reload" then
@@ -101,17 +91,17 @@ slider.new = function(self, object)
 				layer = object.layer + 1,
 				color = object.textColor
 			}
-			loveio.input.callbacks[callbackName][object.name] = function(mx, my)
+			loveio.input.callbacks.mousepressed[name] = function(mx, my)
 				local oldmx = mx
 				local oldmy = my
 				local mx = pos.X2x(mx, true)
 				local my = pos.Y2y(my, true)
 				if mx >= x and mx <= x + w and my >= y and my <= y + h then
 					object.pressed = true
-					loveio.input.callbacks[name].mousemoved(oldmx, oldmy)
+					loveio.input.callbacks.mousemoved[name](oldmx, oldmy)
 				end
 			end
-			loveio.input.callbacks[callbackName][object.name] = function(mx, my)
+			loveio.input.callbacks.mousemoved[name] = function(mx, my)
 				local mx = pos.X2x(mx, true)
 				local my = pos.Y2y(my, true)
 				if object.pressed then
@@ -122,10 +112,10 @@ slider.new = function(self, object)
 					if object.value > maxvalue then object.value = maxvalue
 					elseif object.value < minvalue then object.value = minvalue
 					end
-					object.action(object.value)
+					object.action(object)
 				end
 			end
-			loveio.input.callbacks[callbackName][object.name] = function(mx, my)
+			loveio.input.callbacks.mousereleased[name] = function(mx, my)
 				if object.pressed then object.pressed = false end
 			end
 			object.loaded = true

@@ -17,8 +17,8 @@ output.draw = function()
 	local minLayer = 1
 	local maxLayer = 1
 	for _, object in pairs(objects) do
-		if type(tonumber(object.layer)) == "number" and object.layer < minLayer then minLayer = object.layer end
-		if type(tonumber(object.layer)) == "number" and object.layer > maxLayer then maxLayer = object.layer end
+		if object.layer and object.layer < minLayer then minLayer = object.layer end
+		if object.layer and object.layer > maxLayer then maxLayer = object.layer end
 	end
 	for layer = minLayer, maxLayer do
 		for objectIndex, object in pairs(objects) do
@@ -26,12 +26,6 @@ output.draw = function()
 				output.classes[object.class](object)
 				if object.remove then objects[objectIndex] = nil end
 			end
-		end
-	end
-	for objectIndex, object in pairs(objects) do
-		if type(tonumber(object.layer)) ~= "number" then
-			output.classes[object.class](object)
-			if object.remove then objects[objectIndex] = nil end
 		end
 	end
 end
