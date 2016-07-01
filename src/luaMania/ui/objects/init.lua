@@ -13,7 +13,7 @@ objects.background = ui.classes.picture:new({layer = 1, x = 0, y = 0, w = 1, h =
 		end
 	}
 })
-objects.mania = require("luaMania.modes.mania")
+objects.game = require("luaMania.game")
 objects.playButton = ui.classes.button:new({
 	name = "playButton",
 	x = 0.5 - 0.075 / 2,

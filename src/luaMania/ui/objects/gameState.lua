@@ -27,7 +27,7 @@ gameState.data = {
 				"mapList",
 			},
 			open = {
-				"mania"
+				"game"
 			}
 		}
 	}
