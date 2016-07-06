@@ -1,0 +1,1 @@
+qqq = function() print(234234) end

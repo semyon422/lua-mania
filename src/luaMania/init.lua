@@ -6,11 +6,20 @@ luaMania.modes = require("luaMania.game")
 luaMania.load = require("luaMania.load")
 luaMania.update = require("luaMania.update")
 
-config.luaManiaDefaults = require("luaMania.defaults")
-config.luaManiaDefaults.__index = config.luaManiaDefaults
-config.luaMania = {}
-setmetatable(config.luaMania, config.luaManiaDefaults)
+luaMania.defaultConfig = require("luaMania.config")
+luaMania.config = configManager.load("config.txt")
+setmetatable(luaMania.config, luaMania.defaultConfig)
+luaMania.defaultConfig.__index = luaMania.defaultConfig
 
-luaMania.skin = require(config.luaMania.skinPath)
+	--testing
+	luaMania.config["qqq"]:set("function() print(234234) end", true)
+	print(luaMania.config["qqq"]:get())
+	luaMania.config["qwe"]:set(2)
+	print(luaMania.config["qwe"]:get())
+	print(luaMania.config["qa.ws.ed"]:get())
+
+	configManager.save(luaMania.config, "config.txt")
+
+luaMania.skin = require("res/skin")
 
 return luaMania

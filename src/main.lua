@@ -1,7 +1,7 @@
 function love.load()
 	helpers = require("helpers")
 	log = helpers.logger.log
-	config = helpers.configManager.config
+	configManager = require("configManager")
 	loveio = require("loveio")
 	pos = loveio.output.position
 	nav = loveio.input.navigation
