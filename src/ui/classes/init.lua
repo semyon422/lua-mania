@@ -1,7 +1,8 @@
 local classes = {}
 
-classes.button = require("ui.classes.button")
-classes.slider = require("ui.classes.slider")
-classes.picture = require("ui.classes.picture")
+-- classes.UiObject = require("ui.classes.UiObject")
+classes.button = require("ui.classes.Button")
+classes.slider = require("ui.classes.Slider")
+classes.picture = require("ui.classes.Picture")
 
 return classes

@@ -11,9 +11,10 @@ vsrg.columns = {}
 
 vsrg.update = function(map)
 	if not vsrg.loaded then
-		for key = 1, map.info.keymode do
+		for key = 1, map:get("CircleSize") do
 			vsrg.columns[key] = vsrg.Column:new(key)
 		end
+		map.audio = love.audio.newSource(map:get("mapPath") .. "/" .. map:get("AudioFilename"))
 		map.audio:play()
 		vsrg.loaded = true
 	end

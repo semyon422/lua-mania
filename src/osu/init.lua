@@ -1,8 +1,7 @@
 local osu = {}
 
-trim = require("trim")
-explode = require("explode")
+osu.path = "osu/"
 
-osu.beatmap = require("osu.beatmap")
+osu.beatmap = require(osu.path .. "beatmap")(osu)
 
 return osu

@@ -16,11 +16,11 @@ Column.new = function(self, key)
 	column.hitObjects = {}
 	column.timingPoints = map.timingPoints
 	
-	local interval = 512 / map.info.keymode
+	local interval = 512 / map:get("CircleSize")
 	for hitObjectIndex, hitObject in ipairs(map.hitObjects) do
 		hitObject.key = hitObject.key or 0
 		if hitObject.key == 0 then
-			for newKey = 1, map.info.keymode do
+			for newKey = 1, map:get("CircleSize") do
 				if hitObject.x >= interval * (newKey - 1) and hitObject.x < newKey * interval then
 					hitObject.key = newKey
 					break
@@ -28,7 +28,7 @@ Column.new = function(self, key)
 			end
 		end
 		if hitObject.key == key then
-			hitObject.index = #column.hitObjects + 1
+			hitObject.columnIndex = #column.hitObjects + 1
 			hitObject.column = column
 			table.insert(column.hitObjects, vsrg.HitObject:new(hitObject))
 		end

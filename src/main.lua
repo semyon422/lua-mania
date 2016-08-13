@@ -1,12 +1,14 @@
 function love.load()
 	helpers = require("helpers")
 	log = helpers.logger.log
+	
 	configManager = require("configManager")
+	cacheManager = require("cacheManager")
+	
 	loveio = require("loveio")
 	pos = loveio.output.position
 	nav = loveio.input.navigation
 	
-	cache = require("cache")
 	
 	objects = {}
 	loveio.init(objects)
