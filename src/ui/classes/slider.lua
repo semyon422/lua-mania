@@ -54,6 +54,7 @@ Slider.load = function(self)
 	loveio.input.callbacks.mousereleased[self.name] = function(mx, my)
 		if self.pressed then self.pressed = false end
 	end
+	self:valueChanged()
 	self.loaded = true
 end
 Slider.unload = function(self)

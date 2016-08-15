@@ -1,17 +1,10 @@
 local init = function(output, loveio)
 --------------------------------
-local OutputObject = {}
+local OutputObject = loveio.LoveioObject:new()
 
 OutputObject.x = 0
 OutputObject.y = 0
 OutputObject.color = {255, 255, 255, 255}
-
-OutputObject.new = function(self, object)
-	local object = object or {}
-	self.__index = self
-	setmetatable(object, self)
-	return object
-end
 
 OutputObject.draw = function(self)
 end

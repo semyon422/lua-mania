@@ -1,5 +1,7 @@
 local loveio = {}
 
+loveio.LoveioObject = require("loveio.LoveioObject")(loveio)
+
 loveio.input = require("loveio.input")(loveio)
 loveio.output = require("loveio.output")(loveio)
 

@@ -1,6 +1,6 @@
 local init = function(classes, ui)
 --------------------------------
-local UiObject = {}
+local UiObject = loveio.LoveioObject:new()
 
 UiObject.x = 0
 UiObject.y = 0
@@ -12,22 +12,9 @@ UiObject.objectCount = 1
 UiObject.accesable = true
 UiObject.accessLevel = 1
 
-UiObject.new = function(self, object)
-	local object = object or {}
-	setmetatable(object, self)
-	self.__index = self
-	
-	object.name = object.name or "UiObject" .. math.random()
-	
-	if object.apply then
-		loveio.objects[object.name] = object
-	end
-	return object
-end
-
 UiObject.update = function(self)
-	if self.getValue then self.value = self.getValue() end
 	if self.hidden then return end
+	if self.getValue then self.value = self.getValue() end
 	
 	if self.value ~= nil and (self.oldValue ~= self.value or not self.loaded) then
 		self:valueChanged()
@@ -39,17 +26,9 @@ UiObject.update = function(self)
 	end
 end
 
-UiObject.set = function(self, key, value)
-	self[key] = value
-end
+UiObject.set = loveio.output.classes.OutputObject.set
 UiObject.get = loveio.output.classes.OutputObject.get
 
-UiObject.load = function(self)
-
-end
-UiObject.unload = function(self)
-
-end
 UiObject.valueChanged = function(self)
 
 end
@@ -57,18 +36,13 @@ end
 UiObject.activate = function(self)
 	if self.action then self:action() end
 end
-UiObject.remove = function(self)
+UiObject.hide = function(self)
 	self:unload()
-	loveio.objects[self.name] = nil
-end
-UiObject.reload = function(self)
-	self:unload()
-	self:load()
-	self:valueChanged()
+	self.hidden = true
 end
 UiObject.show = function(self)
+	self:load()
 	self.hidden = false
-	self.loaded = false
 end
 
 return UiObject

@@ -4,6 +4,7 @@ local input = {}
 
 input.navigation = require("loveio.input.navigation")(input, loveio)
 
+
 input.callbackNames = {
 	"keypressed",
 	"keyreleased",
@@ -25,7 +26,9 @@ input.init = function()
 			end
 		end
 	end
+	input.mouse = require("loveio.input.mouse")(input, loveio)
 end
+
 
 return input
 --------------------------------

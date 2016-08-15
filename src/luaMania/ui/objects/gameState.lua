@@ -1,4 +1,4 @@
-local gameState = {}
+local gameState = loveio.LoveioObject:new()
 
 gameState.data = {
 	state = "mainMenu",
@@ -40,6 +40,7 @@ gameState.update = function(self, dt)
 		end
 		for _, key in pairs(data.states[data.state].open) do
 			objects[key] = luaMania.ui.objects[key]
+			objects[key]:reload()
 		end
 		log("gameState: " .. data.state)
 		data.switched = true

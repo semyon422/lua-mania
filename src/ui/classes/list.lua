@@ -1,67 +1,46 @@
 local init = function(classes, ui)
 --------------------------------
-local List = {}
+local List = classes.UiObject:new()
 
-List.x = 0
-List.y = 0
-List.w = 1
-List.h = 1
 List.layer = 2
-List.loaded = false
-List.oldValue = 1
-List.value = List.oldValue
 List.xAlign = "center"
 List.yAlign = "center"
-List.action = function() end
-List.objectCount = 2
 List.textColor = {255, 255, 255, 255}
 List.backgroundColor = {0, 0, 0, 127}
-List.update = function() end
-List.objects = {{}}
-List.apply = false
 
-List.new = function(self, object)
-	setmetatable(object, self)
-	self.__index = self
-	
-	object.name = object.name or "List" .. math.random()
-	object.getValue = object.getValue or function() return object.value end
-		
-	object.update = function(command)
-		local x, y, w, h = object.x, object.y, object.w, object.h
-		local name = object.name
-		local oldValue = object.oldValue
-		object.value = object.getValue()
-		local value = object.value
-		if command == "activate" then
-			object.action(object.value)
-			return
-		elseif command == "close" then
-			loveio.input.callbacks[name] = nil
-			for i = 1, object.objectCount do
-				loveio.output.objects[name .. i] = nil
+List.showingItemsCount = 1
+List.startItem = 1
+
+List.load = function(self)
+	self.items = self.items or {}
+	self.buttons = self.buttons or {}
+	for i = 1, self.showingItemsCount do
+		ui.classes.Button:new({
+			name = self.name .. "-button" .. i,
+			x = self.x, y = self.y + (i - 1) * (self.h / self.showingItemsCount),
+			w = self.w, h = self.h / (self.showingItemsCount) - pos.Y2y(4),
+			value = self.items[(i - 1) + self.startItem] and self.items[(i - 1) + self.startItem].title,
+			layer = self.layer,
+			action = self.items[(i - 1) + self.startItem] and self.items[(i - 1) + self.startItem].action,
+			insert = objects
+		})
+	end
+	loveio.input.callbacks.wheelmoved[self.name] = function(_, direction)
+		if loveio.input.mouse.x >= self:get("x") and loveio.input.mouse.x <= self:get("x") + self:get("w") and loveio.input.mouse.y >= self:get("y") and loveio.input.mouse.y <= self:get("y") + self:get("h") then
+			if direction == -1 then
+				self.startItem = self.startItem - 1
+			elseif direction == 1 then
+				self.startItem = self.startItem + 1
 			end
-			loveio.objects[name] = nil
-			return
-		elseif command == "reload" then
-			object.loaded = false
-			return
-		end
-		
-		if oldValue ~= value or not object.loaded then
-			------
-			object.oldValue = value
-		end
-		if not object.loaded then
-			------
-			object.loaded = true
+			self:reload()
 		end
 	end
-	
-	if object.apply then
-		loveio.objects[object.name] = object
-	end
-	return object
+	self.loaded = true
+end
+List.unload = function(self)
+	for i = 1, self.showingItemsCount do end
+end
+List.valueChanged = function(self)
 end
 
 return List

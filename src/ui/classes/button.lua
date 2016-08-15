@@ -22,6 +22,7 @@ Button.load = function(self)
 			self:activate()
 		end
 	end
+	self:valueChanged()
 	self.loaded = true
 end
 Button.unload = function(self)

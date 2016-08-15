@@ -16,7 +16,7 @@ Drawable.draw = function(self)
 	love.graphics.setColor(oldColor)
 end
 
-return drawable
+return Drawable
 --------------------------------
 end
 
