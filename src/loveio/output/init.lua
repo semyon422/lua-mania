@@ -1,16 +1,18 @@
+local init = function(loveio)
+--------------------------------
 local output = {}
 
 output.objects = {}
 
-output.position = require("loveio.output.position")
+output.position = require("loveio.output.position")(output, loveio)
 
-output.classes = {
-	drawable = require("loveio.output.classes.drawable"),
-	rectangle = require("loveio.output.classes.rectangle"),
-	circle = require("loveio.output.classes.circle"),
-	text = require("loveio.output.classes.text"),
-	polygon = require("loveio.output.classes.polygon")
-}
+output.classes = {}
+output.classes.OutputObject = require("loveio.output.classes.OutputObject")(output, loveio)
+output.classes.Drawable = require("loveio.output.classes.Drawable")(output, loveio)
+output.classes.Rectangle = require("loveio.output.classes.Rectangle")(output, loveio)
+output.classes.Circle = require("loveio.output.classes.Circle")(output, loveio)
+output.classes.Text = require("loveio.output.classes.Text")(output, loveio)
+output.classes.Polygon = require("loveio.output.classes.Polygon")(output, loveio)
 
 output.draw = function()
 	local objects = output.objects
@@ -23,8 +25,7 @@ output.draw = function()
 	for layer = minLayer, maxLayer do
 		for objectIndex, object in pairs(objects) do
 			if object.layer == layer then
-				output.classes[object.class](object)
-				if object.remove then objects[objectIndex] = nil end
+				object:draw()
 			end
 		end
 	end
@@ -35,3 +36,7 @@ output.init = function()
 end
 
 return output
+--------------------------------
+end
+
+return init

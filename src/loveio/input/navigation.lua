@@ -1,3 +1,5 @@
+local init = function(input, loveio)
+--------------------------------
 local navigation = {}
 
 navigation.buttons = {
@@ -84,3 +86,7 @@ navigation.object.update = function(command)
 end
 
 return navigation
+--------------------------------
+end
+
+return init

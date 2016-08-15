@@ -1,39 +1,44 @@
-local function text(source)
-	local x = math.floor(pos.x2X(tonumber(source.x), true)) or 0
-	local y = math.floor(pos.y2Y(tonumber(source.y), true)) or 0
-	local limit = math.floor(pos.x2X(tonumber(source.limit)) or loveio.output.position.w)
-	local r = tonumber(source.r)
-	local xAlign = source.xAlign or "left"
-	local yAlign = source.yAlign or "bottom"
-	local sx = tonumber(source.sx)
-	local sy = tonumber(source.sy) or source.sy
-	local kx = tonumber(source.kx)
-	local ky = tonumber(source.ky)
+local init = function(output, loveio)
+--------------------------------
+local Text = output.classes.OutputObject:new()
 
-	local text = tostring(source.text) or ""
-	local lineCount = #explode("\n", text)
-	local font = source.font or love.graphics.getFont()
-	if source.yAlign == "center" then
-		y = math.floor(y - (font:getHeight() / 2) * lineCount)
-	elseif source.yAlign == "top" then
-		y = math.floor(y - font:getHeight() * lineCount)
+Text.limit = 0
+Text.xAlign = "left"
+Text.yAlign = "bottom"
+Text.text = ""
+Text.font = love.graphics.getFont()
+
+Text.draw = function(self)
+	local Y = self:get("Y", true)
+	local lineCount = #explode("\n", tostring(self.text))
+	if self.yAlign == "center" then
+		Y = math.floor(self:get("Y", true) - (self.font:getHeight() / 2) * lineCount)
+	elseif self.yAlign == "top" then
+		Y = math.floor(self:get("Y", true) - self.font:getHeight() * lineCount)
 	end
-	
-	local multipleColors = source.multipleColors or false
-	local alpha = tonumber(source.alpha) or 255
-	local color = source.color or {}
-	color[1] = tonumber(color[1]) or 255
-	color[2] = tonumber(color[2]) or 255
-	color[3] = tonumber(color[3]) or 255
-	color[4] = tonumber(color[4]) or alpha
 	
 	local oldColor = {love.graphics.getColor()}
 	local oldFont = love.graphics.getFont()
-	love.graphics.setFont(font)
-	local multipleColors = multipleColors or love.graphics.setColor(255, 255, 255, 255)
-	love.graphics.printf({color, text}, x, y, limit, xAlign, r, sx, sy, ox, oy, kx, ky)
+	love.graphics.setFont(self.font)
+	if not multipleColors then love.graphics.setColor(255, 255, 255, 255) end
+	love.graphics.printf({self.color, tostring(self.text)},
+						 math.floor(self:get("X", true)),
+						 math.floor(Y),
+						 self:get("LIMIT"),
+						 self.xAlign,
+						 self.r,
+						 self.sx,
+						 self.sy,
+						 self:get("OX"),
+						 self:get("OX"),
+						 self.kx,
+						 self.ky)
 	love.graphics.setColor(oldColor)
 	love.graphics.setFont(oldFont)
 end
 
-return text
+return Text
+--------------------------------
+end
+
+return init

@@ -32,11 +32,11 @@ gameState.data = {
 		}
 	}
 }
-gameState.update = function(dt)
+gameState.update = function(self, dt)
 	local data = gameState.data
 	if not data.switched then
 		for _, key in pairs(data.states[data.state].close) do
-			if objects[key] then objects[key].update("close") end
+			if objects[key] then objects[key]:unload() end
 		end
 		for _, key in pairs(data.states[data.state].open) do
 			objects[key] = luaMania.ui.objects[key]

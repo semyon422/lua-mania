@@ -1,18 +1,19 @@
-local function polygon(source)
-	local mode = tonumber(source.mode) or "fill"
-	local vertices = source.vertices or {}
+local init = function(output, loveio)
+--------------------------------
+local Polygon = output.classes.OutputObject:new()
 
-	local alpha = tonumber(source.alpha) or 255
-	local color = source.color or {}
-	color[1] = tonumber(color[1]) or 255
-	color[2] = tonumber(color[2]) or 255
-	color[3] = tonumber(color[3]) or 255
-	color[4] = tonumber(color[4]) or alpha
-	
+Polygon.mode = "fill"
+Polygon.vertices = {}
+
+Polygon.draw = function(self)
 	local oldColor = {love.graphics.getColor()}
-	love.graphics.setColor(color)
-	love.graphics.polygon(mode, vertices)
-	love.graphics.setColor(oldColor)
+	love.graphics.setColor(self.color)
+	love.graphics.polygon(self.mode, self.vertices)
+	love.graphics.setColor(self.oldColor)
 end
 
-return polygon
+return Polygon
+--------------------------------
+end
+
+return init

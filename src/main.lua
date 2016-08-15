@@ -16,10 +16,10 @@ function love.load()
 	ui = require("ui")
 	
 	osu = require("osu")
-	luaMania = require("luaMania")
-	luaMania.load()
+	-- luaMania = require("luaMania")
+	-- luaMania.load()
 	
-	objects["luaMania"] = { update = luaMania.update }
+	-- objects["luaMania"] = { update = luaMania.update }
 	objects["position"] = loveio.output.position.object
 	objects["navigation"] = loveio.input.navigation.object
 	objects["ui"] = { update = ui.update }

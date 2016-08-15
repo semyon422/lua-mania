@@ -1,28 +1,30 @@
-local list = {}
+local init = function(classes, ui)
+--------------------------------
+local List = {}
 
-list.x = 0
-list.y = 0
-list.w = 1
-list.h = 1
-list.layer = 2
-list.loaded = false
-list.oldValue = 1
-list.value = list.oldValue
-list.xAlign = "center"
-list.yAlign = "center"
-list.action = function() end
-list.objectCount = 2
-list.textColor = {255, 255, 255, 255}
-list.backgroundColor = {0, 0, 0, 127}
-list.update = function() end
-list.objects = {{}}
-list.apply = false
+List.x = 0
+List.y = 0
+List.w = 1
+List.h = 1
+List.layer = 2
+List.loaded = false
+List.oldValue = 1
+List.value = List.oldValue
+List.xAlign = "center"
+List.yAlign = "center"
+List.action = function() end
+List.objectCount = 2
+List.textColor = {255, 255, 255, 255}
+List.backgroundColor = {0, 0, 0, 127}
+List.update = function() end
+List.objects = {{}}
+List.apply = false
 
-list.new = function(self, object)
+List.new = function(self, object)
 	setmetatable(object, self)
 	self.__index = self
 	
-	object.name = object.name or "list" .. math.random()
+	object.name = object.name or "List" .. math.random()
 	object.getValue = object.getValue or function() return object.value end
 		
 	object.update = function(command)
@@ -62,4 +64,8 @@ list.new = function(self, object)
 	return object
 end
 
-return list
+return List
+--------------------------------
+end
+
+return init

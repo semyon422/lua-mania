@@ -2,7 +2,7 @@ local objects = {}
 
 objects.gameState = require("luaMania.ui.objects.gameState")
 objects.mapList = require("luaMania.ui.objects.mapList")
-objects.background = ui.classes.picture:new({layer = 1, x = 0, y = 0, w = 1, h = 1, value = "res/skin/background.png", mode = "fill",
+objects.background = ui.classes.Picture:new({layer = 1, x = 0, y = 0, w = 1, h = 1, value = "res/skin/background.png",
 	callbacks = {
 		resize = function()
 			objects.background.x = pos.X2x(0, true)
@@ -14,7 +14,7 @@ objects.background = ui.classes.picture:new({layer = 1, x = 0, y = 0, w = 1, h =
 	}
 })
 objects.game = require("luaMania.game")
-objects.playButton = ui.classes.button:new({
+objects.playButton = ui.classes.Button:new({
 	name = "playButton",
 	x = 0.5 - 0.075 / 2,
 	y = 0.5 - pos.x2y(0.075) / 2,
@@ -22,7 +22,7 @@ objects.playButton = ui.classes.button:new({
 	value = "play",
 	action = function() objects.gameState.data.state = "mapList"; objects.gameState.data.switched = false end
 })
-objects.luaManiaLogo = ui.classes.button:new({
+objects.luaManiaLogo = ui.classes.Button:new({
 	name = "luaManiaLogo",
 	x = 0.5 - 0.15 / 2,
 	y = 1 / 6 - pos.x2y(0.05) / 2,

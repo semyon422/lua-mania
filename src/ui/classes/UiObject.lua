@@ -1,15 +1,19 @@
+local init = function(classes, ui)
+--------------------------------
 local UiObject = {}
 
 UiObject.x = 0
 UiObject.y = 0
 UiObject.w = 1
 UiObject.h = 1
+UiObject.r = 1
 UiObject.layer = 1
 UiObject.objectCount = 1
 UiObject.accesable = true
 UiObject.accessLevel = 1
 
 UiObject.new = function(self, object)
+	local object = object or {}
 	setmetatable(object, self)
 	self.__index = self
 	
@@ -35,13 +39,18 @@ UiObject.update = function(self)
 	end
 end
 
-UiObject.load = function()
+UiObject.set = function(self, key, value)
+	self[key] = value
+end
+UiObject.get = loveio.output.classes.OutputObject.get
+
+UiObject.load = function(self)
 
 end
-UiObject.unload = function()
+UiObject.unload = function(self)
 
 end
-UiObject.valueChanged = function()
+UiObject.valueChanged = function(self)
 
 end
 
@@ -49,19 +58,13 @@ UiObject.activate = function(self)
 	if self.action then self:action() end
 end
 UiObject.remove = function(self)
-	self:hide()
+	self:unload()
 	loveio.objects[self.name] = nil
 end
 UiObject.reload = function(self)
 	self:unload()
 	self:load()
-end
-UiObject.hide = function(self)
-	--loveio.input.callbacks[name] = nil
-	for i = 1, self.objectCount do
-		loveio.output.objects[name .. i] = nil
-	end
-	self.hidden = true
+	self:valueChanged()
 end
 UiObject.show = function(self)
 	self.hidden = false
@@ -69,3 +72,7 @@ UiObject.show = function(self)
 end
 
 return UiObject
+--------------------------------
+end
+
+return init

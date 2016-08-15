@@ -1,3 +1,5 @@
+local init = function(loveio)
+--------------------------------
 local position = {}
 
 position.dimensions = 4 / 3
@@ -100,3 +102,7 @@ position.y2Y = function(y, g)
 end
 
 return position
+--------------------------------
+end
+
+return init

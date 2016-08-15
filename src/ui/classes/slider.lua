@@ -1,131 +1,85 @@
-local slider = {}
+local init = function(classes, ui)
+--------------------------------
+local Slider = classes.UiObject:new()
 
-slider.x = 0
-slider.y = 0
-slider.w = 1
-slider.h = 1
-slider.r = 0.005
-slider.layer = 2
-slider.minvalue = 0
-slider.maxvalue = 1
-slider.oldValue = slider.minvalue
-slider.value = slider.oldValue
-slider.xAlign = "center"
-slider.yAlign = "top"
-slider.objectCount = 4
-slider.textColor = {255, 255, 255, 255}
-slider.backgroundColor = {0, 0, 0, 127}
-slider.accesable = true
---nil/false values: loaded, action, font, update, pressed, hidden, apply, round
+Slider.r = 0.005
+Slider.layer = 2
+Slider.minvalue = 0
+Slider.maxvalue = 1
+Slider.oldValue = Slider.minvalue
+Slider.value = Slider.oldValue
+Slider.xAlign = "center"
+Slider.yAlign = "top"
+Slider.textColor = {255, 255, 255, 255}
+Slider.backgroundColor = {0, 0, 0, 127}
 
-slider.new = function(self, object)
-	setmetatable(object, self)
-	self.__index = self
-	
-	object.name = object.name or "slider" .. math.random()
-		
-	object.update = function(command)
-		local x, y, w, h, r = object.x, object.y, object.w, object.h, object.r
-		local name = object.name
-		local oldValue = object.oldValue
-		if object.getValue then object.value = object.getValue() end
-		local value = object.value
-		local minvalue = object.minvalue
-		local maxvalue = object.maxvalue
-		if command == "activate" then
-			object.action(object)
-			return
-		elseif command == "close" then
-			object.update("hide")
-			loveio.objects[name] = nil
-			return
-		elseif command == "reload" then
-			object.loaded = false
-			return
-		elseif command == "hide" then
-			loveio.input.callbacks[name] = nil
-			for i = 1, object.objectCount do
-				loveio.output.objects[name .. i] = nil
-			end
-			object.hidden = true
-			return
-		elseif command == "show" then
-			object.hidden = false
-			object.loaded = false
-		end
-		if object.hidden then return end
-		
-		if oldValue ~= value or not object.loaded then
-			loveio.output.objects[name .. 3] = {
-				class = "circle",
-				x = x + h / 2 + value / (maxvalue - minvalue) * (w - h), y = y + h / 2,
-				r = r,
-				mode = "fill",
-				layer = object.layer + 1,
-				color = object.textColor
-			}
-			loveio.output.objects[name .. 4] = {
-				class = "text",
-				x = x, y = y + h / 2 - r, limit = (h / 2 + value / (maxvalue - minvalue) * (w - h)) * 2,
-				xAlign = object.xAlign, yAlign = object.yAlign,
-				text = object.value,
-				font = object.font,
-				layer = object.layer + 1,
-				color = object.textColor
-			}
-			object.oldValue = value
-		end
-		if not object.loaded then
-			loveio.output.objects[name .. 1] = {
-				class = "rectangle",
-				x = x, y = y,
-				w = w, h = h,
-				mode = "fill", color = object.backgroundColor,
-				layer = object.layer
-			}
-			loveio.output.objects[name .. 2] = {
-				class = "rectangle",
-				x = x + h / 2, y = y + h / 2 - pos.Y2y(1),
-				w = w - h, h = pos.Y2y(2),
-				mode = "fill",
-				layer = object.layer + 1,
-				color = object.textColor
-			}
-			loveio.input.callbacks.mousepressed[name] = function(mx, my)
-				local oldmx = mx
-				local oldmy = my
-				local mx = pos.X2x(mx, true)
-				local my = pos.Y2y(my, true)
-				if mx >= x and mx <= x + w and my >= y and my <= y + h then
-					object.pressed = true
-					loveio.input.callbacks.mousemoved[name](oldmx, oldmy)
-				end
-			end
-			loveio.input.callbacks.mousemoved[name] = function(mx, my)
-				local mx = pos.X2x(mx, true)
-				local my = pos.Y2y(my, true)
-				if object.pressed then
-					object.value = (mx - (x + h / 2)) / (w - h) * (maxvalue - minvalue)
-					if type(object.round) == "function" then
-						object.value = object.round(object.value)
-					end
-					if object.value > maxvalue then object.value = maxvalue
-					elseif object.value < minvalue then object.value = minvalue
-					end
-					object.action(object)
-				end
-			end
-			loveio.input.callbacks.mousereleased[name] = function(mx, my)
-				if object.pressed then object.pressed = false end
-			end
-			object.loaded = true
+Slider.load = function(self)
+	loveio.output.objects[self.name .. "-rectangle-1"] = loveio.output.classes.Rectangle:new({
+		x = self.x, y = self.y,
+		w = self.w, h = self.h,
+		mode = "fill", color = self.backgroundColor,
+		layer = self.layer
+	})
+	loveio.output.objects[self.name .. "-rectangle-2"] = loveio.output.classes.Rectangle:new({
+		x = self.x + self.h / 2, y = self.y + self.h / 2 - pos.Y2y(1),
+		w = self.w - self.h, h = pos.Y2y(2),
+		mode = "fill",
+		layer = self.layer + 1,
+		color = self.textColor
+	})
+	loveio.input.callbacks.mousepressed[self.name] = function(mx, my)
+		local oldmx = mx
+		local oldmy = my
+		local mx = pos.X2x(mx, true)
+		local my = pos.Y2y(my, true)
+		if mx >= self.x and mx <= self.x + self.w and my >= self.y and my <= self.y + self.h then
+			self.pressed = true
+			loveio.input.callbacks.mousemoved[self.name](oldmx, oldmy)
 		end
 	end
-	
-	if object.apply then
-		loveio.objects[object.name] = object
+	loveio.input.callbacks.mousemoved[self.name] = function(mx, my)
+		local mx = pos.X2x(mx, true)
+		local my = pos.Y2y(my, true)
+		if self.pressed then
+			self.value = (mx - (self.x + self.h / 2)) / (self.w - self.h) * (self.maxvalue - self.minvalue)
+			if type(self.round) == "function" then
+				self.value = self.round(self.value)
+			end
+			if self.value > self.maxvalue then self.value = self.maxvalue
+			elseif self.value < self.minvalue then self.value = self.minvalue
+			end
+			self:action()
+		end
 	end
-	return object
+	loveio.input.callbacks.mousereleased[self.name] = function(mx, my)
+		if self.pressed then self.pressed = false end
+	end
+	self.loaded = true
+end
+Slider.unload = function(self)
+
+end
+Slider.valueChanged = function(self)
+	loveio.output.objects[self.name .. 3] = loveio.output.classes.Circle:new({
+		x = self.x + self.h / 2 + self.value / (self.maxvalue - self.minvalue) * (self.w - self.h), y = self.y + self.h / 2,
+		r = self.r,
+		mode = "fill",
+		layer = self.layer + 1,
+		color = self.textColor
+	})
+	loveio.output.objects[self.name .. 4] = loveio.output.classes.Text:new({
+		x = self.x, y = self.y + self.h / 2 - self.r, limit = (self.h / 2 + self.value / (self.maxvalue - self.minvalue) * (self.w - self.h)) * 2,
+		xAlign = self.xAlign, yAlign = self.yAlign,
+		text = self.value,
+		font = self.font,
+		layer = self.layer + 1,
+		color = self.textColor
+	})
+	self.oldValue = value
 end
 
-return slider
+return Slider
+--------------------------------
+end
+
+return init
