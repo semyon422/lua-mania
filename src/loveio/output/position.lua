@@ -1,4 +1,4 @@
-local init = function(loveio)
+local init = function(output, loveio)
 --------------------------------
 local position = {}
 

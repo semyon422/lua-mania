@@ -22,7 +22,7 @@ List.load = function(self)
 			value = self.items[(i - 1) + self.startItem] and self.items[(i - 1) + self.startItem].title,
 			layer = self.layer,
 			action = self.items[(i - 1) + self.startItem] and self.items[(i - 1) + self.startItem].action,
-			insert = objects
+			insert = {table = self.insert.table, onCreate = true}
 		})
 	end
 	loveio.input.callbacks.wheelmoved[self.name] = function(_, direction)
@@ -38,7 +38,11 @@ List.load = function(self)
 	self.loaded = true
 end
 List.unload = function(self)
-	for i = 1, self.showingItemsCount do end
+	for i = 1, self.showingItemsCount do
+		if self.insert.table[self.name .. "-button" .. i] then
+			self.insert.table[self.name .. "-button" .. i]:remove()
+		end
+	end
 end
 List.valueChanged = function(self)
 end

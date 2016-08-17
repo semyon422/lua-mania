@@ -1,3 +1,5 @@
+local init = function(cache, luaMania)
+--------------------------------
 local function osuCache(filePath)
 	local title, artist, version, creator, source
 	
@@ -38,3 +40,7 @@ local function osuCache(filePath)
 end
 
 return osuCache
+--------------------------------
+end
+
+return init

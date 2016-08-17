@@ -1,20 +1,20 @@
-local init = function(vsrg, game)
+local init = function(vsrg, game, luaMania)
 --------------------------------
-local Column = {}
+local Column = loveio.LoveioObject:new()
 
-Column.update = require("luaMania/game/modes/vsrg/update")(vsrg, game)
-Column.draw = require("luaMania/game/modes/vsrg/draw")(vsrg, game)
+Column.update = require("luaMania/game/modes/vsrg/update")(Column, vsrg, game, luaMania)
+Column.draw = require("luaMania/game/modes/vsrg/draw")(Column, vsrg, game, luaMania)
 
-Column.new = function(self, key)
-	local column = {}
-	setmetatable(column, self)
-	self.__index = self
-	
+Column.remove = function(self)
+	self:draw(true)
+end
+
+Column.load = function(self, key)
 	local map = game.map
 	
-	column.key = key
-	column.hitObjects = {}
-	column.timingPoints = map.timingPoints
+	self.key = key
+	self.hitObjects = {}
+	self.timingPoints = map.timingPoints
 	
 	local interval = 512 / map:get("CircleSize")
 	for hitObjectIndex, hitObject in ipairs(map.hitObjects) do
@@ -28,12 +28,21 @@ Column.new = function(self, key)
 			end
 		end
 		if hitObject.key == key then
-			hitObject.columnIndex = #column.hitObjects + 1
-			hitObject.column = column
-			table.insert(column.hitObjects, vsrg.HitObject:new(hitObject))
+			hitObject.columnIndex = #self.hitObjects + 1
+			hitObject.column = self
+			table.insert(self.hitObjects, vsrg.HitObject:new(hitObject))
 		end
 	end
-	column.firstHitObjectIndex = 1
+	self.firstHitObjectIndex = 1
+	
+	loveio.output.objects["column" .. self.key] = loveio.output.classes.Rectangle:new({
+		color = {0,0,0,127},
+		x = 0.1 * (self.key - 1),
+		y = 0,
+		w = 0.1,
+		h = 1,
+		layer = 2
+	})
 	
 	-- loveio.input.callbacks.keypressed["vsrgColumn" .. key] = function(key)
 		-- for keybind, keynum in pairs(mania.keys.binds) do
@@ -58,7 +67,6 @@ Column.new = function(self, key)
 		-- end
 	-- end
 	
-	return column
 end
 
 return Column

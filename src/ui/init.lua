@@ -14,30 +14,30 @@ ui.update = function(dt)
 			x = 0, y = 0, w = 0.08, h = pos.x2y(0.05),
 			getValue = function() return love.timer.getFPS() .. "fps" end,
 			action = function(self) print("FPS: " .. self.value) end,
-			insert = objects
+			insert = {table = objects, onCreate = true}
 		})
 		ui.classes.Button:new({
 			name = "latencyDisplay",
 			x = 0, y = pos.x2y(0.05), w = 0.08, h = pos.x2y(0.05),
 			getValue = function() return math.floor((1000 / love.timer.getFPS()) * 10) / 10 .. "ms" end,
 			action = function(self) print("Latency: " .. self.value) end,
-			insert = objects
+			insert = {table = objects, onCreate = true}
 		})
 		ui.classes.Button:new({
 			name = "goFullscreen",
 			x = 1 - 0.08, y = 0, w = 0.08, h = pos.x2y(0.05),
 			value = "full\nscreen",
 			action = function() love.window.setFullscreen(not (love.window.getFullscreen())) end,
-			insert = objects
+			insert = {table = objects, onCreate = true}
 		})
-		ui.classes.Slider:new({
-			name = "mover",
-			x = 0, y = 0.5, w = 0.2, h = 0.1,
-			value = objects.fpsDisplay.x,
-			getValue = function() return objects.fpsDisplay.x end,
-			action = function(self) objects.fpsDisplay.x = self.value; objects.fpsDisplay:reload(); objects.fpsDisplay:valueChanged() end,
-			insert = objects
-		})
+		-- ui.classes.Slider:new({
+			-- name = "mover",
+			-- x = 0, y = 0.5, w = 0.2, h = 0.1,
+			-- value = objects.fpsDisplay.x,
+			-- getValue = function() return objects.fpsDisplay.x end,
+			-- action = function(self) objects.fpsDisplay.x = self.value; objects.fpsDisplay:reload(); objects.fpsDisplay:valueChanged() end,
+			-- insert = {table = objects, onCreate = true}
+		-- })
 		ui.classes.Button:new({
 			name = "hideLogo",
 			x = 1 - 0.08, y = pos.x2y(0.05), w = 0.08, h = pos.x2y(0.05),
@@ -45,7 +45,7 @@ ui.update = function(dt)
 			action = function(self)
 				for i, v in pairs(objects) do print(i, v) end
 			end,
-			insert = objects
+			insert = {table = objects, onCreate = true}
 		})
 		-- ui.classes.Button:new({
 			-- name = "hideLogo",

@@ -6,7 +6,8 @@ local mapList = ui.classes.List:new({
 	h = 0.9,
 	xAlign = "left",
 	showingItemsCount = 12,
-	items = {}
+	items = {},
+	insert = {table = objects, onCreate = false}
 })
 
 mapList.reload = function(self)

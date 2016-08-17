@@ -1,31 +1,37 @@
-local init = function(game)
+local init = function(game, luaMania)
 --------------------------------
-local vsrg = {}
+local vsrg = loveio.LoveioObject:new()
 
 vsrg.path = game.path .. "modes/vsrg/"
 
-vsrg.HitObject = require(vsrg.path .. "hitObject")(vsrg, game)
-vsrg.Column = require(vsrg.path .. "column")(vsrg, game)
+vsrg.HitObject = require(vsrg.path .. "hitObject")(vsrg, game, luaMania)
+vsrg.Column = require(vsrg.path .. "column")(vsrg, game, luaMania)
 
 vsrg.columns = {}
 
-vsrg.update = function(map)
-	if not vsrg.loaded then
-		for key = 1, map:get("CircleSize") do
-			vsrg.columns[key] = vsrg.Column:new(key)
-		end
-		map.audio = love.audio.newSource(map:get("mapPath") .. "/" .. map:get("AudioFilename"))
-		map.audio:play()
-		vsrg.loaded = true
+vsrg.load = function()
+	for key = 1, game.map:get("CircleSize") do
+		vsrg.columns[key] = vsrg.Column:new()
+		vsrg.columns[key]:load(key)
 	end
+	game.map.audio = love.audio.newSource(game.map:get("mapPath") .. "/" .. game.map:get("AudioFilename"))
+	game.map.audio:play()
+	vsrg.loaded = true
+end
+
+vsrg.update = function()
 	for _, column in ipairs(vsrg.columns) do
-		column:update(map)
+		column:update()
 	end
 end
-vsrg.draw = function(map)
+vsrg.draw = function()
 	for _, column in ipairs(vsrg.columns) do
-		column:draw(map)
+		column:draw()
 	end
+end
+vsrg.remove = function()
+	game.map.audio:stop()
+	vsrg.removeAll = true
 end
 
 return vsrg

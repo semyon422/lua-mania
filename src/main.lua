@@ -9,7 +9,6 @@ function love.load()
 	pos = loveio.output.position
 	nav = loveio.input.navigation
 	
-	
 	objects = {}
 	loveio.init(objects)
 	
@@ -19,7 +18,6 @@ function love.load()
 	luaMania = require("luaMania")
 	luaMania.load()
 	
-	objects["luaMania"] = { update = luaMania.update }
 	objects["position"] = loveio.output.position.object
 	objects["navigation"] = loveio.input.navigation.object
 	objects["ui"] = { update = ui.update }

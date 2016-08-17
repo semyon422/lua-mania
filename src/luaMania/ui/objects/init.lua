@@ -13,13 +13,21 @@ objects.background = ui.classes.Picture:new({layer = 1, x = 0, y = 0, w = 1, h =
 		end
 	}
 })
-objects.game = require("luaMania.game")
+objects.game = require("luaMania.game")(luaMania)
 objects.playButton = ui.classes.Button:new({
 	name = "playButton",
 	x = 0.5 - 0.075 / 2,
 	y = 0.5 - pos.x2y(0.075) / 2,
 	w = 0.075, h = pos.x2y(0.075),
 	value = "play",
+	action = function() objects.gameState.data.state = "mapList"; objects.gameState.data.switched = false end
+})
+objects.backButton = ui.classes.Button:new({
+	name = "backButton",
+	x = 0.9,
+	y = 0.9,
+	w = 0.1, h = 0.1,
+	value = "back",
 	action = function() objects.gameState.data.state = "mapList"; objects.gameState.data.switched = false end
 })
 objects.luaManiaLogo = ui.classes.Button:new({

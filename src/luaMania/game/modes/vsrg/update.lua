@@ -1,4 +1,4 @@
-local init = function(vsrg, game)
+local init = function(Column, vsrg, game, luaMania)
 --------------------------------
 local update = function(column, map)
 

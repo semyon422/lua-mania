@@ -7,7 +7,7 @@ gameState.data = {
 		["mainMenu"] = {
 			close = {},
 			open = {
-				"background",
+				--"background",
 				"playButton",
 				"luaManiaLogo",
 				"cursor"
@@ -16,7 +16,9 @@ gameState.data = {
 		["mapList"] = {
 			close = {
 				"playButton",
-				"luaManiaLogo"
+				"luaManiaLogo",
+				"game",
+				"backButton"
 			},
 			open = {
 				"mapList"
@@ -27,7 +29,8 @@ gameState.data = {
 				"mapList",
 			},
 			open = {
-				"game"
+				"game",
+				"backButton"
 			}
 		}
 	}
@@ -36,7 +39,7 @@ gameState.update = function(self, dt)
 	local data = gameState.data
 	if not data.switched then
 		for _, key in pairs(data.states[data.state].close) do
-			if objects[key] then objects[key]:unload() end
+			if objects[key] then objects[key]:remove() end
 		end
 		for _, key in pairs(data.states[data.state].open) do
 			objects[key] = luaMania.ui.objects[key]

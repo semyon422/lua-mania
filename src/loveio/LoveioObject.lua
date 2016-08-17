@@ -9,8 +9,8 @@ LoveioObject.new = function(self, object)
 	
 	object.name = object.name or "LoveioObject" .. math.random()
 	
-	if object.insert then
-		object.insert[object.name] = object
+	if object.insert and object.insert.onCreate then
+		object.insert.table[object.name] = object
 	end
 	return object
 end
