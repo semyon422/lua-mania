@@ -10,6 +10,9 @@ VsrgHitObject.new = function(self, hitObject)
 end
 
 VsrgHitObject.draw = function(self, ox, oy)
+	if not self.column.drawedObjects[self.name] then
+		self.column.drawedObjects[self.name] = self
+	end
 	if not loveio.output.objects[self.name] then
 		if not self.endTime then
 			loveio.output.objects[self.name] = loveio.output.classes.Rectangle:new({

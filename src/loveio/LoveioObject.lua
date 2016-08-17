@@ -31,7 +31,7 @@ end
 
 LoveioObject.remove = function(self)
 	self:unload()
-	if self.insert then self.insert[self.name] = nil end
+	if self.insert then self.insert.table[self.name] = nil end
 end
 LoveioObject.reload = function(self)
 	self:unload()

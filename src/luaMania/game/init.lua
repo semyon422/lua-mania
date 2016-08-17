@@ -7,23 +7,16 @@ game.modes = {}
 game.modes.vsrg = require(game.path .. "/modes/vsrg")(game, luaMania)
 
 game.load = function()
-	local filePath = luaMania.cache.data[luaMania.cache.position].filePath
-	game.map = osu.beatmap:new():import(filePath)
-	game.mode = game.modes.vsrg
-	game.mode.removeAll = false
-	game.mode:load()
+	local newGame = game.modes.vsrg:new({
+		name = "newGame",
+		insert = {table = objects, onCreate = true}
+	})
+	newGame.map = osu.beatmap:new():import(luaMania.cache.data[luaMania.cache.position].filePath)
+	
 	game.loaded = true
 end
-
-game.update = function()
-	game.mode.update()
-	game.mode.draw()
-end
 game.unload = function()
-	if game.mode then game.mode:unload() end
-end
-game.remove = function()
-	if game.mode then game.mode:remove() end
+	if objects.newGame then objects.newGame:unload() end
 end
 
 return game
