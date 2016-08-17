@@ -10,12 +10,19 @@ vsrg.HitObject = require(vsrg.path .. "hitObject")(vsrg, game, luaMania)
 vsrg.Column = require(vsrg.path .. "column")(vsrg, game, luaMania)
 
 vsrg.load = function(self)
+	self.score = {}
+	
+	---
+	self.hitPosition = 0
+	---
+	
 	self.columns = {}
 	for key = 1, self.map:get("CircleSize") do
 		self.columns["column" .. key] = self.Column:new({
 			name = "column" .. key,
 			key = key,
 			map = self.map,
+			vsrg = self,
 			insert = self.insert
 		})
 	end
