@@ -20,6 +20,6 @@ function love.load()
 	
 	objects["position"] = loveio.output.position.object
 	objects["navigation"] = loveio.input.navigation.object
-	objects["ui"] = { update = ui.update }
+	objects["ui"] = ui
 	love.graphics.setBackgroundColor(63,63,63)
 end
