@@ -10,7 +10,14 @@ vsrg.HitObject = require(vsrg.path .. "hitObject")(vsrg, game, luaMania)
 vsrg.Column = require(vsrg.path .. "column")(vsrg, game, luaMania)
 
 vsrg.load = function(self)
-	self.score = {}
+	self.combo = 0
+	self.comboCounter = ui.classes.Button:new({
+		x = 0.15, y = 0.45, w = 0.1, h = 0.1,
+		name = "comboCounter",
+		value = self.combo,
+		getValue = function() return self.combo end,
+		insert = self.insert
+	})
 	
 	---
 	self.hitPosition = 0
@@ -37,6 +44,7 @@ vsrg.unload = function(self)
 		end
 	end
 	self.columns = nil
+	self.comboCounter:remove()
 	self.map.audio:stop()
 end
 

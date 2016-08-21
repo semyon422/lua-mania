@@ -7,7 +7,7 @@ Column.update = function(self)
 		self:load()
 		self.loaded = true
 	end
-	self.currentHitObject:update()
+	if self.currentHitObject then self.currentHitObject:update() end
 	self:draw()
 end
 
