@@ -4,13 +4,10 @@ local HitObject = {}
 
 HitObject.data = {}
 
-HitObject.metatable = {
-	__index = HitObject
-}
-
-HitObject.new = function(self)
-	local hitObject = {}
-	setmetatable(hitObject, HitObject.metatable)
+HitObject.new = function(self, hitObject)
+	local hitObject = hitObject or {}
+	setmetatable(hitObject, self)
+	self.__index = self
 	return hitObject
 end
 

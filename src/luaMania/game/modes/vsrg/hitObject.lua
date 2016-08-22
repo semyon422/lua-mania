@@ -10,7 +10,6 @@ VsrgHitObject.new = function(self, hitObject)
 end
 
 VsrgHitObject.state = "clear"
-VsrgHitObject.removeQueued = false
 
 VsrgHitObject.judgement = {
 	["pass"] = {0, 150},
@@ -42,10 +41,11 @@ VsrgHitObject.next = function(self)
 end
 
 VsrgHitObject.update = function(self)
-	local deltaStartTime = self.startTime - 1000*self.column.map.audio:tell()
+	local currentTime = 1000 * self.column.map.audio:tell()
+	local deltaStartTime = self.startTime - currentTime
 	local deltaEndTime = 0
 	if self.endTime then
-		deltaEndTime = self.endTime - 1000*self.column.map.audio:tell()
+		deltaEndTime = self.endTime - currentTime
 	end
 	
 	local startJudgement, startDelay = self:getJudgement(deltaStartTime)
@@ -76,7 +76,7 @@ VsrgHitObject.update = function(self)
 				self.column.vsrg.combo = 0
 			elseif keyIsDown then
 				if startJudgement == "miss" and startDelay == "early" then
-					self.state = "startMissed"
+					self.state = "startMissedPressed"
 					self.column.vsrg.combo = 0
 				elseif startJudgement == "pass" then
 					self.state = "startPassed"
@@ -84,6 +84,7 @@ VsrgHitObject.update = function(self)
 				end
 			end
 		elseif self.state == "startPassed" then
+			self.pseudoStartTime = currentTime
 			if not keyIsDown then
 				if endJudgement == "none" then
 					self.state = "startMissed"
@@ -99,7 +100,7 @@ VsrgHitObject.update = function(self)
 				self.column.vsrg.combo = 0
 				self:next()
 			end
-		elseif self.state == "startMissed" then
+		elseif self.state == "startMissedPressed" then
 			if not keyIsDown then
 				if endJudgement == "pass" then
 					self.state = "endPassed"
@@ -112,36 +113,53 @@ VsrgHitObject.update = function(self)
 				self.column.vsrg.combo = 0
 				self:next()
 			end
+		elseif self.state == "startMissed" then
+			if endJudgement == "miss" and endDelay == "lately" then
+				self.column.keyInfo.isDown = false
+				self.state = "endMissed"
+				self.column.vsrg.combo = 0
+				self:next()
+			end
 		end
 	end
 end
+
+VsrgHitObject.h = 0
 
 VsrgHitObject.draw = function(self, ox, oy)
 	if not self.column.createdObjects[self.name] then
 		self.column.createdObjects[self.name] = self
 	end
 	if not loveio.output.objects[self.name] then
+		self.h = 0.05
 		if not self.endTime then
 			loveio.output.objects[self.name] = loveio.output.classes.Rectangle:new({
-				x = 0, y = 0, w = 0.1, h = 0.05, mode = "fill", layer = 3
+				x = 0, y = 0, w = 0.1, h = self.h, mode = "fill", layer = 3
 			})
 		else
+			self.longH = self.h + (self.endTime - self.startTime) / 1000
 			loveio.output.objects[self.name] = loveio.output.classes.Rectangle:new({
-				x = 0, y = 0, w = 0.1, h = 0.05 + (self.endTime - self.startTime) / 1000, mode = "fill", layer = 3
+				x = 0, y = 0, w = 0.1, h = self.longH, mode = "fill", layer = 3
 			})
 		end
 	end
 	
 	loveio.output.objects[self.name].x = ox
 	if self.endTime then
-		loveio.output.objects[self.name].y = oy - (self.endTime - self.startTime) / 1000 - 0.05
+		loveio.output.objects[self.name].y = oy - (self.endTime - self.startTime) / 1000 - self.h
 	else
-		loveio.output.objects[self.name].y = oy - 0.05
+		loveio.output.objects[self.name].y = oy - self.h
 	end
 	if self.state == "clear" then
 		loveio.output.objects[self.name].color = {255, 255, 255, 255}
 	elseif self.state == "startPassed" then
 		loveio.output.objects[self.name].color = {127, 255, 127, 255}
+		self.longH = self.h + (self.endTime - (self.pseudoStartTime or self.startTime)) / 1000
+		if self.longH > 0 then
+			loveio.output.objects[self.name].h = self.longH
+		else
+			loveio.output.objects[self.name].h = 0
+		end
 	elseif self.state == "startMissed" then
 		loveio.output.objects[self.name].color = {255, 127, 127, 127}
 	elseif self.state == "endPassed" or self.state == "endMissed" then

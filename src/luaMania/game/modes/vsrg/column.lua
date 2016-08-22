@@ -74,31 +74,52 @@ Column.unload = function(self)
 end
 
 Column.getCoord = function(self, time)
-	-- return self:getTime(time) / 1000 + self.vsrg.hitPosition
-	return 1 - (self:getTime(time) / 1000 + self.vsrg.hitPosition)
-end
-Column.scaleTime = function(self, time)
-	return time
-end
-Column.getTime = function(self, time)
-	return self:scaleTime(time - 1000*self.map.audio:tell())
+	local currentTime = 1000*self.map.audio:tell()
+	local coord = 0
+	
+	--old code
+	for timingPointIndex, timingPoint in pairs(self.map.timingPoints) do
+		if time > currentTime then
+			if timingPoint.startTime < time and timingPoint.endTime > currentTime then
+				if timingPoint.startTime <= currentTime and timingPoint.endTime > currentTime then
+					if time > timingPoint.startTime and time <= timingPoint.endTime then
+						coord = coord + (time - currentTime) * timingPoint.velocity
+					else
+						coord = coord + (timingPoint.endTime - currentTime) * timingPoint.velocity
+					end
+				elseif timingPoint.startTime > currentTime and timingPoint.endTime <= time then
+					coord = coord + (timingPoint.endTime - timingPoint.startTime) * timingPoint.velocity
+				elseif timingPoint.startTime < time and timingPoint.endTime > time then
+					coord = coord + (time - timingPoint.startTime) * timingPoint.velocity
+				end
+			end
+		elseif time < currentTime then
+			if timingPoint.endTime > time and timingPoint.startTime < currentTime then
+				if timingPoint.startTime <= currentTime and timingPoint.endTime > currentTime then
+					if time > timingPoint.startTime and time <= timingPoint.endTime then
+						coord = coord + (time - currentTime) * timingPoint.velocity
+					else
+						coord = coord + (timingPoint.startTime - currentTime) * timingPoint.velocity
+					end
+				elseif timingPoint.endTime < currentTime and timingPoint.startTime >= time then
+					coord = coord + (timingPoint.startTime - timingPoint.endTime) * timingPoint.velocity
+				elseif timingPoint.startTime < time and timingPoint.endTime > time then
+					coord = coord + (time - timingPoint.endTime) * timingPoint.velocity
+				end
+			end
+		end
+	end
+	
+	return 1 - self.vsrg.hitPosition - coord/1000
 end
 
 Column.draw = function(self)
 	for hitObjectIndex = self.firstHitObjectIndex, #self.hitObjects do
 		local hitObject = self.hitObjects[hitObjectIndex]
 		if hitObject then
-			-- if self:getCoord(hitObject.startTime) > 1 then
-				-- break
-			-- elseif self:getCoord(hitObject.startTime) < 0 and not hitObject.endTime or hitObject.endTime and self:getCoord(hitObject.endTime) < 0 then
-				-- hitObject:remove()
-				-- self.firstHitObjectIndex = hitObject.columnIndex
-			-- else
-				-- hitObject:draw((hitObject.key - 1) / 10, self:getCoord(hitObject.startTime))
-			-- end
 			if self:getCoord(hitObject.startTime) < 0 then
 				break
-			elseif self:getCoord(hitObject.startTime) > 1 and not hitObject.endTime or hitObject.endTime and self:getCoord(hitObject.endTime) > 1 then
+			elseif self:getCoord(hitObject.startTime) > 1 + hitObject.h and not hitObject.endTime or hitObject.endTime and self:getCoord(hitObject.endTime) > 1 + hitObject.h then
 				hitObject:remove()
 				self.firstHitObjectIndex = hitObject.columnIndex
 			else

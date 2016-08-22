@@ -6,8 +6,8 @@ vsrg.map = {}
 
 vsrg.path = game.path .. "modes/vsrg/"
 
-vsrg.HitObject = require(vsrg.path .. "hitObject")(vsrg, game, luaMania)
-vsrg.Column = require(vsrg.path .. "column")(vsrg, game, luaMania)
+vsrg.HitObject = require(vsrg.path .. "HitObject")(vsrg, game, luaMania)
+vsrg.Column = require(vsrg.path .. "Column")(vsrg, game, luaMania)
 
 vsrg.load = function(self)
 	self.combo = 0

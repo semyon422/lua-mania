@@ -12,6 +12,7 @@ game.load = function()
 		insert = {table = objects, onCreate = true}
 	})
 	newGame.map = osu.beatmap:new():import(luaMania.cache.data[luaMania.cache.position].filePath)
+	newGame.map:set("CircleSize", math.ceil(newGame.map:get("CircleSize")))
 	
 	game.loaded = true
 end

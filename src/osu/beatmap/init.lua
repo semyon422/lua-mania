@@ -12,6 +12,7 @@ Beatmap.new = function(self)
 	local beatmap = {}
 	setmetatable(beatmap, Beatmap.metatable)
 	
+	self.timingPoints = {}
 	self.hitObjects = {}
 	return beatmap
 end
@@ -19,6 +20,7 @@ end
 Beatmap.import = require(osu.path .. "beatmap/import")(Beatmap, osu)
 Beatmap.export = require(osu.path .. "beatmap/export")(Beatmap, osu)
 
+Beatmap.TimingPoint = require(osu.path .. "beatmap/TimingPoint")(Beatmap, osu)
 Beatmap.HitObject = require(osu.path .. "beatmap/HitObject")(Beatmap, osu)
 
 Beatmap.get = function(self, key)
