@@ -7,6 +7,7 @@ local mapList = ui.classes.List:new({
 	xAlign = "left",
 	showingItemsCount = 12,
 	items = {},
+	scrollDirection = -1,
 	insert = {table = objects, onCreate = false}
 })
 

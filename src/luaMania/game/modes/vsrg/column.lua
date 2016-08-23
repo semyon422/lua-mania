@@ -2,11 +2,7 @@ local init = function(vsrg, game, luaMania)
 --------------------------------
 local Column = loveio.LoveioObject:new()
 
-Column.update = function(self)
-	if not self.loaded then
-		self:load()
-		self.loaded = true
-	end
+Column.postUpdate = function(self)
 	if self.currentHitObject then self.currentHitObject:update() end
 	self:draw()
 end
@@ -27,7 +23,11 @@ Column.load = function(self)
 		if hitObject.key == self.key then
 			hitObject.columnIndex = #self.hitObjects + 1
 			hitObject.column = self
-			table.insert(self.hitObjects, vsrg.HitObject:new(hitObject))
+			if hitObject.endTime then
+				table.insert(self.hitObjects, vsrg.Hold:new(hitObject))
+			else
+				table.insert(self.hitObjects, vsrg.Note:new(hitObject))
+			end
 		end
 	end
 	self.firstHitObjectIndex = 1

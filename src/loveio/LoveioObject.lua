@@ -16,17 +16,21 @@ LoveioObject.new = function(self, object)
 end
 
 LoveioObject.update = function(self)	
+	self:preUpdate()
 	if not self.loaded then
 		self:load()
 		self.loaded = true
 	end
+	self:postUpdate()
+end
+LoveioObject.preUpdate = function(self)
+end
+LoveioObject.postUpdate = function(self)
 end
 
 LoveioObject.load = function(self)
-
 end
 LoveioObject.unload = function(self)
-
 end
 
 LoveioObject.remove = function(self)

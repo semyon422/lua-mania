@@ -5,7 +5,7 @@ local VsrgHitObject = {}
 VsrgHitObject.new = function(self, hitObject)
 	setmetatable(hitObject, self)
 	self.__index = self
-	hitObject.name = "VsrgHO" .. hitObject.column.key .. "-" .. hitObject.columnIndex
+	
 	return hitObject
 end
 

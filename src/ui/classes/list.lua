@@ -11,6 +11,8 @@ List.backgroundColor = {0, 0, 0, 127}
 List.showingItemsCount = 1
 List.startItem = 1
 
+List.scrollDirection = 1
+
 List.load = function(self)
 	self.items = self.items or {}
 	self.buttons = self.buttons or {}
@@ -27,9 +29,9 @@ List.load = function(self)
 	end
 	loveio.input.callbacks.wheelmoved[self.name] = function(_, direction)
 		if loveio.input.mouse.x >= self:get("x") and loveio.input.mouse.x <= self:get("x") + self:get("w") and loveio.input.mouse.y >= self:get("y") and loveio.input.mouse.y <= self:get("y") + self:get("h") then
-			if direction == -1 then
+			if direction == -1 * self.scrollDirection then
 				self.startItem = self.startItem - 1
-			elseif direction == 1 then
+			elseif direction == 1 * self.scrollDirection then
 				self.startItem = self.startItem + 1
 			end
 			self:reload()
