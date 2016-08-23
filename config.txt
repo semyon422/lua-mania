@@ -1,1 +1,14 @@
-qqq = function() print(234234) end
+game.vsrg.4K.1 = e
+game.vsrg.4K.2 = r
+game.vsrg.4K.3 = o
+game.vsrg.4K.4 = p
+
+game.vsrg.7K.1 = w
+game.vsrg.7K.2 = e
+game.vsrg.7K.3 = r
+game.vsrg.7K.4 = space
+game.vsrg.7K.5 = o
+game.vsrg.7K.6 = p
+game.vsrg.7K.7 = [
+
+game.vsrg.speed = 2

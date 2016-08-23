@@ -74,7 +74,7 @@ Column.unload = function(self)
 end
 
 Column.getCoord = function(self, time)
-	local currentTime = 1000*self.map.audio:tell()
+	local currentTime = 1000 * self.map.audio:tell()
 	local coord = 0
 	
 	--old code
@@ -110,7 +110,7 @@ Column.getCoord = function(self, time)
 		end
 	end
 	
-	return 1 - self.vsrg.hitPosition - coord/1000
+	return 1 - self.vsrg.speed*coord/1000
 end
 
 Column.draw = function(self)

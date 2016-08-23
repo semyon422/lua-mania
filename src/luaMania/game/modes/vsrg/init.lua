@@ -21,9 +21,7 @@ vsrg.load = function(self)
 		insert = self.insert
 	})
 	
-	---
-	self.hitPosition = 0
-	---
+	self.speed = luaMania.config["game.vsrg.speed"].value
 	
 	self.columns = {}
 	for key = 1, self.map:get("CircleSize") do
