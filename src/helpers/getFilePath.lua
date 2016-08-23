@@ -1,9 +1,5 @@
 local function getFilePath(filename, rules)
 	if not rules then return end
-	-- local rules = rules or {
-		-- formats = {"wav", "mp3", "ogg"},
-		-- paths = {"res/skin/game/hitSounds"}
-	-- }
 	
 	local filePath = nil
 	
@@ -27,7 +23,11 @@ local function getFilePath(filename, rules)
 		if continue then break end
 	end
 	
-	if not filePath then print("file " .. filename .. " not found!") end
+	if not filePath then
+		if rules.default then
+			return rules.default
+		end
+	end
 	return filePath
 end
 

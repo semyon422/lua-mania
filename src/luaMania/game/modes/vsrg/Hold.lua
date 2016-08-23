@@ -11,7 +11,7 @@ Hold.new = function(self, hold)
 end
 
 Hold.update = function(self)
-	local currentTime = 1000 * self.column.map.audio:tell()
+	local currentTime = self.column.map.currentTime
 	local deltaStartTime = self.startTime - currentTime
 	local deltaEndTime = self.endTime - currentTime
 	

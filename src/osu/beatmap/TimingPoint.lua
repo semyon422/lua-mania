@@ -1,4 +1,4 @@
-local init = function(...)
+local init = function(Beatmap, osu)
 --------------------------------
 local TimingPoint = {}
 
@@ -23,14 +23,15 @@ TimingPoint.import = function(self, line)
 	self.timingChange = tonumber(breaked[7])
 	self.kiaiTimeActive = tonumber(breaked[8])
 	
-	
 	self.startTime = self.offset
 	self.endTime = nil
 	
 	if self.timingChange == 0 then
-		self.velocity = -100 / self.beatLength
+		self.velocity = -100 / self.beatLength * self.beatmap.baseTimingPoint.velocity
+		self.inherited = true
 	elseif self.timingChange == 1 then
-		self.velocity = 1
+		self.velocity = (self.beatmap.baseBeatLength or self.beatLength) / self.beatLength
+		self.inherited = false
 	end
 	
 	return self

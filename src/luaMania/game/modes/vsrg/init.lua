@@ -23,6 +23,16 @@ vsrg.load = function(self)
 	
 	self.speed = luaMania.config["game.vsrg.speed"].value
 	
+	self.hitSounds = {}
+	self.hitSoundsRules = {
+		formats = {"wav", "mp3", "ogg"},
+		paths = {
+			self.map:get("mapPath"),
+			"res/skin/game/hitSounds"
+		},
+		default = "res/blank.ogg"
+	}
+	
 	self.columns = {}
 	for key = 1, self.map:get("CircleSize") do
 		self.columns["column" .. key] = self.Column:new({
@@ -35,6 +45,10 @@ vsrg.load = function(self)
 	end
 	self.map.audio = love.audio.newSource(self.map:get("mapPath") .. "/" .. self.map:get("AudioFilename"))
 	self.map.audio:play()
+end
+
+vsrg.postUpdate = function(self)
+	self.map.currentTime = self.map.audio:tell() * 1000
 end
 
 vsrg.unload = function(self)

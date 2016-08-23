@@ -19,6 +19,13 @@ Column.load = function(self)
 					break
 				end
 			end
+			
+			for hitSoundIndex, hitSoundName in pairs(hitObject.hitSoundsList) do
+				if not self.vsrg.hitSounds[hitSoundName] then
+					local filePath = helpers.getFilePath(hitSoundName, self.vsrg.hitSoundsRules)
+					self.vsrg.hitSounds[hitSoundName] = love.audio.newSource(filePath)
+				end
+			end
 		end
 		if hitObject.key == self.key then
 			hitObject.columnIndex = #self.hitObjects + 1
@@ -54,6 +61,9 @@ Column.load = function(self)
 	loveio.input.callbacks.keypressed[self.name] = function(key)
 		if key == self.keyInfo.bind then
 			self.keyInfo.isDown = true
+			if self.currentHitObject then
+				self.currentHitObject:playHitSound()
+			end
 		end
 	end
 	loveio.input.callbacks.keyreleased[self.name] = function(key)
@@ -74,7 +84,7 @@ Column.unload = function(self)
 end
 
 Column.getCoord = function(self, time)
-	local currentTime = 1000 * self.map.audio:tell()
+	local currentTime = self.map.currentTime
 	local coord = 0
 	
 	--old code

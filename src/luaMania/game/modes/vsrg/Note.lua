@@ -11,7 +11,7 @@ Note.new = function(self, note)
 end
 
 Note.update = function(self)
-	local currentTime = 1000 * self.column.map.audio:tell()
+	local currentTime = self.column.map.currentTime
 	local deltaStartTime = self.startTime - currentTime
 	
 	local startJudgement, startDelay = self:getJudgement(deltaStartTime)

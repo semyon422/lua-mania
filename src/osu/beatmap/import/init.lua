@@ -4,13 +4,18 @@ local import = function(self, filePath)
 	local breakedPath = explode("/", filePath)
 	local mapFileName = breakedPath[#breakedPath]
 	breakedPath = nil
-	local mapPath = string.sub(filePath, 1, #filePath - #mapFileName)
+	local mapPath = string.sub(filePath, 1, #filePath - #mapFileName - 1)
 	self:set("mapFileName", mapFileName)
 	self:set("mapPath", mapPath)
 	
+	self.hitSoundsRules = {
+		formats = {"wav", "mp3", "ogg"},
+		paths = {mapPath}
+	}
+	
 	local file = io.open(filePath, "r")
 	local fileLines = {}
-	
+
 	local blockName = ""
 	for line in file:lines() do
 		if line:sub(1,1) == "[" then
@@ -25,25 +30,31 @@ local import = function(self, filePath)
 		elseif blockName == "Events" and trim(line) ~= "" then
 			
 		elseif blockName == "TimingPoints" and trim(line) ~= "" then
-			table.insert(self.timingPoints, self.TimingPoint:new():import(line))
+			table.insert(self.timingPoints, self.TimingPoint:new({beatmap = self}):import(line))
 			local current = self.timingPoints[#self.timingPoints]
 			local prev = self.timingPoints[#self.timingPoints - 1]
-			if #self.timingPoints == 1 and current.startTime > 0 then
-				self.timingPoints[2] = current
-				self.timingPoints[1] = self.TimingPoint:new():import(line)
-				self.timingPoints[1].startTime = 0
-				self.timingPoints[1].endTime = self.timingPoints[2].startTime - 1
-				current = self.timingPoints[2]
-				prev = self.timingPoints[1]
+			
+			if #self.timingPoints == 1 then
+				self.baseBeatLength = current.beatLength
+				if current.startTime > 0 then
+					self.timingPoints[2] = current
+					self.timingPoints[1] = self.TimingPoint:new({beatmap = self}):import(line)
+					self.timingPoints[1].startTime = 0
+					self.timingPoints[1].endTime = self.timingPoints[2].startTime - 1
+					current = self.timingPoints[2]
+					prev = self.timingPoints[1]
+				end
 			end
 			if #self.timingPoints > 1 then
 				if not prev.endTime then prev.endTime = current.startTime - 1 end
-				if current.timingChange == 0 then
+				if current.inherited then
 					current.beatLenght = prev.beatLenght
+				else
+					self.baseTimingPoint = current
 				end
 			end
 		elseif blockName == "HitObjects" and trim(line) ~= "" then
-			table.insert(self.hitObjects, self.HitObject:new():import(line))
+			table.insert(self.hitObjects, self.HitObject:new({beatmap = self}):import(line))
 		end
 	end
 	local lastTimingPoint = self.timingPoints[#self.timingPoints]
