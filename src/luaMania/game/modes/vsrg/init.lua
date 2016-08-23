@@ -12,13 +12,14 @@ vsrg.Hold = require(vsrg.path .. "Hold")(vsrg, game, luaMania)
 vsrg.Column = require(vsrg.path .. "Column")(vsrg, game, luaMania)
 
 vsrg.load = function(self)
+	self.columns = {}
 	self.combo = 0
 	self.comboCounter = ui.classes.Button:new({
 		x = 0.15, y = 0.45, w = 0.1, h = 0.1,
 		name = "comboCounter",
 		value = self.combo,
 		getValue = function() return self.combo end,
-		insert = self.insert
+		insert = {table = self.columns, onCreate = true}
 	})
 	
 	self.speed = luaMania.config["game.vsrg.speed"].value
@@ -60,6 +61,11 @@ vsrg.postUpdate = function(self)
 		self.map.currentTime = self.map.audio:tell() * 1000
 	elseif self.map.audioState == 2 then
 		self.map.audioStartTime = math.floor(love.timer.getTime() * 1000 - self.map.currentTime)
+	end
+	if self.columns then
+		for _, column in pairs(self.columns) do
+			if column.update then column:update() end
+		end
 	end
 end
 
