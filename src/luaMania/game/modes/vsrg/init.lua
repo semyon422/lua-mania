@@ -19,7 +19,7 @@ vsrg.load = function(self)
 		name = "comboCounter",
 		value = self.combo,
 		getValue = function() return self.combo end,
-		insert = {table = self.columns, onCreate = true}
+		insert = self.insert
 	})
 	
 	self.speed = luaMania.config["game.vsrg.speed"].value
@@ -41,7 +41,7 @@ vsrg.load = function(self)
 			key = key,
 			map = self.map,
 			vsrg = self,
-			insert = self.insert
+			insert = {table = self.columns, onCreate = true}
 		})
 	end
 	self.map.audio = love.audio.newSource(self.map:get("mapPath") .. "/" .. self.map:get("AudioFilename"))
@@ -55,7 +55,6 @@ vsrg.postUpdate = function(self)
 		if self.map.currentTime >= 0 then
 			self.map.audioState = 1
 			self.map.audio:play()
-			print(1)
 		end
 	elseif self.map.audioState == 1 then
 		self.map.currentTime = self.map.audio:tell() * 1000
