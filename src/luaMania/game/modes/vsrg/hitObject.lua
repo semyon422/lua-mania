@@ -49,7 +49,6 @@ VsrgHitObject.playHitSound = function(self)
 			hitSound:setVolume(self.volume)
 			hitSound:setPitch(1)
 			hitSound:play()
-			print(hitSoundName)
 		end
 	end
 end

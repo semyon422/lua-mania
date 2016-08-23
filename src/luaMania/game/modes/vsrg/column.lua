@@ -120,7 +120,11 @@ Column.getCoord = function(self, time)
 		end
 	end
 	
-	return 1 - self.vsrg.speed*coord/1000
+	if currentTime >= 0 then
+		return 1 - self.vsrg.speed*coord/1000
+	else
+		return 1 - self.vsrg.speed*(coord - currentTime)/1000
+	end
 end
 
 Column.draw = function(self)

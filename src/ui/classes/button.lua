@@ -5,6 +5,8 @@ local Button = classes.UiObject:new()
 Button.layer = 2
 Button.xAlign = "center"
 Button.yAlign = "center"
+Button.xPadding = 0
+Button.yPadding = 0
 Button.textColor = {255, 255, 255, 255}
 Button.backgroundColor = {0, 0, 0, 127}
 
@@ -32,9 +34,9 @@ Button.unload = function(self)
 end
 Button.valueChanged = function(self)
 	loveio.output.objects[self.name .. "-text"] = loveio.output.classes.Text:new({
-		x = self.x, y = self.y + self.h / 2,
-		limit = self.w,
-		text = self.value, xAlign = self.xAlign, yAlign = "center",
+		x = self.x + self.xPadding, y = self.y + self.h / 2,
+		limit = self.w - 2*self.xPadding,
+		text = self.value, xAlign = self.xAlign, yAlign = self.yAlign,
 		font = self.font,
 		color = self.textColor,
 		layer = self.layer + 1

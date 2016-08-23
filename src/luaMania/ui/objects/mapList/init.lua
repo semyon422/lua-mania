@@ -5,6 +5,7 @@ local mapList = ui.classes.List:new({
 	w = 0.45,
 	h = 0.9,
 	xAlign = "left",
+	xPadding = 0.9 / 12 / 4,
 	showingItemsCount = 12,
 	items = {},
 	scrollDirection = -1,

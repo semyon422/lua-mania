@@ -44,11 +44,23 @@ vsrg.load = function(self)
 		})
 	end
 	self.map.audio = love.audio.newSource(self.map:get("mapPath") .. "/" .. self.map:get("AudioFilename"))
-	self.map.audio:play()
+	self.map.audioStartTime = love.timer.getTime()*1000 + 2000
+	self.map.audioState = -1
 end
 
 vsrg.postUpdate = function(self)
-	self.map.currentTime = self.map.audio:tell() * 1000
+	if self.map.audioState == -1 then
+		self.map.currentTime = math.floor(love.timer.getTime()*1000 - self.map.audioStartTime)
+		if self.map.currentTime >= 0 then
+			self.map.audioState = 1
+			self.map.audio:play()
+			print(1)
+		end
+	elseif self.map.audioState == 1 then
+		self.map.currentTime = self.map.audio:tell() * 1000
+	elseif self.map.audioState == 2 then
+		self.map.audioStartTime = math.floor(love.timer.getTime() * 1000 - self.map.currentTime)
+	end
 end
 
 vsrg.unload = function(self)

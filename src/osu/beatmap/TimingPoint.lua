@@ -27,7 +27,7 @@ TimingPoint.import = function(self, line)
 	self.endTime = nil
 	
 	if self.timingChange == 0 then
-		self.velocity = -100 / self.beatLength * self.beatmap.baseTimingPoint.velocity
+		self.velocity = -100 / self.beatLength * (self.beatmap.baseTimingPoint and self.beatmap.baseTimingPoint.velocity or 1)
 		self.inherited = true
 	elseif self.timingChange == 1 then
 		self.velocity = (self.beatmap.baseBeatLength or self.beatLength) / self.beatLength
