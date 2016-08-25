@@ -28,7 +28,9 @@ local import = function(self, filePath)
 				self:set(key, tonumber(value) or value)
 			end
 		elseif blockName == "Events" and trim(line) ~= "" then
-			
+			if string.sub(line, 1, 6) == "Sample" then
+				table.insert(self.eventSamples, self.EventSample:new({beatmap = self}):import(line))
+			end
 		elseif blockName == "TimingPoints" and trim(line) ~= "" then
 			table.insert(self.timingPoints, self.TimingPoint:new({beatmap = self}):import(line))
 			local current = self.timingPoints[#self.timingPoints]

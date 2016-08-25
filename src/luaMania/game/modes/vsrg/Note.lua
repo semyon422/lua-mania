@@ -49,7 +49,7 @@ Note.draw = function(self, ox, oy)
 	loveio.output.objects[self.name].y = oy - self.h
 	
 	if self.state == "missed" then
-		loveio.output.objects[self.name].color = {127, 127, 127, 127}
+		loveio.output.objects[self.name].color = {127, 127, 127, 255}
 	elseif self.state == "passed" then
 		self:remove()
 	end
