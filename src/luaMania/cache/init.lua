@@ -2,14 +2,21 @@ local init = function(luaMania)
 --------------------------------
 local cache = {}
 
-local osuCache = require("luaMania.cache.osuCache")(cache, luaMania)
+cache.cachers = {}
+cache.cachers.osu = require("luaMania.cache.osuCacher")(cache, luaMania)
+cache.cachers.bms = require("luaMania.cache.bmsCacher")(cache, luaMania)
 
 cache.data = {}
 
 cache.callback = function(filePath)
 	if love.filesystem.isFile(filePath) then
-		if string.sub(filePath, -4, -1) == ".osu" then
-			return osuCache(filePath)
+		local breaked = explode(".", filePath)
+		local fileType = breaked[#breaked]
+		if fileType == "osu" then
+			return cache.cachers.osu(filePath)
+		end
+		if fileType == "bms" or fileType == "bme" then
+			return cache.cachers.bms(filePath)
 		end
 	end
 end

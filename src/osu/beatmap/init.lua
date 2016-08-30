@@ -19,22 +19,10 @@ Beatmap.new = function(self)
 end
 
 Beatmap.import = require(osu.path .. "beatmap/import")(Beatmap, osu)
-Beatmap.export = require(osu.path .. "beatmap/export")(Beatmap, osu)
 
 Beatmap.EventSample = require(osu.path .. "beatmap/EventSample")(Beatmap, osu)
 Beatmap.TimingPoint = require(osu.path .. "beatmap/TimingPoint")(Beatmap, osu)
 Beatmap.HitObject = require(osu.path .. "beatmap/HitObject")(Beatmap, osu)
-
-Beatmap.get = function(self, key)
-	return self.data[key] and self.data[key].value or ""
-end
-Beatmap.set = function(self, key, value)
-	self.data[key] = self.data[key] or {}
-	self.data[key].value = value
-	self.data[key].modified = true
-
-	return self:get(key)
-end
 
 return Beatmap
 --------------------------------

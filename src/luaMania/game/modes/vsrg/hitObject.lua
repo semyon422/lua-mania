@@ -46,7 +46,7 @@ VsrgHitObject.playHitSound = function(self)
 	for hitSoundIndex, hitSoundName in pairs(self.hitSoundsList) do
 		if self.column.vsrg.hitSounds[hitSoundName] then
 			local hitSound = self.column.vsrg.hitSounds[hitSoundName]:clone()
-			hitSound:setVolume(self.volume)
+			hitSound:setVolume(self.volume or 1)
 			hitSound:setPitch(1)
 			hitSound:play()
 		end

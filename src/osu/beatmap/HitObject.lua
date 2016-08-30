@@ -37,6 +37,15 @@ HitObject.import = function(self, line)
 	
 	self.x = tonumber(breaked[1])
 	self.y = tonumber(breaked[2])
+	
+	local interval = 512 / self.beatmap.keymode
+	for newKey = 1, self.beatmap.keymode do
+		if self.x >= interval * (newKey - 1) and self.x < newKey * interval then
+			self.key = newKey
+			break
+		end
+	end
+	
 	self.startTime = tonumber(breaked[3])
 	self.type = tonumber(breaked[4])
 	

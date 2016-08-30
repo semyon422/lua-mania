@@ -25,10 +25,11 @@ vsrg.load = function(self)
 	self.speed = luaMania.config["game.vsrg.speed"].value
 	
 	self.hitSounds = {}
+	self.playingHitSounds = {}
 	self.hitSoundsRules = {
 		formats = {"wav", "mp3", "ogg"},
 		paths = {
-			self.map:get("mapPath"),
+			self.map.mapPath,
 			"res/skin/game/hitSounds"
 		},
 		default = "res/blank.ogg"
@@ -46,7 +47,7 @@ vsrg.load = function(self)
 	end
 	
 	self.columns = {}
-	for key = 1, self.map:get("CircleSize") do
+	for key = 1, self.map.keymode do
 		self.columns["column" .. key] = self.Column:new({
 			name = "column" .. key,
 			key = key,
@@ -55,8 +56,8 @@ vsrg.load = function(self)
 			insert = {table = self.columns, onCreate = true}
 		})
 	end
-	if self.map:get("AudioFilename") ~= "virtual" then
-		self.map.audio = love.audio.newSource(self.map:get("mapPath") .. "/" .. self.map:get("AudioFilename"))
+	if self.map.audioFilename ~= "virtual" then
+		self.map.audio = love.audio.newSource(self.map.mapPath .. "/" .. self.map.audioFilename)
 	end
 	self.map.audioStartTime = love.timer.getTime()*1000 + 1000
 	self.map.audioState = -1
@@ -80,20 +81,27 @@ vsrg.postUpdate = function(self)
 	-- elseif self.map.audioState == 2 then
 		-- self.map.audioStartTime = math.floor(love.timer.getTime() * 1000 - self.map.currentTime)
 	end
+	self.map.currentTime = self.map.currentTime + luaMania.config["game.vsrg.offset"].value
 	if #self.map.eventSamples > 0 then
 		while true do
-			if self.currentEventSample.startTime <= self.map.currentTime then
+			if self.currentEventSample and self.currentEventSample.startTime <= self.map.currentTime then
 				if self.hitSounds[self.currentEventSample.fileName] then
 					local eventSample = self.hitSounds[self.currentEventSample.fileName]:clone()
-					eventSample:setVolume(self.currentEventSample.volume)
+					eventSample:setVolume(self.currentEventSample.volume or 1)
 					eventSample:setPitch(1)
 					eventSample:play()
+					table.insert(self.playingHitSounds, eventSample)
 				end
 				self.currentEventSampleIndex = self.currentEventSampleIndex + 1
 				self.currentEventSample = self.map.eventSamples[self.currentEventSampleIndex]
 			else
 				break
 			end
+		end
+	end
+	for hitSoundIndex, hitSound in pairs(self.playingHitSounds) do
+		if hitSound:isStopped() then
+			self.playingHitSounds[hitSoundIndex] = nil
 		end
 	end
 	for _, column in pairs(self.columns) do
@@ -111,6 +119,10 @@ vsrg.unload = function(self)
 	self.comboCounter:remove()
 	if self.map.audio then
 		self.map.audio:stop()
+	end
+	for hitSoundIndex, hitSound in pairs(self.playingHitSounds) do
+		hitSound:stop()
+		self.playingHitSounds[hitSoundIndex] = nil
 	end
 	if self.insert then self.insert.table[self.name] = nil end
 end

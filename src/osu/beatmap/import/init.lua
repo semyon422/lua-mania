@@ -2,15 +2,12 @@ local init = function(Beatmap, osu)
 --------------------------------
 local import = function(self, filePath)
 	local breakedPath = explode("/", filePath)
-	local mapFileName = breakedPath[#breakedPath]
-	breakedPath = nil
-	local mapPath = string.sub(filePath, 1, #filePath - #mapFileName - 1)
-	self:set("mapFileName", mapFileName)
-	self:set("mapPath", mapPath)
+	self.mapFileName = breakedPath[#breakedPath]
+	self.mapPath = string.sub(filePath, 1, #filePath - #self.mapFileName - 1)
 	
 	self.hitSoundsRules = {
 		formats = {"wav", "mp3", "ogg"},
-		paths = {mapPath}
+		paths = {self.mapPath}
 	}
 	
 	local file = io.open(filePath, "r")
@@ -21,11 +18,11 @@ local import = function(self, filePath)
 		if line:sub(1,1) == "[" then
 			blockName = line:sub(2, -2)
 		elseif blockName ~= "Events" and blockName ~= "TimingPoints" and blockName ~= "HitObjects" then
-			local colon = line:find(":")
-			if colon then
-				local key = trim(line:sub(1, colon - 1))
-				local value = trim(line:sub(colon + 1, -1))
-				self:set(key, tonumber(value) or value)
+			if string.sub(line, 1, #("AudioFilename")) == "AudioFilename" then
+				self.audioFilename = trim(string.sub(line, #("AudioFilename") + 2, -1))
+			elseif string.sub(line, 1, #("CircleSize")) == "CircleSize" then
+				self.keymode = tonumber(string.sub(line, #("CircleSize") + 2, -1))
+				print(self.keymode)
 			end
 		elseif blockName == "Events" and trim(line) ~= "" then
 			if string.sub(line, 1, 6) == "Sample" then

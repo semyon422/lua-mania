@@ -4,6 +4,7 @@ local config = {}
 
 config.game = {}
 config.game.vsrg = {}
+config.game.vsrg.offset = 0
 config.game.vsrg.speed = 1
 config.game.vsrg["4K"] = {"d", "f", "j", "k"}
 config.game.vsrg["5K"] = {"d", "f", "space", "j", "k"}

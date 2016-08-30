@@ -9,25 +9,15 @@ end
 
 Column.load = function(self)
 	self.hitObjects = {}
-	local interval = 512 / self.map:get("CircleSize")
 	for hitObjectIndex, hitObject in ipairs(self.map.hitObjects) do
-		hitObject.key = hitObject.key or 0
-		if hitObject.key == 0 then
-			for newKey = 1, self.map:get("CircleSize") do
-				if hitObject.x >= interval * (newKey - 1) and hitObject.x < newKey * interval then
-					hitObject.key = newKey
-					break
-				end
-			end
-			
+		if hitObject.key == self.key then
 			for hitSoundIndex, hitSoundName in pairs(hitObject.hitSoundsList) do
 				if not self.vsrg.hitSounds[hitSoundName] then
 					local filePath = helpers.getFilePath(hitSoundName, self.vsrg.hitSoundsRules)
-					self.vsrg.hitSounds[hitSoundName] = love.audio.newSource(filePath)
+					self.vsrg.hitSounds[hitSoundName] = love.audio.newSource(filePath, "static")
 				end
 			end
-		end
-		if hitObject.key == self.key then
+			
 			hitObject.columnIndex = #self.hitObjects + 1
 			hitObject.column = self
 			if hitObject.endTime then
@@ -55,7 +45,7 @@ Column.load = function(self)
 	
 	self.keyInfo = {
 		key = self.key,
-		bind = luaMania.config["game.vsrg." .. self.map:get("CircleSize") .. "K." .. self.key].value,
+		bind = luaMania.config["game.vsrg." .. self.map.keymode .. "K." .. self.key].value,
 		isDown = false
 	}
 	loveio.input.callbacks.keypressed[self.name] = function(key)

@@ -2,6 +2,6 @@ local osu = {}
 
 osu.path = "osu/"
 
-osu.beatmap = require(osu.path .. "beatmap")(osu)
+osu.Beatmap = require(osu.path .. "Beatmap")(osu)
 
 return osu
