@@ -9,6 +9,7 @@ loveio.init = function(objects)
 	loveio.objects = objects or {}
 	local objects = loveio.objects
 	love.update = function(dt)
+		loveio.dt = dt
 		for _, object in pairs(objects) do
 			if object.update then object:update() end
 		end

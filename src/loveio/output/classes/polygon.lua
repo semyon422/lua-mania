@@ -9,7 +9,7 @@ Polygon.draw = function(self)
 	local oldColor = {love.graphics.getColor()}
 	love.graphics.setColor(self.color)
 	love.graphics.polygon(self.mode, self.vertices)
-	love.graphics.setColor(self.oldColor)
+	love.graphics.setColor(oldColor)
 end
 
 return Polygon
