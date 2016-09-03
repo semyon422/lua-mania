@@ -9,14 +9,13 @@ gameState.data = {
 			open = {
 				"menuBackground",
 				"playButton",
-				"luaManiaLogo",
+				"fpsDisplay",
 				"cursor"
 			}
 		},
 		["mapList"] = {
 			close = {
 				"playButton",
-				"luaManiaLogo",
 				"game",
 				"backButton"
 			},

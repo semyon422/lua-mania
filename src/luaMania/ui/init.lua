@@ -2,13 +2,12 @@ local init = function(luaMania)
 --------------------------------
 local ui = {}
 
-ui.state = "mainMenu"
-ui.mode = 0
+ui.objects = require("luaMania.ui.objects")(ui, luaMania)
 
---ui.skin = require("res.skin")(ui, luaMania)
-
-ui.tupdate = function()
-	ui.states[ui.state].update()
+loveio.input.callbacks.keypressed.goFullscreen = function(key)
+	if key == "f11" then
+		love.window.setFullscreen(not (love.window.getFullscreen()))
+	end
 end
 
 return ui

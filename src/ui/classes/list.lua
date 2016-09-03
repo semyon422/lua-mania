@@ -27,6 +27,8 @@ List.load = function(self)
 			layer = self.layer,
 			xAlign = self.xAlign, yAlign = self.yAlign,
 			xPadding = self.xPadding, yPadding = self.yPadding,
+			backgroundColor = self.backgroundColor,
+			textColor = self.textColor,
 			action = self.items[(i - 1) + self.startItem] and self.items[(i - 1) + self.startItem].action,
 			insert = {table = self.insert.table, onCreate = true}
 		})

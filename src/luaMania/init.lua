@@ -13,7 +13,6 @@ luaMania.defaultConfig.__index = luaMania.defaultConfig
 
 --luaMania.skin = require("res/skin")(luaMania)
 luaMania.load = function()
-	luaMania.ui.objects = require("luaMania.ui.objects")
 	objects.gameState = luaMania.ui.objects.gameState
 	
 	luaMania.cache.data = cacheManager.generate(luaMania.cache.rules)
