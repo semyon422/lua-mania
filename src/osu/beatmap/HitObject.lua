@@ -13,10 +13,13 @@ end
 
 HitObject.getTimingPoint = function(self, time)
 	for timingPointIndex, timingPoint in ipairs(self.beatmap.timingPoints) do
-		if timingPointIndex == #self.beatmap.timingPoints or time > timingPoint.startTime and time < timingPoint.endTime then
+		if time >= timingPoint.startTime and time <= timingPoint.endTime or
+			(timingPointIndex == #self.beatmap.timingPoints and time >= timingPoint.startTime) then
 			return timingPoint
 		end
 	end
+	print("not found", time)
+	return self.beatmap.timingPoints[1]
 end
 
 HitObject.getSampleSetName = function(self, id)
@@ -60,11 +63,12 @@ HitObject.import = function(self, line)
 	
 	if bit.band(self.type, 128) == 128 then
 		self.endTime = tonumber(addition[1])
+		self.endTimingPoint = self:getTimingPoint(self.endTime)
 	end
 	
-	local timingPoint = self:getTimingPoint(self.startTime)
+	self.startTimingPoint = self:getTimingPoint(self.startTime)
 	
-	self.sampleSetName = self:getSampleSetName(timingPoint.sampleSetId)
+	self.sampleSetName = self:getSampleSetName(self.startTimingPoint.sampleSetId)
 	if self.addition.sampleSetId ~= 0 then
 		self.sampleSetName = self:getSampleSetName(self.addition.sampleSetId)
 	end
@@ -72,8 +76,8 @@ HitObject.import = function(self, line)
 		self.sampleSetName = self:getSampleSetName(self.addition.additionalSampleSetId)
 	end
 	
-	if timingPoint.customSampleIndex ~= 0 then
-		self.customSampleIndex = timingPoint.customSampleIndex
+	if self.startTimingPoint.customSampleIndex ~= 0 then
+		self.customSampleIndex = self.startTimingPoint.customSampleIndex
 	else
 		self.customSampleIndex = ""
 	end
@@ -81,7 +85,7 @@ HitObject.import = function(self, line)
 	if self.addition.hitSoundVolume > 0 then
 		self.volume = self.addition.hitSoundVolume / 100
 	else
-		self.volume = timingPoint.sampleVolume / 100
+		self.volume = self.startTimingPoint.sampleVolume / 100
 	end
 	
 	self.hitSoundsList = {}

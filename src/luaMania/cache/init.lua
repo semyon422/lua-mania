@@ -15,9 +15,9 @@ cache.callback = function(filePath)
 		if fileType == "osu" then
 			return cache.cachers.osu(filePath)
 		end
-		if fileType == "bms" or fileType == "bme" then
-			return cache.cachers.bms(filePath)
-		end
+		-- if fileType == "bms" or fileType == "bme" then
+			-- return cache.cachers.bms(filePath)
+		-- end
 	end
 end
 

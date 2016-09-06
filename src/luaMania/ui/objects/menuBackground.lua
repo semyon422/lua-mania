@@ -32,15 +32,16 @@ end
 
 bg.blinkConuter = 0
 bg.blinkDelay = 0.1
+bg.linesCount = 8
 
 bg.computePolygons = function(self, w, h)
 	for polygonIndex, polygon in pairs(self.polygons) do
 		local v = polygon.vertices
-		local x = (polygonIndex - 1) * w/8
+		local x = (polygonIndex - 1) * w/self.linesCount
 		v[1], v[2] = x, 0
 		v[3], v[4] = x - h, h
-		v[5], v[6] = x - h + w/8, h
-		v[7], v[8] = x + w/8, 0
+		v[5], v[6] = x - h + w/self.linesCount, h
+		v[7], v[8] = x + w/self.linesCount, 0
 		loveio.output.objects["bgPolygon" .. polygonIndex] = polygon
 	end
 end

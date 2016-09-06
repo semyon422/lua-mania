@@ -24,7 +24,7 @@ TimingPoint.import = function(self, line)
 	self.kiaiTimeActive = tonumber(breaked[8])
 	
 	self.startTime = self.offset
-	self.endTime = nil
+	self.endTime = self.startTime
 	
 	if self.timingChange == 0 then
 		self.velocity = -100 / self.beatLength * (self.beatmap.baseTimingPoint and self.beatmap.baseTimingPoint.velocity or 1)
@@ -33,6 +33,8 @@ TimingPoint.import = function(self, line)
 		self.velocity = (self.beatmap.baseBeatLength or self.beatLength) / self.beatLength
 		self.inherited = false
 	end
+	
+	self.index = #self.beatmap.timingPoints + 1
 	
 	return self
 end

@@ -46,6 +46,8 @@ vsrg.load = function(self)
 		self.currentEventSample = self.map.eventSamples[self.currentEventSampleIndex]
 	end
 	
+	self.currentTimingPoint = self.map.timingPoints[1]
+	
 	self.columns = {}
 	for key = 1, self.map.keymode do
 		self.columns["column" .. key] = self.Column:new({
@@ -74,7 +76,7 @@ vsrg.postUpdate = function(self)
 		end
 	elseif self.map.audioState == 1 then
 		if self.map.audio then
-			self.map.currentTime = self.map.audio:tell() * 1000
+			self.map.currentTime = math.floor(self.map.audio:tell() * 1000)
 		else
 			self.map.currentTime = math.floor(love.timer.getTime()*1000 - self.map.audioStartTime)
 		end
@@ -97,6 +99,13 @@ vsrg.postUpdate = function(self)
 			else
 				break
 			end
+		end
+	end
+	while true do
+		if self.currentTimingPoint and self.currentTimingPoint.endTime <= self.map.currentTime then
+			self.currentTimingPoint = self.map.timingPoints[self.currentTimingPoint.index + 1]
+		else
+			break
 		end
 	end
 	for hitSoundIndex, hitSound in pairs(self.playingHitSounds) do

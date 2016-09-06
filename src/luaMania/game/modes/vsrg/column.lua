@@ -73,13 +73,18 @@ Column.unload = function(self)
 	loveio.input.callbacks.keyreleased[self.name] = nil
 end
 
-Column.getCoord = function(self, time)
+Column.getCoord = function(self, hitObject, key)
+	local time = hitObject[key]
+	local hitObjectTimingPoint = hitObject.startTimingPoint
+	if key == "endTime" then
+		hitObjectTimingPoint = hitObject.endTimingPoint
+	end
 	local currentTime = self.map.currentTime
 	local coord = 0
 	
-	--old code
-	for timingPointIndex, timingPoint in pairs(self.map.timingPoints) do
-		if time > currentTime then
+	if time > currentTime then
+		for timingPointIndex = self.vsrg.currentTimingPoint.index, hitObjectTimingPoint.index do
+			local timingPoint = self.map.timingPoints[timingPointIndex]
 			if timingPoint.startTime < time and timingPoint.endTime > currentTime then
 				if timingPoint.startTime <= currentTime and timingPoint.endTime > currentTime then
 					if time > timingPoint.startTime and time <= timingPoint.endTime then
@@ -93,7 +98,10 @@ Column.getCoord = function(self, time)
 					coord = coord + (time - timingPoint.startTime) * timingPoint.velocity
 				end
 			end
-		elseif time < currentTime then
+		end
+	elseif time < currentTime then
+		for timingPointIndex = hitObjectTimingPoint.index, self.vsrg.currentTimingPoint.index do
+			local timingPoint = self.map.timingPoints[timingPointIndex]
 			if timingPoint.endTime > time and timingPoint.startTime < currentTime then
 				if timingPoint.startTime <= currentTime and timingPoint.endTime > currentTime then
 					if time > timingPoint.startTime and time <= timingPoint.endTime then
@@ -121,13 +129,13 @@ Column.draw = function(self)
 	for hitObjectIndex = self.firstHitObjectIndex, #self.hitObjects do
 		local hitObject = self.hitObjects[hitObjectIndex]
 		if hitObject then
-			if self:getCoord(hitObject.startTime) < 0 then
+			if self:getCoord(hitObject, "startTime") < 0 then
 				break
-			elseif self:getCoord(hitObject.startTime) > 1 + hitObject.h and not hitObject.endTime or hitObject.endTime and self:getCoord(hitObject.endTime) > 1 + hitObject.h then
+			elseif self:getCoord(hitObject, "startTime") > 1 + hitObject.h and not hitObject.endTime or hitObject.endTime and self:getCoord(hitObject, "endTime") > 1 + hitObject.h then
 				hitObject:remove()
 				self.firstHitObjectIndex = hitObject.columnIndex
 			else
-				hitObject:draw((hitObject.key - 1) / 10, self:getCoord(hitObject.startTime))
+				hitObject:draw((hitObject.key - 1) / 10, self:getCoord(hitObject, "startTime"))
 			end
 		end
 	end

@@ -105,8 +105,8 @@ Hold.draw = function(self, ox, oy)
 	self.tail.x = ox
 	self.body.x = ox + 0.01
 	self.head.y = oy - self.h
-	self.tail.y = self.column:getCoord(self.endTime) - self.h
-	self.body.y = self.column:getCoord(self.endTime) - self.h/2
+	self.tail.y = self.column:getCoord(self, "endTime") - self.h
+	self.body.y = self.column:getCoord(self, "endTime") - self.h/2
 	
 	if self.state == "clear" then
 		self.color[1], self.color[2], self.color[3] = 255, 255, 255
@@ -114,9 +114,9 @@ Hold.draw = function(self, ox, oy)
 	elseif self.state == "startPassed" then
 		self.color[1], self.color[2], self.color[3] = 127, 255, 127
 		if self.pseudoStartTime and self.pseudoStartTime > self.startTime then
-			self.head.y = self.column:getCoord(self.pseudoStartTime) - self.h
+			self.head.y = self.column:getCoord(self, "pseudoStartTime") - self.h
 		else
-			self.head.y = self.column:getCoord(self.startTime) - self.h
+			self.head.y = self.column:getCoord(self, "startTime") - self.h
 		end
 		
 		self.longH = self.head.y - self.tail.y

@@ -22,7 +22,6 @@ local import = function(self, filePath)
 				self.audioFilename = trim(string.sub(line, #("AudioFilename") + 2, -1))
 			elseif string.sub(line, 1, #("CircleSize")) == "CircleSize" then
 				self.keymode = tonumber(string.sub(line, #("CircleSize") + 2, -1))
-				print(self.keymode)
 			end
 		elseif blockName == "Events" and trim(line) ~= "" then
 			if string.sub(line, 1, 6) == "Sample" then
@@ -37,7 +36,9 @@ local import = function(self, filePath)
 				self.baseBeatLength = current.beatLength
 				if current.startTime > 0 then
 					self.timingPoints[2] = current
+					self.timingPoints[2].index = 2
 					self.timingPoints[1] = self.TimingPoint:new({beatmap = self}):import(line)
+					self.timingPoints[1].index = 1
 					self.timingPoints[1].startTime = 0
 					self.timingPoints[1].endTime = self.timingPoints[2].startTime - 1
 					current = self.timingPoints[2]
@@ -45,7 +46,7 @@ local import = function(self, filePath)
 				end
 			end
 			if #self.timingPoints > 1 then
-				if not prev.endTime then prev.endTime = current.startTime - 1 end
+				if prev.endTime == prev.startTime then prev.endTime = current.startTime - 1 end
 				if current.inherited then
 					current.beatLenght = prev.beatLenght
 				else
