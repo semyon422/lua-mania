@@ -13,3 +13,5 @@ game.vsrg.7K.7 = [
 
 game.vsrg.speed = 2.4
 game.vsrg.offset = 0
+game.vsrg.velocityPower = 1
+game.vsrg.velocityMode = 1

@@ -82,40 +82,50 @@ Column.getCoord = function(self, hitObject, key)
 	local currentTime = self.map.currentTime
 	local coord = 0
 	
-	if time > currentTime then
-		for timingPointIndex = self.vsrg.currentTimingPoint.index, hitObjectTimingPoint.index do
-			local timingPoint = self.map.timingPoints[timingPointIndex]
-			if timingPoint.startTime < time and timingPoint.endTime > currentTime then
-				if timingPoint.startTime <= currentTime and timingPoint.endTime > currentTime then
-					if time > timingPoint.startTime and time <= timingPoint.endTime then
-						coord = coord + (time - currentTime) * timingPoint.velocity
-					else
-						coord = coord + (timingPoint.endTime - currentTime) * timingPoint.velocity
+	local velocityPower = luaMania.config["game.vsrg.velocityPower"].value
+	local velocityMode = tonumber(luaMania.config["game.vsrg.velocityMode"].value)
+	
+	if velocityMode == 1 then
+		if time > currentTime then
+			for timingPointIndex = self.vsrg.currentTimingPoint.index, hitObjectTimingPoint.index do
+				local timingPoint = self.map.timingPoints[timingPointIndex]
+				if timingPoint.startTime < time and timingPoint.endTime > currentTime then
+					local velocity = timingPoint.velocity ^ velocityPower
+					if timingPoint.startTime <= currentTime and timingPoint.endTime > currentTime then
+						if time > timingPoint.startTime and time <= timingPoint.endTime then
+							coord = coord + (time - currentTime) * velocity
+						else
+							coord = coord + (timingPoint.endTime - currentTime) * velocity
+						end
+					elseif timingPoint.startTime > currentTime and timingPoint.endTime <= time then
+						coord = coord + (timingPoint.endTime - timingPoint.startTime) * velocity
+					elseif timingPoint.startTime < time and timingPoint.endTime > time then
+						coord = coord + (time - timingPoint.startTime) * velocity
 					end
-				elseif timingPoint.startTime > currentTime and timingPoint.endTime <= time then
-					coord = coord + (timingPoint.endTime - timingPoint.startTime) * timingPoint.velocity
-				elseif timingPoint.startTime < time and timingPoint.endTime > time then
-					coord = coord + (time - timingPoint.startTime) * timingPoint.velocity
+				end
+			end
+		elseif time < currentTime then
+			for timingPointIndex = hitObjectTimingPoint.index, self.vsrg.currentTimingPoint.index do
+				local timingPoint = self.map.timingPoints[timingPointIndex]
+				if timingPoint.endTime > time and timingPoint.startTime < currentTime then
+					local velocity = timingPoint.velocity ^ velocityPower
+					if timingPoint.startTime <= currentTime and timingPoint.endTime > currentTime then
+						if time > timingPoint.startTime and time <= timingPoint.endTime then
+							coord = coord + (time - currentTime) * velocity
+						else
+							coord = coord + (timingPoint.startTime - currentTime) * velocity
+						end
+					elseif timingPoint.endTime < currentTime and timingPoint.startTime >= time then
+						coord = coord + (timingPoint.startTime - timingPoint.endTime) * velocity
+					elseif timingPoint.startTime < time and timingPoint.endTime > time then
+						coord = coord + (time - timingPoint.endTime) * velocity
+					end
 				end
 			end
 		end
-	elseif time < currentTime then
-		for timingPointIndex = hitObjectTimingPoint.index, self.vsrg.currentTimingPoint.index do
-			local timingPoint = self.map.timingPoints[timingPointIndex]
-			if timingPoint.endTime > time and timingPoint.startTime < currentTime then
-				if timingPoint.startTime <= currentTime and timingPoint.endTime > currentTime then
-					if time > timingPoint.startTime and time <= timingPoint.endTime then
-						coord = coord + (time - currentTime) * timingPoint.velocity
-					else
-						coord = coord + (timingPoint.startTime - currentTime) * timingPoint.velocity
-					end
-				elseif timingPoint.endTime < currentTime and timingPoint.startTime >= time then
-					coord = coord + (timingPoint.startTime - timingPoint.endTime) * timingPoint.velocity
-				elseif timingPoint.startTime < time and timingPoint.endTime > time then
-					coord = coord + (time - timingPoint.endTime) * timingPoint.velocity
-				end
-			end
-		end
+	elseif velocityMode == 2 then
+		local velocity = hitObjectTimingPoint.velocity ^ velocityPower
+		coord = (time - currentTime) * velocity
 	end
 	
 	if currentTime >= 0 then
