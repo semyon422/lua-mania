@@ -10,6 +10,7 @@ config.game.vsrg.velocityPower = 1
 config.game.vsrg.velocityMode = 1
 config.game.vsrg.hitSoundSourceType = "static"
 config.game.vsrg.audioSourceType = "stream"
+config.game.vsrg.audioPitch = 1
 config.game.vsrg["4K"] = {"d", "f", "j", "k"}
 config.game.vsrg["5K"] = {"d", "f", "space", "j", "k"}
 config.game.vsrg["6K"] = {"s", "d", "f", "j", "k", "l"}

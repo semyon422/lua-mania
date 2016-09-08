@@ -85,7 +85,7 @@ Column.getCoord = function(self, hitObject, key)
 			for timingPointIndex = self.vsrg.currentTimingPoint.index, hitObjectTimingPoint.index do
 				local timingPoint = self.map.timingPoints[timingPointIndex]
 				if timingPoint.startTime < time and timingPoint.endTime > currentTime then
-					local velocity = timingPoint.velocity ^ velocityPower
+					local velocity = timingPoint.velocity ^ velocityPower / self.vsrg.audioPitch
 					if timingPoint.startTime <= currentTime and timingPoint.endTime > currentTime then
 						if time > timingPoint.startTime and time <= timingPoint.endTime then
 							coord = coord + (time - currentTime) * velocity
