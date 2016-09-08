@@ -14,7 +14,8 @@ Column.load = function(self)
 			for hitSoundIndex, hitSoundName in pairs(hitObject.hitSoundsList) do
 				if not self.vsrg.hitSounds[hitSoundName] then
 					local filePath = helpers.getFilePath(hitSoundName, self.vsrg.hitSoundsRules)
-					self.vsrg.hitSounds[hitSoundName] = love.audio.newSource(filePath, "static")
+					local sourceType = luaMania.config["game.vsrg.hitSoundSourceType"].value
+					self.vsrg.hitSounds[hitSoundName] = love.audio.newSource(filePath, sourceType)
 				end
 			end
 			
@@ -31,8 +32,7 @@ Column.load = function(self)
 	
 	self.currentHitObject = self.hitObjects[1]
 	
-	self.createdObjects = {}
-	table.insert(self.createdObjects, loveio.output.classes.Rectangle:new({
+	table.insert(self.vsrg.createdObjects, loveio.output.classes.Rectangle:new({
 		name = "column" .. self.key .. "bg",
 		color = {0,0,0,127},
 		x = 0.1 * (self.key - 1),
@@ -64,11 +64,6 @@ Column.load = function(self)
 end
 
 Column.unload = function(self)
-	if self.createdObjects then
-		for createdObjectIndex, createdObject in pairs(self.createdObjects) do
-			createdObject:remove()
-		end
-	end
 	loveio.input.callbacks.keypressed[self.name] = nil
 	loveio.input.callbacks.keyreleased[self.name] = nil
 end

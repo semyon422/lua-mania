@@ -13,6 +13,7 @@ vsrg.Column = require(vsrg.path .. "Column")(vsrg, game, luaMania)
 
 vsrg.load = function(self)
 	self.columns = {}
+	self.createdObjects = {}
 	self.combo = 0
 	self.comboCounter = ui.classes.Button:new({
 		x = 0.15, y = 0.45, w = 0.1, h = 0.1,
@@ -38,7 +39,8 @@ vsrg.load = function(self)
 	for eventSampleIndex, eventSample in pairs(self.map.eventSamples) do
 		if not self.hitSounds[eventSample.fileName] then
 			local filePath = helpers.getFilePath(eventSample.fileName, self.hitSoundsRules)
-			self.hitSounds[eventSample.fileName] = love.audio.newSource(filePath)
+			local sourceType = luaMania.config["game.vsrg.hitSoundSourceType"].value
+			self.hitSounds[eventSample.fileName] = love.audio.newSource(filePath, sourceType)
 		end
 	end
 	if #self.map.eventSamples > 0 then
@@ -47,6 +49,22 @@ vsrg.load = function(self)
 	end
 	
 	self.currentTimingPoint = self.map.timingPoints[1]
+	
+	loveio.input.callbacks.keypressed.newGame = function(key)
+		if key == "f1" then
+			self.map.audioState = "paused"
+		elseif key == "f2" then
+			self.map.audioState = "started"
+			if self.map.audio:tell() - 1 >= 0 then
+				self.map.audio:seek(self.map.audio:tell() - 1)
+				for createdObjectIndex, createdObject in pairs(self.createdObjects) do
+					if createdObject.objectType == "hitObject" then
+						createdObject:remove()
+					end
+				end
+			end
+		end
+	end
 	
 	self.columns = {}
 	for key = 1, self.map.keymode do
@@ -59,30 +77,40 @@ vsrg.load = function(self)
 		})
 	end
 	if self.map.audioFilename ~= "virtual" then
-		self.map.audio = love.audio.newSource(self.map.mapPath .. "/" .. self.map.audioFilename)
+		local sourceType = luaMania.config["game.vsrg.audioSourceType"].value
+		self.map.audio = love.audio.newSource(self.map.mapPath .. "/" .. self.map.audioFilename, sourceType)
+	else
+		local lastHitObject = self.map.hitObjects[#self.map.hitObjects]
+		local samples = 44100 * (lastHitObject.endTime and lastHitObject.endTime or lastHitObject.startTime) / 1000
+		local soundData = love.sound.newSoundData(samples)
+		self.map.audio = love.audio.newSource(soundData)
 	end
 	self.map.audioStartTime = love.timer.getTime()*1000 + 1000
-	self.map.audioState = -1
+	self.map.audioState = "delayed"
 end
 
 vsrg.postUpdate = function(self)
-	if self.map.audioState == -1 then
+	if self.map.audioState == "delayed" then
 		self.map.currentTime = math.floor(love.timer.getTime()*1000 - self.map.audioStartTime)
-		if self.map.currentTime >= 0 then
-			self.map.audioState = 1
-			if self.map.audio then
-				self.map.audio:play()
-			end
+		if self.map.currentTime > 0 then
+			self.map.audioState = "started"
+			self.map.audio:play()
 		end
-	elseif self.map.audioState == 1 then
-		if self.map.audio then
-			self.map.currentTime = math.floor(self.map.audio:tell() * 1000)
-		else
-			self.map.currentTime = math.floor(love.timer.getTime()*1000 - self.map.audioStartTime)
+	elseif self.map.audioState == "started" then
+		if not self.map.audio:isPlaying() then self.map.audio:play() end
+		self.map.currentTime = math.floor(self.map.audio:tell() * 1000)
+		if self.map.currentTime == 0 then
+			self.map.audioState = "ended"
+			self.map.audioStartTime = love.timer.getTime() * 1000
 		end
-	-- elseif self.map.audioState == 2 then
-		-- self.map.audioStartTime = math.floor(love.timer.getTime() * 1000 - self.map.currentTime)
+	elseif self.map.audioState == "ended" then
+		self.map.currentTime = math.floor(love.timer.getTime()*1000 - self.map.audioStartTime)
+	elseif self.map.audioState == "paused" then
+		self.map.audioStartTime = love.timer.getTime()*1000 + 1000
+		if not self.map.audio:isPaused() then self.map.audio:pause() end
 	end
+	
+	
 	self.map.currentTime = self.map.currentTime + luaMania.config["game.vsrg.offset"].value
 	if #self.map.eventSamples > 0 then
 		while true do
@@ -102,8 +130,12 @@ vsrg.postUpdate = function(self)
 		end
 	end
 	while true do
-		if self.currentTimingPoint and self.currentTimingPoint.endTime <= self.map.currentTime then
-			self.currentTimingPoint = self.map.timingPoints[self.currentTimingPoint.index + 1]
+		if self.currentTimingPoint.endTime <= self.map.currentTime then
+			if self.map.timingPoints[self.currentTimingPoint.index + 1] then
+				self.currentTimingPoint = self.map.timingPoints[self.currentTimingPoint.index + 1]
+			else
+				break
+			end
 		else
 			break
 		end
@@ -125,10 +157,13 @@ vsrg.unload = function(self)
 		end
 	end
 	self.columns = nil
-	self.comboCounter:remove()
-	if self.map.audio then
-		self.map.audio:stop()
+	if self.createdObjects then
+		for createdObjectIndex, createdObject in pairs(self.createdObjects) do
+			createdObject:remove()
+		end
 	end
+	self.comboCounter:remove()
+	self.map.audio:stop()
 	for hitSoundIndex, hitSound in pairs(self.playingHitSounds) do
 		hitSound:stop()
 		self.playingHitSounds[hitSoundIndex] = nil

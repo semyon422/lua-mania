@@ -10,6 +10,7 @@ VsrgHitObject.new = function(self, hitObject)
 end
 
 VsrgHitObject.state = "clear"
+VsrgHitObject.objectType = "hitObject"
 
 VsrgHitObject.judgement = {
 	["pass"] = {0, 150},

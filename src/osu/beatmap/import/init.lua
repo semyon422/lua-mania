@@ -57,9 +57,7 @@ local import = function(self, filePath)
 			table.insert(self.hitObjects, self.HitObject:new({beatmap = self}):import(line))
 		end
 	end
-	local lastTimingPoint = self.timingPoints[#self.timingPoints]
-	local lastHitObject = self.hitObjects[#self.hitObjects]
-	lastTimingPoint.endTime = lastHitObject.endTime and lastHitObject.endTime or lastHitObject.startTime
+	self.timingPoints[#self.timingPoints].endTime = math.huge
 	return self
 end
 

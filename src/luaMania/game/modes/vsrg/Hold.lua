@@ -80,8 +80,8 @@ Hold.update = function(self)
 end
 
 Hold.draw = function(self, ox, oy)
-	if not self.column.createdObjects[self.name] then
-		self.column.createdObjects[self.name] = self
+	if not self.column.vsrg.createdObjects[self.name] then
+		self.column.vsrg.createdObjects[self.name] = self
 	end
 	if not self.drawed then
 		self.h = 0.05
