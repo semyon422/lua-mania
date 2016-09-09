@@ -74,6 +74,7 @@ end
 
 Column.getCoord = function(self, hitObject, key)
 	local time = hitObject[key]
+	if not time then return end
 	local hitObjectTimingPoint = hitObject.startTimingPoint
 	if key == "endTime" then
 		hitObjectTimingPoint = hitObject.endTimingPoint

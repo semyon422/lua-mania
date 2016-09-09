@@ -97,7 +97,7 @@ Hold.drawLoad = function(self)
 end
 Hold.drawUpdate = function(self)
 	local ox = (self.key - 1) / 10
-	local oyStart = self.column:getCoord(self, "startTime")
+	local oyStart = self.column:getCoord(self, "pseudoStartTime") or self.column:getCoord(self, "startTime")
 	local oyEnd = self.column:getCoord(self, "endTime")
 	self.head.x = ox
 	self.tail.x = ox

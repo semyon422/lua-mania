@@ -10,9 +10,7 @@ Drawable.draw = function(self)
 					   self:get("Y", true),
 					   self:get("R"),
 					   self.sx,
-					   self.sy,
-					   self:get("SX"),
-					   self:get("SY"))
+					   self.sy)
 	love.graphics.setColor(oldColor)
 end
 

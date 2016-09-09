@@ -18,3 +18,4 @@ game.vsrg.velocityMode = 1
 game.vsrg.hitSoundSourceType = static
 game.vsrg.audioSourceType = stream
 game.vsrg.audioPitch = 1
+skinPath = res/skin/
