@@ -31,16 +31,19 @@ vsrg.load = function(self)
 		formats = {"wav", "mp3", "ogg"},
 		paths = {
 			self.map.mapPath,
-			"res/skin/game/hitSounds"
-		},
-		default = "res/blank.ogg"
+			"res/hitSounds"
+		}
 	}
 	
 	for eventSampleIndex, eventSample in pairs(self.map.eventSamples) do
 		if not self.hitSounds[eventSample.fileName] then
 			local filePath = helpers.getFilePath(eventSample.fileName, self.hitSoundsRules)
 			local sourceType = luaMania.config["game.vsrg.hitSoundSourceType"].value
-			self.hitSounds[eventSample.fileName] = love.audio.newSource(filePath, sourceType)
+			if not filePath then
+				self.hitSounds[eventSample.fileName] = love.audio.newSource(love.sound.newSoundData(1))
+			else
+				self.hitSounds[eventSample.fileName] = love.audio.newSource(filePath, sourceType)
+			end
 		end
 	end
 	if #self.map.eventSamples > 0 then

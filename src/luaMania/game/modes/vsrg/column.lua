@@ -15,7 +15,11 @@ Column.load = function(self)
 				if not self.vsrg.hitSounds[hitSoundName] then
 					local filePath = helpers.getFilePath(hitSoundName, self.vsrg.hitSoundsRules)
 					local sourceType = luaMania.config["game.vsrg.hitSoundSourceType"].value
-					self.vsrg.hitSounds[hitSoundName] = love.audio.newSource(filePath, sourceType)
+					if not filePath then
+						self.vsrg.hitSounds[hitSoundName] = love.audio.newSource(love.sound.newSoundData(1))
+					else
+						self.vsrg.hitSounds[hitSoundName] = love.audio.newSource(filePath, sourceType)
+					end
 				end
 			end
 			
@@ -140,7 +144,7 @@ Column.draw = function(self)
 				hitObject:remove()
 				self.firstHitObjectIndex = hitObject.columnIndex
 			else
-				hitObject:draw((hitObject.key - 1) / 10, self:getCoord(hitObject, "startTime"))
+				hitObject:draw()
 			end
 		end
 	end

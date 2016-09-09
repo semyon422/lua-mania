@@ -34,17 +34,15 @@ Note.update = function(self)
 	end
 end
 
-Note.draw = function(self, ox, oy)
-	if not self.column.vsrg.createdObjects[self.name] then
-		self.column.vsrg.createdObjects[self.name] = self
-	end
-	if not loveio.output.objects[self.name] then
-		self.h = 0.05
-		loveio.output.objects[self.name] = loveio.output.classes.Rectangle:new({
-			x = 0, y = 0, w = 0.1, h = self.h, mode = "fill", layer = 3
-		})
-	end
-	
+Note.drawLoad = function(self)
+	self.h = 0.05
+	loveio.output.objects[self.name] = loveio.output.classes.Rectangle:new({
+		x = 0, y = 0, w = 0.1, h = self.h, mode = "fill", layer = 3
+	})
+end
+Note.drawUpdate = function(self)
+	local ox = (self.key - 1) / 10
+	local oy = self.column:getCoord(self, "startTime")
 	loveio.output.objects[self.name].x = ox
 	loveio.output.objects[self.name].y = oy - self.h
 	
@@ -54,8 +52,7 @@ Note.draw = function(self, ox, oy)
 		self:remove()
 	end
 end
-
-Note.remove = function(self)
+Note.drawRemove = function(self)
 	loveio.output.objects[self.name] = nil
 end
 
