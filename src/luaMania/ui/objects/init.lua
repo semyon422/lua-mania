@@ -7,7 +7,8 @@ objects.fpsDisplay = ui.classes.Button:new({
 	x = 1 - 0.05, y = 0, w = 0.05, h = pos:x2y(0.05),
 	getValue = function() return love.timer.getFPS() end,
 	action = function(self) print("FPS: " .. self.value) end,
-	backgroundColor = {255, 255, 255, 31}
+	backgroundColor = {255, 255, 255, 31},
+	pos = loveio.output.Position:new({1,1})
 })
 objects.goFullscreen = ui.classes.Button:new({
 	name = "goFullscreen",

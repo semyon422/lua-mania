@@ -3,10 +3,12 @@ function love.load()
 	log = helpers.logger.log
 	
 	configManager = require("configManager")
+	mainConfig = configManager.load("config.txt")
+	
 	cacheManager = require("cacheManager")
 	
 	loveio = require("loveio")
-	pos = loveio.output.position:new({1, 1}, 4/3)
+	pos = loveio.output.Position:new({1, 1}, tonumber(mainConfig["position.ratio"] and mainConfig["position.ratio"].value))
 	
 	objects = {}
 	loveio.init(objects)
@@ -17,9 +19,7 @@ function love.load()
 	bms = require("bms")
 	luaMania = require("luaMania")
 	luaMania.load()
-	
-	objects["position"] = loveio.output.position.object
-	objects["navigation"] = loveio.input.navigation.object
+
 	objects["ui"] = ui
 	love.graphics.setBackgroundColor(127, 127, 127)
 end

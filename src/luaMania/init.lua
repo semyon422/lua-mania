@@ -5,7 +5,7 @@ luaMania.ui = require("luaMania.ui")(luaMania)
 luaMania.cache = require("luaMania.cache")(luaMania)
 
 luaMania.defaultConfig = require("luaMania.config")(luaMania)
-luaMania.config = configManager.load("config.txt")
+luaMania.config = mainConfig
 setmetatable(luaMania.config, luaMania.defaultConfig)
 luaMania.defaultConfig.__index = luaMania.defaultConfig
 

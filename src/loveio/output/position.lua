@@ -9,6 +9,10 @@ Position.new = function(self, resolution, ratio)
 		X = 0, Y = 0,
 		W = love.graphics.getWidth(), H = love.graphics.getHeight()
 	}
+	if not ratio then
+		position.noRatio = true
+		position.ratio = love.graphics.getWidth() / love.graphics.getHeight()
+	end
 	position.rW = position.W
 	position.rH = position.H
 	
@@ -24,6 +28,9 @@ Position.update = function(self)
 		self.rH = love.graphics.getHeight()
 		local W = self.rW
 		local H = self.rH
+		if self.noRatio then
+			self.ratio = W / H
+		end
 		if W / H > self.ratio then
 			self.H = H
 			self.W = H * self.ratio
@@ -36,7 +43,7 @@ Position.update = function(self)
 			self.X = 0
 		else
 			self.W = W
-			self.H = W
+			self.H = H
 			self.Y = 0
 			self.X = 0
 		end

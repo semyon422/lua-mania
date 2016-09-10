@@ -13,6 +13,7 @@ OutputObject.set = function(self, key, value)
 	self[key] = value
 end
 OutputObject.get = function(self, key, g)
+	local pos = self.pos or pos
 	if string.lower(key) == key then
 		if key:find("x") or key:find("w") or key:find("r") or key:find("limit") then
 			return self[key] or pos:X2x(self[key:upper()], g)

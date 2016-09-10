@@ -19,3 +19,4 @@ game.vsrg.hitSoundSourceType = static
 game.vsrg.audioSourceType = stream
 game.vsrg.audioPitch = 1
 skinPath = res/skin/
+position.ratio = 1.333

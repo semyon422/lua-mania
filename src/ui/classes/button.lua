@@ -17,6 +17,7 @@ Button.load = function(self)
 		mode = "fill", color = self.backgroundColor,
 		layer = self.layer
 	})
+	
 	loveio.input.callbacks.mousepressed[self.name] = function(mx, my)
 		local mx = pos:X2x(mx, true)
 		local my = pos:Y2y(my, true)

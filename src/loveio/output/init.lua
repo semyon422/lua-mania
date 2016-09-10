@@ -4,7 +4,7 @@ local output = {}
 
 output.objects = {}
 
-output.position = require("loveio.output.Position")(output, loveio)
+output.Position = require("loveio.output.Position")(output, loveio)
 
 output.classes = {}
 output.classes.OutputObject = require("loveio.output.classes.OutputObject")(output, loveio)
