@@ -6,8 +6,7 @@ function love.load()
 	cacheManager = require("cacheManager")
 	
 	loveio = require("loveio")
-	pos = loveio.output.position
-	nav = loveio.input.navigation
+	pos = loveio.output.position:new({1, 1}, 4/3)
 	
 	objects = {}
 	loveio.init(objects)

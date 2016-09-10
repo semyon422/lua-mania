@@ -21,8 +21,8 @@ Slider.load = function(self)
 		layer = self.layer
 	})
 	loveio.output.objects[self.name .. "-rectangle-2"] = loveio.output.classes.Rectangle:new({
-		x = self.x + self.h / 2, y = self.y + self.h / 2 - pos.Y2y(1),
-		w = self.w - self.h, h = pos.Y2y(2),
+		x = self.x + self.h / 2, y = self.y + self.h / 2 - pos:Y2y(1),
+		w = self.w - self.h, h = pos:Y2y(2),
 		mode = "fill",
 		layer = self.layer + 1,
 		color = self.textColor
@@ -30,16 +30,16 @@ Slider.load = function(self)
 	loveio.input.callbacks.mousepressed[self.name] = function(mx, my)
 		local oldmx = mx
 		local oldmy = my
-		local mx = pos.X2x(mx, true)
-		local my = pos.Y2y(my, true)
+		local mx = pos:X2x(mx, true)
+		local my = pos:Y2y(my, true)
 		if mx >= self.x and mx <= self.x + self.w and my >= self.y and my <= self.y + self.h then
 			self.pressed = true
 			loveio.input.callbacks.mousemoved[self.name](oldmx, oldmy)
 		end
 	end
 	loveio.input.callbacks.mousemoved[self.name] = function(mx, my)
-		local mx = pos.X2x(mx, true)
-		local my = pos.Y2y(my, true)
+		local mx = pos:X2x(mx, true)
+		local my = pos:Y2y(my, true)
 		if self.pressed then
 			self.value = (mx - (self.x + self.h / 2)) / (self.w - self.h) * (self.maxvalue - self.minvalue)
 			if type(self.round) == "function" then

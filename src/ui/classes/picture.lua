@@ -14,8 +14,8 @@ Picture.unload = function(self)
 end
 Picture.valueChanged = function(self)
 	local drawable = love.graphics.newImage(self.value)
-	local dw = pos.X2x(drawable:getWidth())
-	local dh = pos.Y2y(drawable:getHeight())
+	local dw = pos:X2x(drawable:getWidth())
+	local dh = pos:Y2y(drawable:getHeight())
 	loveio.output.objects[self.name] = loveio.output.classes.Drawable:new({
 		x = self.x, y = self.y,
 		sx = self.w / dw,

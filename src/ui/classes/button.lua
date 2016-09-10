@@ -18,8 +18,8 @@ Button.load = function(self)
 		layer = self.layer
 	})
 	loveio.input.callbacks.mousepressed[self.name] = function(mx, my)
-		local mx = pos.X2x(mx, true)
-		local my = pos.Y2y(my, true)
+		local mx = pos:X2x(mx, true)
+		local my = pos:Y2y(my, true)
 		if mx >= self.x and mx <= self.x + self.w and my >= self.y and my <= self.y + self.h then
 			self:activate()
 		end

@@ -7,17 +7,17 @@ Hold.hold = love.graphics.newImage(skin.path .. "vsrg/hold/ffffff.png")
 
 Hold.drawLoad = function(self)
 	self.color = {255, 255, 255, 255}
-	self.h = pos.x2y(0.1)
+	self.h = pos:x2y(0.1)
 	loveio.output.objects[self.name .. "head"] = loveio.output.classes.Drawable:new({
-		drawable = Hold.arrow, sx = 0.1 / pos.X2x(Hold.arrow:getWidth()),
+		drawable = Hold.arrow, sx = 0.1 / pos:X2x(Hold.arrow:getWidth()),
 		x = 0, y = 0, layer = 3, color = self.color
 	})
 	loveio.output.objects[self.name .. "tail"] = loveio.output.classes.Drawable:new({
-		drawable = Hold.arrow, sx = 0.1 / pos.X2x(Hold.arrow:getWidth()),
+		drawable = Hold.arrow, sx = 0.1 / pos:X2x(Hold.arrow:getWidth()),
 		x = 0, y = 0, layer = 3, color = self.color
 	})
 	loveio.output.objects[self.name .. "body"] = loveio.output.classes.Drawable:new({
-		drawable = Hold.hold, sx = 0.1 / pos.X2x(Hold.hold:getWidth()),
+		drawable = Hold.hold, sx = 0.1 / pos:X2x(Hold.hold:getWidth()),
 		x = 0, y = 0, layer = 3, color = self.color
 	})
 	self.head = loveio.output.objects[self.name .. "head"]
@@ -35,7 +35,7 @@ Hold.drawUpdate = function(self)
 	self.tail.y = oyEnd - self.h
 	self.body.y = oyEnd - self.h/2
 	
-	self.body.sy = (self.head.y - self.tail.y) / pos.Y2y(Hold.hold:getHeight())
+	self.body.sy = (self.head.y - self.tail.y) / pos:Y2y(Hold.hold:getHeight())
 	
 	if self.state == "clear" then
 		self.color[1], self.color[2], self.color[3] = 255, 255, 255
@@ -47,7 +47,7 @@ Hold.drawUpdate = function(self)
 			self.head.y = self.column:getCoord(self, "startTime") - self.h
 		end
 		
-		self.body.sy = (self.head.y - self.tail.y) / pos.Y2y(Hold.hold:getHeight())
+		self.body.sy = (self.head.y - self.tail.y) / pos:Y2y(Hold.hold:getHeight())
 		if self.body.sy <= 0 then
 			self:remove()
 		end

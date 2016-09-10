@@ -1,107 +1,114 @@
 local init = function(output, loveio)
 --------------------------------
-local position = {}
+local Position = {}
 
-position.dimensions = 4 / 3
-position.x = 0
-position.y = 0
-position.w = love.graphics.getWidth()
-position.h = love.graphics.getHeight()
-position.realWidth = love.graphics.getWidth()
-position.realHeight = love.graphics.getHeight()
-position.object = {}
-position.object.loaded = false
-position.object.update = function(command)
-	if position.realWidth ~= love.graphics.getWidth() or position.realHeight ~= love.graphics.getHeight() then
-		position.realWidth = love.graphics.getWidth()
-		position.realHeight = love.graphics.getHeight()
-		local w = position.realWidth
-		local h = position.realHeight
-		if w / h > position.dimensions then
-			position.h = h
-			position.w = h * position.dimensions
-			position.x = (w - position.w) / 2
-			position.y = 0
-		elseif w / h < position.dimensions then
-			position.w = w
-			position.h = w / position.dimensions
-			position.y = (h - position.h) / 2
-			position.x = 0
+Position.new = function(self, resolution, ratio)
+	local position = {
+		resolution = resolution,
+		ratio = ratio,
+		X = 0, Y = 0,
+		W = love.graphics.getWidth(), H = love.graphics.getHeight()
+	}
+	position.rW = position.W
+	position.rH = position.H
+	
+	setmetatable(position, self)
+	self.__index = self
+
+	return position
+end
+
+Position.update = function(self)
+	if self.rW ~= love.graphics.getWidth() or self.rH ~= love.graphics.getHeight() then
+		self.rW = love.graphics.getWidth()
+		self.rH = love.graphics.getHeight()
+		local W = self.rW
+		local H = self.rH
+		if W / H > self.ratio then
+			self.H = H
+			self.W = H * self.ratio
+			self.X = (W - self.W) / 2
+			self.Y = 0
+		elseif W / H < self.ratio then
+			self.W = W
+			self.H = W / self.ratio
+			self.Y = (H - self.H) / 2
+			self.X = 0
 		else
-			position.w = w
-			position.h = h
-			position.y = 0
-			position.x = 0
+			self.W = W
+			self.H = W
+			self.Y = 0
+			self.X = 0
 		end
 	end
 end
 
-position.x2y = function(x)
+Position.x2y = function(self, x)
 	if not x then return end
-	position.object.update()
-	return x * position.dimensions
+	self:update()
+	return x * self.ratio
 end
-position.y2x = function(y)
+Position.y2x = function(self, y)
 	if not y then return end
-	position.object.update()
-	return y / position.dimensions
+	self:update()
+	return y / self.ratio
 end
-position.X2Y = function(X, g)
+Position.X2Y = function(self, X, g)
 	if not X then return end
-	position.object.update()
+	self:update()
 	if g then
-		return (X - position.x) * position.dimensions
+		return (X - self.X) * self.ratio
 	else
-		return X * position.dimensions
+		return X * self.ratio
 	end
 end
-position.Y2X = function(Y, g)
+Position.Y2X = function(self, Y, g)
 	if not Y then return end
-	position.object.update()
+	self:update()
 	if g then
-		return (Y - position.y) / position.dimensions
+		return (Y - self.Y) / self.ratio
 	else
-		return Y / position.dimensions
+		return Y / self.ratio
 	end
 end
-position.X2x = function(X, g)
+Position.X2x = function(self, X, g)
 	if not X then return end
-	position.object.update()
+	self:update()
 	if g then
-		return (X - position.x) / position.w
+		return (X - self.X) / self.W
 	else
-		return X / position.w
+		return X / self.W
 	end
 end
-position.Y2y = function(Y, g)
+Position.Y2y = function(self, Y, g)
 	if not Y then return end
-	position.object.update()
+	self:update()
 	if g then
-		return (Y - position.y) / position.h
+		return (Y - self.Y) / self.H
 	else
-		return Y / position.h
+		return Y / self.H
 	end
 end
-position.x2X = function(x, g)
+Position.x2X = function(self, x, g)
 	if not x then return end
-	position.object.update()
+	self:update()
 	if g then
-		return position.x + x * position.w
+		return self.X + x * self.W
 	else
-		return x * position.w
+		return x * self.W
 	end
 end
-position.y2Y = function(y, g)
+Position.y2Y = function(self, y, g)
 	if not y then return end
-	position.object.update()
+	self:update()
 	if g then
-		return position.y + y * position.h
+		return self.Y + y * self.H
 	else
-		return y * position.h
+		return y * self.H
 	end
 end
 
-return position
+return Position
 --------------------------------
 end
 

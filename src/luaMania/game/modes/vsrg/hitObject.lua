@@ -56,10 +56,10 @@ end
 
 VsrgHitObject.draw = function(self, ox, oy)
 	if not self.column.vsrg.createdObjects[self.name] then
-		self.column.vsrg.createdObjects[self.name] = self
-	end
-	if not loveio.output.objects[self.name] then
 		self:drawLoad()
+	end
+	if not self.column.vsrg.createdObjects[self.name] then
+		self.column.vsrg.createdObjects[self.name] = self
 	end
 	self:drawUpdate()
 end

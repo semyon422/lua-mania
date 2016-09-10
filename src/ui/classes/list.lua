@@ -22,7 +22,7 @@ List.load = function(self)
 		ui.classes.Button:new({
 			name = self.name .. "-button" .. i,
 			x = self.x, y = self.y + (i - 1) * (self.h / self.showingItemsCount),
-			w = self.w, h = self.h / (self.showingItemsCount) - pos.Y2y(4),
+			w = self.w, h = self.h / (self.showingItemsCount) - pos:Y2y(4),
 			value = self.items[(i - 1) + self.startItem] and self.items[(i - 1) + self.startItem].title,
 			layer = self.layer,
 			xAlign = self.xAlign, yAlign = self.yAlign,
