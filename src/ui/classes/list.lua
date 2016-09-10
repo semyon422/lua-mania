@@ -34,7 +34,7 @@ List.load = function(self)
 		})
 	end
 	loveio.input.callbacks.wheelmoved[self.name] = function(_, direction)
-		if loveio.input.mouse.x >= self:get("x") and loveio.input.mouse.x <= self:get("x") + self:get("w") and loveio.input.mouse.y >= self:get("y") and loveio.input.mouse.y <= self:get("y") + self:get("h") then
+		if loveio.input.mouse.X >= self:get("X") and loveio.input.mouse.X <= self:get("X") + self:get("W") and loveio.input.mouse.Y >= self:get("Y") and loveio.input.mouse.Y <= self:get("Y") + self:get("H") then
 			if direction == -1 * self.scrollDirection then
 				self.startItem = self.startItem - 1
 			elseif direction == 1 * self.scrollDirection then
