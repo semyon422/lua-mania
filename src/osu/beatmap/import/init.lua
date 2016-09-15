@@ -16,7 +16,8 @@ local import = function(self, filePath)
 	local blockName = ""
 	for line in file:lines() do
 		if line:sub(1,1) == "[" then
-			blockName = line:sub(2, -2)
+			blockName = trim(line):sub(2, -2)
+			print(blockName)
 		elseif blockName ~= "Events" and blockName ~= "TimingPoints" and blockName ~= "HitObjects" then
 			if string.sub(line, 1, #("AudioFilename")) == "AudioFilename" then
 				self.audioFilename = trim(string.sub(line, #("AudioFilename") + 2, -1))

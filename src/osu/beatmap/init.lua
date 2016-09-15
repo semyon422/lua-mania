@@ -18,11 +18,11 @@ Beatmap.new = function(self)
 	return beatmap
 end
 
-Beatmap.import = require(osu.path .. "beatmap/import")(Beatmap, osu)
+Beatmap.import = require(osu.path .. "Beatmap/import")(Beatmap, osu)
 
-Beatmap.EventSample = require(osu.path .. "beatmap/EventSample")(Beatmap, osu)
-Beatmap.TimingPoint = require(osu.path .. "beatmap/TimingPoint")(Beatmap, osu)
-Beatmap.HitObject = require(osu.path .. "beatmap/HitObject")(Beatmap, osu)
+Beatmap.EventSample = require(osu.path .. "Beatmap/EventSample")(Beatmap, osu)
+Beatmap.TimingPoint = require(osu.path .. "Beatmap/TimingPoint")(Beatmap, osu)
+Beatmap.HitObject = require(osu.path .. "Beatmap/HitObject")(Beatmap, osu)
 
 return Beatmap
 --------------------------------
