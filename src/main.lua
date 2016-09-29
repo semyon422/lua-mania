@@ -15,6 +15,8 @@ function love.load()
 	
 	ui = require("ui")
 	
+	cli = require("cli")
+	
 	osu = require("osu")
 	bms = require("bms")
 	luaMania = require("luaMania")

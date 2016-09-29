@@ -2,6 +2,10 @@ local init = function(lmui, luaMania)
 --------------------------------
 local objects = {}
 
+objects.cliUi = cli.CliUi:new({
+	name = "lmCliUi",
+	x = 0, y = 0, w = 1, h = 0.5
+})
 objects.fpsDisplay = ui.classes.Button:new({
 	name = "fpsDisplay",
 	x = 1 - 0.05, y = 0, w = 0.05, h = pos:x2y(0.05),
@@ -26,7 +30,7 @@ objects.playButton = ui.classes.Button:new({
 	y = 0.5 - pos:x2y(0.075) / 2,
 	w = 0.15, h = pos:x2y(0.075),
 	value = "play",
-	action = function() objects.gameState.data.state = "mapList"; objects.gameState.data.switched = false end,
+	action = function() luaMania.cli:run("gameState set mapList") end,
 	backgroundColor = {255, 255, 255, 31}
 })
 objects.backButton = ui.classes.Button:new({
@@ -35,7 +39,7 @@ objects.backButton = ui.classes.Button:new({
 	y = 0.9,
 	w = 0.1, h = 0.1,
 	value = "back",
-	action = function() objects.gameState.data.state = "mapList"; objects.gameState.data.switched = false end
+	action = function() luaMania.cli:run("gameState set mapList") end
 })
 objects.luaManiaLogo = ui.classes.Button:new({
 	name = "luaManiaLogo",

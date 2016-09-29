@@ -3,6 +3,8 @@ local luaMania = loveio.LoveioObject:new()
 luaMania.game = require("luaMania.game")(luaMania)
 luaMania.ui = require("luaMania.ui")(luaMania)
 luaMania.cache = require("luaMania.cache")(luaMania)
+luaMania.cliBinds = require("luaMania.cliBinds")(luaMania)
+luaMania.cli = cli.Cli:new({binds = luaMania.cliBinds})
 
 luaMania.defaultConfig = require("luaMania.config")(luaMania)
 luaMania.config = mainConfig

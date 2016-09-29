@@ -14,7 +14,7 @@ end
 TimingPoint.import = function(self, line)
 	local breaked = explode(",", line)
 	
-	self.offset = tonumber(breaked[1])
+	self.offset = math.ceil(tonumber(breaked[1]))
 	self.beatLength = tonumber(breaked[2])
 	self.timingSignature = tonumber(breaked[3])
 	self.sampleSetId = tonumber(breaked[4])

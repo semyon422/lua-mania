@@ -10,7 +10,8 @@ gameState.data = {
 				"menuBackground",
 				"playButton",
 				"fpsDisplay",
-				"cursor"
+				"cursor",
+				"cliUi"
 			}
 		},
 		["mapList"] = {

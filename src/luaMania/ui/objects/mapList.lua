@@ -21,8 +21,7 @@ mapList.reload = function(self)
 			title = cacheItem.title .. " - " .. cacheItem.version,
 			action = function()
 				luaMania.cache.position = cacheIndex
-				objects.gameState.data.state = "game"
-				objects.gameState.data.switched = false
+				luaMania.cli:run("gameState set game")
 			end
 		}
 	end
