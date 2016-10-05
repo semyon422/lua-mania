@@ -14,19 +14,19 @@ Slider.textColor = {255, 255, 255, 255}
 Slider.backgroundColor = {0, 0, 0, 127}
 
 Slider.load = function(self)
-	loveio.output.objects[tostring(self) .. "-rectangle-1"] = loveio.output.classes.Rectangle:new({
+	self["rectangle-1"] = loveio.output.classes.Rectangle:new({
 		x = self.x, y = self.y,
 		w = self.w, h = self.h,
 		mode = "fill", color = self.backgroundColor,
 		layer = self.layer
-	})
-	loveio.output.objects[tostring(self) .. "-rectangle-2"] = loveio.output.classes.Rectangle:new({
+	}):insert(loveio.output.objects)
+	self["rectangle-2"] = loveio.output.classes.Rectangle:new({
 		x = self.x + self.h / 2, y = self.y + self.h / 2 - pos:Y2y(1),
 		w = self.w - self.h, h = pos:Y2y(2),
 		mode = "fill",
 		layer = self.layer + 1,
 		color = self.textColor
-	})
+	}):insert(loveio.output.objects)
 	loveio.input.callbacks.mousepressed[tostring(self)] = function(mx, my)
 		local oldmx = mx
 		local oldmy = my
@@ -61,21 +61,21 @@ Slider.unload = function(self)
 
 end
 Slider.valueChanged = function(self)
-	loveio.output.objects[tostring(self) .. 3] = loveio.output.classes.Circle:new({
+	self["circle-1"] = loveio.output.classes.Circle:new({
 		x = self.x + self.h / 2 + self.value / (self.maxvalue - self.minvalue) * (self.w - self.h), y = self.y + self.h / 2,
 		r = self.r,
 		mode = "fill",
 		layer = self.layer + 1,
 		color = self.textColor
-	})
-	loveio.output.objects[tostring(self) .. 4] = loveio.output.classes.Text:new({
+	}):insert(loveio.output.objects)
+	self["text-1"]  = loveio.output.classes.Text:new({
 		x = self.x, y = self.y + self.h / 2 - self.r, limit = (self.h / 2 + self.value / (self.maxvalue - self.minvalue) * (self.w - self.h)) * 2,
 		xAlign = self.xAlign, yAlign = self.yAlign,
 		text = self.value,
 		font = self.font,
 		layer = self.layer + 1,
 		color = self.textColor
-	})
+	}):insert(loveio.output.objects)
 	self.oldValue = value
 end
 

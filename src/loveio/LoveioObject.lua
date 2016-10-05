@@ -7,9 +7,6 @@ LoveioObject.new = function(self, object)
 	setmetatable(object, self)
 	self.__index = self
 	
-	if object.insert and object.insert.onCreate then
-		object.insert.table[object.name] = object
-	end
 	return object
 end
 
@@ -33,11 +30,16 @@ end
 
 LoveioObject.remove = function(self)
 	self:unload()
-	if self.insert then self.insert.table[tostring(self)] = nil end
+	if self.insertTraget then self.insertTraget[tostring(self)] = nil end
 end
 LoveioObject.reload = function(self)
 	self:unload()
 	self:load()
+end
+LoveioObject.insert = function(self, target)
+	self.insertTraget = target
+	target[tostring(self)] = self
+	return self
 end
 
 return LoveioObject

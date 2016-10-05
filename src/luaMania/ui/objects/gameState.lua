@@ -48,7 +48,6 @@ gameState.update = function(self, dt)
 		for _, object in pairs(data.states[data.state].open) do
 			objects[tostring(object)] = object
 			object:reload()
-			print(object)
 		end
 		log("gameState: " .. data.state)
 		data.switched = true

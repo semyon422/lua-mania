@@ -37,22 +37,20 @@ Column.load = function(self)
 	self.currentHitObject = self.hitObjects[1]
 	
 	table.insert(self.vsrg.createdObjects, loveio.output.classes.Rectangle:new({
-		name = "column" .. self.key .. "bg",
 		color = {0,0,0,127},
 		x = 0.1 * (self.key - 1),
 		y = 0,
 		w = 0.1,
 		h = 1,
-		layer = 2,
-		insert = {table = loveio.output.objects, onCreate = true}
-	}))
+		layer = 2
+	}):insert(loveio.output.objects))
 	
 	self.keyInfo = {
 		key = self.key,
 		bind = luaMania.config["game.vsrg." .. self.map.keymode .. "K." .. self.key].value,
 		isDown = false
 	}
-	loveio.input.callbacks.keypressed[self.name] = function(key)
+	loveio.input.callbacks.keypressed[tostring(self)] = function(key)
 		if key == self.keyInfo.bind then
 			self.keyInfo.isDown = true
 			if self.currentHitObject then
@@ -60,7 +58,7 @@ Column.load = function(self)
 			end
 		end
 	end
-	loveio.input.callbacks.keyreleased[self.name] = function(key)
+	loveio.input.callbacks.keyreleased[tostring(self)] = function(key)
 		if key == self.keyInfo.bind then
 			self.keyInfo.isDown = false
 		end
@@ -68,8 +66,8 @@ Column.load = function(self)
 end
 
 Column.unload = function(self)
-	loveio.input.callbacks.keypressed[self.name] = nil
-	loveio.input.callbacks.keyreleased[self.name] = nil
+	loveio.input.callbacks.keypressed[tostring(self)] = nil
+	loveio.input.callbacks.keyreleased[tostring(self)] = nil
 end
 
 Column.getCoord = function(self, hitObject, key)

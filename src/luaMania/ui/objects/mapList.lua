@@ -8,8 +8,7 @@ local mapList = ui.classes.List:new({
 	showingItemsCount = 12,
 	items = {},
 	scrollDirection = -1,
-	backgroundColor = {255, 255, 255, 31},
-	insert = {table = objects, onCreate = false}
+	backgroundColor = {255, 255, 255, 31}
 })
 
 mapList.reload = function(self)

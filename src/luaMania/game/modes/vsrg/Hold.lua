@@ -82,18 +82,18 @@ end
 Hold.drawLoad = function(self)
 	self.h = 0.05
 	self.color = {255, 255, 255, 255}
-	loveio.output.objects[self.name .. "head"] = loveio.output.classes.Rectangle:new({
+	loveio.output.objects[tostring(self) .. "head"] = loveio.output.classes.Rectangle:new({
 		x = 0, y = 0, w = 0.1, h = self.h, mode = "fill", layer = 3, color = self.color
 	})
-	loveio.output.objects[self.name .. "tail"] = loveio.output.classes.Rectangle:new({
+	loveio.output.objects[tostring(self) .. "tail"] = loveio.output.classes.Rectangle:new({
 		x = 0, y = 0, w = 0.1, h = self.h, mode = "fill", layer = 3, color = self.color
 	})
-	loveio.output.objects[self.name .. "body"] = loveio.output.classes.Rectangle:new({
+	loveio.output.objects[tostring(self) .. "body"] = loveio.output.classes.Rectangle:new({
 		x = 0, y = 0, w = 0.08, h = self.h, mode = "fill", layer = 3, color = self.color
 	})
-	self.head = loveio.output.objects[self.name .. "head"]
-	self.tail = loveio.output.objects[self.name .. "tail"]
-	self.body = loveio.output.objects[self.name .. "body"]
+	self.head = loveio.output.objects[tostring(self) .. "head"]
+	self.tail = loveio.output.objects[tostring(self) .. "tail"]
+	self.body = loveio.output.objects[tostring(self) .. "body"]
 end
 Hold.drawUpdate = function(self)
 	local ox = (self.key - 1) / 10
@@ -106,8 +106,12 @@ Hold.drawUpdate = function(self)
 	self.tail.y = oyEnd - self.h
 	self.body.y = oyEnd - self.h/2
 	
+	
 	if self.state == "clear" then
 		self.color[1], self.color[2], self.color[3] = 255, 255, 255
+		if self.column.currentHitObject == self then
+			self.color[1], self.color[2], self.color[3] = 191, 191, 255
+		end
 		self.body.h = self.head.y - self.tail.y
 	elseif self.state == "startPassed" then
 		self.color[1], self.color[2], self.color[3] = 127, 255, 127
@@ -134,9 +138,9 @@ Hold.drawUpdate = function(self)
 	end
 end
 Hold.drawRemove = function(self)
-	loveio.output.objects[self.name .. "head"] = nil
-	loveio.output.objects[self.name .. "tail"] = nil
-	loveio.output.objects[self.name .. "body"] = nil
+	loveio.output.objects[tostring(self) .. "head"] = nil
+	loveio.output.objects[tostring(self) .. "tail"] = nil
+	loveio.output.objects[tostring(self) .. "body"] = nil
 end
 
 return Hold

@@ -55,18 +55,18 @@ VsrgHitObject.playHitSound = function(self)
 end
 
 VsrgHitObject.draw = function(self, ox, oy)
-	if not self.column.vsrg.createdObjects[self.name] then
+	if not self.column.vsrg.createdObjects[tostring(self)] then
 		self:drawLoad()
 	end
-	if not self.column.vsrg.createdObjects[self.name] then
-		self.column.vsrg.createdObjects[self.name] = self
+	if not self.column.vsrg.createdObjects[tostring(self)] then
+		self.column.vsrg.createdObjects[tostring(self)] = self
 	end
 	self:drawUpdate()
 end
 
 VsrgHitObject.remove = function(self)
 	self:drawRemove()
-	self.column.vsrg.createdObjects[self.name] = nil
+	self.column.vsrg.createdObjects[tostring(self)] = nil
 end
 
 return VsrgHitObject

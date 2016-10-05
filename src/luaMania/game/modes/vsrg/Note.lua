@@ -36,24 +36,29 @@ end
 
 Note.drawLoad = function(self)
 	self.h = 0.05
-	loveio.output.objects[self.name] = loveio.output.classes.Rectangle:new({
-		x = 0, y = 0, w = 0.1, h = self.h, mode = "fill", layer = 3
+	self.color = {255, 255, 255, 255}
+	loveio.output.objects[tostring(self)] = loveio.output.classes.Rectangle:new({
+		x = 0, y = 0, w = 0.1, h = self.h, mode = "fill", layer = 3, color = self.color
 	})
 end
 Note.drawUpdate = function(self)
 	local ox = (self.key - 1) / 10
 	local oy = self.column:getCoord(self, "startTime")
-	loveio.output.objects[self.name].x = ox
-	loveio.output.objects[self.name].y = oy - self.h
+	loveio.output.objects[tostring(self)].x = ox
+	loveio.output.objects[tostring(self)].y = oy - self.h
+	
+	if self.column.currentHitObject == self then
+		self.color[1], self.color[2], self.color[3] = 191, 191, 255
+	end
 	
 	if self.state == "missed" then
-		loveio.output.objects[self.name].color = {127, 127, 127, 255}
+		self.color[1], self.color[2], self.color[3] = 127, 127, 127
 	elseif self.state == "passed" then
 		self:remove()
 	end
 end
 Note.drawRemove = function(self)
-	loveio.output.objects[self.name] = nil
+	loveio.output.objects[tostring(self)] = nil
 end
 
 return Note

@@ -10,18 +10,18 @@ Picture.load = function(self)
 	self.loaded = true
 end
 Picture.unload = function(self)
-	loveio.output.objects[tostring(self)] = nil
+	self.drawableObject:remove()
 end
 Picture.valueChanged = function(self)
 	local drawable = love.graphics.newImage(self.value)
 	local dw = pos:X2x(drawable:getWidth())
 	local dh = pos:Y2y(drawable:getHeight())
-	loveio.output.objects[tostring(self)] = loveio.output.classes.Drawable:new({
+	self.drawableObject = loveio.output.classes.Drawable:new({
 		x = self.x, y = self.y,
 		sx = self.w / dw,
 		drawable = drawable,
 		layer = self.layer
-	})
+	}):insert(loveio.output.objects)
 	self.oldValue = value
 end
 

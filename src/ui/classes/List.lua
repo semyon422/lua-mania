@@ -18,9 +18,9 @@ List.scrollDirection = 1
 List.load = function(self)
 	self.items = self.items or {}
 	self.buttons = self.buttons or {}
+	self.showingItems = {}
 	for i = 1, self.showingItemsCount do
-		ui.classes.Button:new({
-			name = tostring(self) .. "-button" .. i,
+		table.insert(self.showingItems, ui.classes.Button:new({
 			x = self.x, y = self.y + (i - 1) * (self.h / self.showingItemsCount),
 			w = self.w, h = self.h / (self.showingItemsCount) - pos:Y2y(4),
 			value = self.items[(i - 1) + self.startItem] and self.items[(i - 1) + self.startItem].title,
@@ -29,9 +29,8 @@ List.load = function(self)
 			xPadding = self.xPadding, yPadding = self.yPadding,
 			backgroundColor = self.backgroundColor,
 			textColor = self.textColor,
-			action = self.items[(i - 1) + self.startItem] and self.items[(i - 1) + self.startItem].action,
-			insert = {table = self.insert.table, onCreate = true}
-		})
+			action = self.items[(i - 1) + self.startItem] and self.items[(i - 1) + self.startItem].action
+		}):insert(loveio.objects))
 	end
 	loveio.input.callbacks.wheelmoved[tostring(self)] = function(_, direction)
 		if loveio.input.mouse.X >= self:get("X") and loveio.input.mouse.X <= self:get("X") + self:get("W") and loveio.input.mouse.Y >= self:get("Y") and loveio.input.mouse.Y <= self:get("Y") + self:get("H") then
@@ -46,9 +45,9 @@ List.load = function(self)
 	self.loaded = true
 end
 List.unload = function(self)
-	for i = 1, self.showingItemsCount do
-		if self.insert.table[tostring(self) .. "-button" .. i] then
-			self.insert.table[tostring(self) .. "-button" .. i]:remove()
+	if self.showingItems then
+		for _, showingItem in pairs(self.showingItems) do
+			showingItem:remove()
 		end
 	end
 end

@@ -17,11 +17,9 @@ vsrg.load = function(self)
 	self.combo = 0
 	self.comboCounter = ui.classes.Button:new({
 		x = 0.15, y = 0.45, w = 0.1, h = 0.1,
-		name = "comboCounter",
 		value = self.combo,
-		getValue = function() return self.combo end,
-		insert = self.insert
-	})
+		getValue = function() return self.combo end
+	}):insert(loveio.objects)
 	
 	self.speed = luaMania.config["game.vsrg.speed"].value
 	
@@ -67,9 +65,8 @@ vsrg.load = function(self)
 			name = "column" .. key,
 			key = key,
 			map = self.map,
-			vsrg = self,
-			insert = {table = self.columns, onCreate = true}
-		})
+			vsrg = self
+		}):insert(self.columns)
 	end
 	
 	self.audioPitch = luaMania.config["game.vsrg.audioPitch"].value
@@ -166,7 +163,6 @@ vsrg.unload = function(self)
 		hitSound:stop()
 		self.playingHitSounds[hitSoundIndex] = nil
 	end
-	if self.insert then self.insert.table[self.name] = nil end
 end
 
 return vsrg

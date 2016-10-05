@@ -1,7 +1,5 @@
 local bg = loveio.LoveioObject:new()
 
-bg.insert = {table = objects, onCreate = false}
-
 bg.polygons = {}
 bg.colors = {}
 bg.colors.min = 127 - 16
@@ -79,7 +77,6 @@ bg.unload = function(self)
 		loveio.output.objects["bgPolygon" .. polygonIndex] = nil
 	end
 	loveio.input.callbacks.resize.menuBackground = nil
-	self.loaded = false
 end
 
 return bg
