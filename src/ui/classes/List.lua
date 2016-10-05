@@ -20,7 +20,7 @@ List.load = function(self)
 	self.buttons = self.buttons or {}
 	for i = 1, self.showingItemsCount do
 		ui.classes.Button:new({
-			name = self.name .. "-button" .. i,
+			name = tostring(self) .. "-button" .. i,
 			x = self.x, y = self.y + (i - 1) * (self.h / self.showingItemsCount),
 			w = self.w, h = self.h / (self.showingItemsCount) - pos:Y2y(4),
 			value = self.items[(i - 1) + self.startItem] and self.items[(i - 1) + self.startItem].title,
@@ -33,7 +33,7 @@ List.load = function(self)
 			insert = {table = self.insert.table, onCreate = true}
 		})
 	end
-	loveio.input.callbacks.wheelmoved[self.name] = function(_, direction)
+	loveio.input.callbacks.wheelmoved[tostring(self)] = function(_, direction)
 		if loveio.input.mouse.X >= self:get("X") and loveio.input.mouse.X <= self:get("X") + self:get("W") and loveio.input.mouse.Y >= self:get("Y") and loveio.input.mouse.Y <= self:get("Y") + self:get("H") then
 			if direction == -1 * self.scrollDirection then
 				self.startItem = self.startItem - 1
@@ -47,8 +47,8 @@ List.load = function(self)
 end
 List.unload = function(self)
 	for i = 1, self.showingItemsCount do
-		if self.insert.table[self.name .. "-button" .. i] then
-			self.insert.table[self.name .. "-button" .. i]:remove()
+		if self.insert.table[tostring(self) .. "-button" .. i] then
+			self.insert.table[tostring(self) .. "-button" .. i]:remove()
 		end
 	end
 end

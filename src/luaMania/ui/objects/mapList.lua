@@ -1,5 +1,4 @@
 local mapList = ui.classes.List:new({
-	name = "mapList",
 	x = 0.5,
 	y = 0.05,
 	w = 0.45,

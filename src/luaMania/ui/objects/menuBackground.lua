@@ -1,7 +1,6 @@
 local bg = loveio.LoveioObject:new()
 
 bg.insert = {table = objects, onCreate = false}
-bg.name = "menuBackground"
 
 bg.polygons = {}
 bg.colors = {}

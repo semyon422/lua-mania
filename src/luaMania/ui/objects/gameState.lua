@@ -1,3 +1,5 @@
+local init = function(lmObjects, lmui, luaMania)
+--------------------------------
 local gameState = loveio.LoveioObject:new()
 
 gameState.data = {
@@ -7,32 +9,32 @@ gameState.data = {
 		["mainMenu"] = {
 			close = {},
 			open = {
-				"menuBackground",
-				"playButton",
-				"fpsDisplay",
-				"cursor",
-				"cliUi"
+				lmObjects["menuBackground"],
+				lmObjects["playButton"],
+				lmObjects["fpsDisplay"],
+				lmObjects["cursor"],
+				lmObjects["cliUi"]
 			}
 		},
 		["mapList"] = {
 			close = {
-				"playButton",
-				"game",
-				"backButton"
+				lmObjects["playButton"],
+				lmObjects["game"],
+				lmObjects["backButton"]
 			},
 			open = {
-				"mapList",
-				"menuBackground"
+				lmObjects["mapList"],
+				lmObjects["menuBackground"]
 			}
 		},
 		["game"] = {
 			close = {
-				"mapList",
-				"menuBackground"
+				lmObjects["mapList"],
+				lmObjects["menuBackground"]
 			},
 			open = {
-				"game",
-				"backButton"
+				lmObjects["game"],
+				lmObjects["backButton"]
 			}
 		}
 	}
@@ -40,12 +42,13 @@ gameState.data = {
 gameState.update = function(self, dt)
 	local data = gameState.data
 	if not data.switched then
-		for _, key in pairs(data.states[data.state].close) do
-			if objects[key] then objects[key]:remove() end
+		for _, object in pairs(data.states[data.state].close) do
+			object:remove()
 		end
-		for _, key in pairs(data.states[data.state].open) do
-			objects[key] = luaMania.ui.objects[key]
-			objects[key]:reload()
+		for _, object in pairs(data.states[data.state].open) do
+			objects[tostring(object)] = object
+			object:reload()
+			print(object)
 		end
 		log("gameState: " .. data.state)
 		data.switched = true
@@ -53,3 +56,7 @@ gameState.update = function(self, dt)
 end
 
 return gameState
+--------------------------------
+end
+
+return init
