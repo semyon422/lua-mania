@@ -55,11 +55,10 @@ VsrgHitObject.playHitSound = function(self)
 end
 
 VsrgHitObject.draw = function(self, ox, oy)
-	if not self.column.vsrg.createdObjects[tostring(self)] then
+	if not self.drawedOnce then
 		self:drawLoad()
-	end
-	if not self.column.vsrg.createdObjects[tostring(self)] then
 		self.column.vsrg.createdObjects[tostring(self)] = self
+		self.drawedOnce = true
 	end
 	self:drawUpdate()
 end
