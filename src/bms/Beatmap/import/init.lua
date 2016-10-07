@@ -19,6 +19,8 @@ local import = function(self, filePath)
 	self.timingPoints = {}
 	self.eventSamples = {}
 	
+	self.timingPoints[1] = {}
+	
 	self.channel2key = {
 		[16] = 1,
 		[11] = 2,
@@ -66,7 +68,8 @@ local import = function(self, filePath)
 								hitSoundsList = {
 									self.wav[point]
 								},
-								key = self.channel2key[channel]
+								key = self.channel2key[channel],
+								startTimingPoint = self.timingPoints[1]
 							})
 						end
 					end
@@ -74,11 +77,10 @@ local import = function(self, filePath)
 			end
 		end
 	end
-	self.timingPoints[1] = {
-		startTime = 0,
-		endTime = self.eventSamples[#self.eventSamples].startTime,
-		velocity = 1
-	}
+	self.timingPoints[1].index = 1
+	self.timingPoints[1].startTime = 0
+	self.timingPoints[1].endTime = self.eventSamples[#self.eventSamples].startTime
+	self.timingPoints[1].velocity = 1
 	
 	self.sortByTime = function(a, b)
 		return a.startTime < b.startTime

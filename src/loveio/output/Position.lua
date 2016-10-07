@@ -53,12 +53,12 @@ end
 Position.x2y = function(self, x)
 	if not x then return end
 	self:update()
-	return x * self.ratio
+	return x * self.ratio / self.resolution[2]
 end
 Position.y2x = function(self, y)
 	if not y then return end
 	self:update()
-	return y / self.ratio
+	return y / self.ratio / self.resolution[1]
 end
 Position.X2Y = function(self, X, g)
 	if not X then return end
@@ -82,36 +82,36 @@ Position.X2x = function(self, X, g)
 	if not X then return end
 	self:update()
 	if g then
-		return (X - self.X) / self.W
+		return (X - self.X) / self.W / self.resolution[1]
 	else
-		return X / self.W
+		return X / self.W / self.resolution[1]
 	end
 end
 Position.Y2y = function(self, Y, g)
 	if not Y then return end
 	self:update()
 	if g then
-		return (Y - self.Y) / self.H
+		return (Y - self.Y) / self.H / self.resolution[2]
 	else
-		return Y / self.H
+		return Y / self.H / self.resolution[2]
 	end
 end
 Position.x2X = function(self, x, g)
 	if not x then return end
 	self:update()
 	if g then
-		return self.X + x * self.W
+		return self.X + x * self.W / self.resolution[1]
 	else
-		return x * self.W
+		return x * self.W / self.resolution[1]
 	end
 end
 Position.y2Y = function(self, y, g)
 	if not y then return end
 	self:update()
 	if g then
-		return self.Y + y * self.H
+		return self.Y + y * self.H / self.resolution[2]
 	else
-		return y * self.H
+		return y * self.H / self.resolution[2]
 	end
 end
 
