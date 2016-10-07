@@ -4,7 +4,6 @@ function love.load()
 	
 	configManager = require("configManager")
 	mainConfig = configManager.load("config.txt")
-	
 	cacheManager = require("cacheManager")
 	
 	loveio = require("loveio")
@@ -22,6 +21,5 @@ function love.load()
 	luaMania = require("luaMania")
 	luaMania.load()
 
-	objects["ui"] = ui
 	love.graphics.setBackgroundColor(127, 127, 127)
 end
