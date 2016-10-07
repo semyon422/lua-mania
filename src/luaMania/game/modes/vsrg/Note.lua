@@ -34,10 +34,13 @@ Note.update = function(self)
 end
 
 Note.drawLoad = function(self)
-	self.h = 0.05
+	local circle = luaMania.skin.game.vsrg.circle
 	self.color = {255, 255, 255, 255}
-	self.gNote = loveio.output.classes.Rectangle:new({
-		x = 0, y = 0, w = 0.1, h = self.h, mode = "fill", layer = 3, color = self.color
+	self.h = pos:x2y(0.1)
+	self.gNote = loveio.output.classes.Drawable:new({
+		drawable = circle,
+		x = 0, y = 0, sx = 0.1 / pos:X2x(circle:getWidth()),
+		layer = 3
 	}):insert(loveio.output.objects)
 end
 Note.drawUpdate = function(self)
@@ -45,10 +48,6 @@ Note.drawUpdate = function(self)
 	local oy = self.column:getCoord(self, "startTime")
 	self.gNote.x = ox
 	self.gNote.y = oy - self.h
-	
-	if self.column.currentHitObject == self then
-		self.color[1], self.color[2], self.color[3] = 191, 191, 255
-	end
 	
 	if self.state == "missed" then
 		self.color[1], self.color[2], self.color[3] = 127, 127, 127
