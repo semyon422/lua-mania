@@ -5,7 +5,6 @@ local Note = vsrg.HitObject:new({})
 Note.new = function(self, note)
 	setmetatable(note, self)
 	self.__index = self
-	note.name = "note" .. note.column.key .. "-" .. note.columnIndex
 	
 	return note
 end
@@ -37,15 +36,15 @@ end
 Note.drawLoad = function(self)
 	self.h = 0.05
 	self.color = {255, 255, 255, 255}
-	loveio.output.objects[tostring(self)] = loveio.output.classes.Rectangle:new({
+	self.gNote = loveio.output.classes.Rectangle:new({
 		x = 0, y = 0, w = 0.1, h = self.h, mode = "fill", layer = 3, color = self.color
-	})
+	}):insert(loveio.output.objects)
 end
 Note.drawUpdate = function(self)
 	local ox = (self.key - 1) / 10
 	local oy = self.column:getCoord(self, "startTime")
-	loveio.output.objects[tostring(self)].x = ox
-	loveio.output.objects[tostring(self)].y = oy - self.h
+	self.gNote.x = ox
+	self.gNote.y = oy - self.h
 	
 	if self.column.currentHitObject == self then
 		self.color[1], self.color[2], self.color[3] = 191, 191, 255
@@ -58,7 +57,7 @@ Note.drawUpdate = function(self)
 	end
 end
 Note.drawRemove = function(self)
-	loveio.output.objects[tostring(self)] = nil
+	self.gNote:remove()
 end
 
 return Note

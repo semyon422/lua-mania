@@ -82,29 +82,26 @@ end
 Hold.drawLoad = function(self)
 	self.h = 0.05
 	self.color = {255, 255, 255, 255}
-	loveio.output.objects[tostring(self) .. "head"] = loveio.output.classes.Rectangle:new({
+	self.gHead = loveio.output.classes.Rectangle:new({
 		x = 0, y = 0, w = 0.1, h = self.h, mode = "fill", layer = 3, color = self.color
-	})
-	loveio.output.objects[tostring(self) .. "tail"] = loveio.output.classes.Rectangle:new({
+	}):insert(loveio.output.objects)
+	self.gTail = loveio.output.classes.Rectangle:new({
 		x = 0, y = 0, w = 0.1, h = self.h, mode = "fill", layer = 3, color = self.color
-	})
-	loveio.output.objects[tostring(self) .. "body"] = loveio.output.classes.Rectangle:new({
+	}):insert(loveio.output.objects)
+	self.gBody = loveio.output.classes.Rectangle:new({
 		x = 0, y = 0, w = 0.08, h = self.h, mode = "fill", layer = 3, color = self.color
-	})
-	self.head = loveio.output.objects[tostring(self) .. "head"]
-	self.tail = loveio.output.objects[tostring(self) .. "tail"]
-	self.body = loveio.output.objects[tostring(self) .. "body"]
+	}):insert(loveio.output.objects)
 end
 Hold.drawUpdate = function(self)
 	local ox = (self.key - 1) / 10
 	local oyStart = self.column:getCoord(self, "pseudoStartTime") or self.column:getCoord(self, "startTime")
 	local oyEnd = self.column:getCoord(self, "endTime")
-	self.head.x = ox
-	self.tail.x = ox
-	self.body.x = ox + 0.01
-	self.head.y = oyStart - self.h
-	self.tail.y = oyEnd - self.h
-	self.body.y = oyEnd - self.h/2
+	self.gHead.x = ox
+	self.gTail.x = ox
+	self.gBody.x = ox + 0.01
+	self.gHead.y = oyStart - self.h
+	self.gTail.y = oyEnd - self.h
+	self.gBody.y = oyEnd - self.h/2
 	
 	
 	if self.state == "clear" then
@@ -112,35 +109,35 @@ Hold.drawUpdate = function(self)
 		if self.column.currentHitObject == self then
 			self.color[1], self.color[2], self.color[3] = 191, 191, 255
 		end
-		self.body.h = self.head.y - self.tail.y
+		self.gBody.h = self.gHead.y - self.gTail.y
 	elseif self.state == "startPassed" then
 		self.color[1], self.color[2], self.color[3] = 127, 255, 127
 		if self.pseudoStartTime and self.pseudoStartTime > self.startTime then
-			self.head.y = self.column:getCoord(self, "pseudoStartTime") - self.h
+			self.gHead.y = self.column:getCoord(self, "pseudoStartTime") - self.h
 		else
-			self.head.y = self.column:getCoord(self, "startTime") - self.h
+			self.gHead.y = self.column:getCoord(self, "startTime") - self.h
 		end
 		
-		self.longH = self.head.y - self.tail.y
+		self.longH = self.gHead.y - self.gTail.y
 		if self.longH > 0 then
-			self.body.h = self.longH
+			self.gBody.h = self.longH
 		else
 			self:remove()
 		end
 	elseif self.state == "startMissedPressed" then
 		self.color[1], self.color[2], self.color[3], self.color[4] = 127, 192, 127, 255
-		self.body.h = self.head.y - self.tail.y
+		self.gBody.h = self.gHead.y - self.gTail.y
 	elseif self.state == "startMissed" then
 		self.color[1], self.color[2], self.color[3], self.color[4] = 127, 127, 127, 255
-		self.body.h = self.head.y - self.tail.y
+		self.gBody.h = self.gHead.y - self.gTail.y
 	elseif self.state == "endPassed" or self.state == "endMissed" then
 		self:remove()
 	end
 end
 Hold.drawRemove = function(self)
-	loveio.output.objects[tostring(self) .. "head"] = nil
-	loveio.output.objects[tostring(self) .. "tail"] = nil
-	loveio.output.objects[tostring(self) .. "body"] = nil
+	self.gHead:remove()
+	self.gTail:remove()
+	self.gBody:remove()
 end
 
 return Hold
