@@ -4,8 +4,6 @@ ui.classes = require("ui.classes")(ui)
 ui.fonts = {
 	default = love.graphics.newFont("res/fonts/OpenSans/OpenSansRegular/OpenSansRegular.ttf", 12)
 }
-
-ui.load = function(self)
-end
+ui.accessableGroups = {}
 
 return ui

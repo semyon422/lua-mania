@@ -9,8 +9,6 @@ UiObject.h = 1
 UiObject.r = 1
 UiObject.layer = 1
 UiObject.objectCount = 1
-UiObject.accesable = true
-UiObject.accessLevel = 1
 
 UiObject.update = function(self)
 	if self.hidden then return end
@@ -34,7 +32,11 @@ UiObject.valueChanged = function(self)
 end
 
 UiObject.activate = function(self)
-	if self.action then self:action() end
+	if self.action then
+		if self.group and ui.accessableGroups[self.group] or not self.group then
+			self:action()
+		end
+	end
 end
 UiObject.hide = function(self)
 	self:unload()
