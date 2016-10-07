@@ -19,8 +19,8 @@ Button.load = function(self)
 	}):insert(loveio.output.objects)
 	
 	loveio.input.callbacks.mousepressed[tostring(self)] = function(mx, my)
-		local x = self:get("X")
-		local y = self:get("Y")
+		local x = self:get("X", true)
+		local y = self:get("Y", true)
 		local w = self:get("W")
 		local h = self:get("H")
 		if mx >= x and mx <= x + w and my >= y and my <= y + h then

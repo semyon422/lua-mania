@@ -33,8 +33,8 @@ List.load = function(self)
 		}):insert(loveio.objects))
 	end
 	loveio.input.callbacks.wheelmoved[tostring(self)] = function(_, direction)
-		local x = self:get("X")
-		local y = self:get("Y")
+		local x = self:get("X", true)
+		local y = self:get("Y", true)
 		local w = self:get("W")
 		local h = self:get("H")
 		local mx = loveio.input.mouse.X
