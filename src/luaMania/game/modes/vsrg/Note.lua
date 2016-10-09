@@ -40,11 +40,13 @@ Note.drawLoad = function(self)
 	self.gNote = loveio.output.classes.Drawable:new({
 		drawable = circle,
 		x = 0, y = 0, sx = 0.1 / pos:X2x(circle:getWidth()),
-		layer = 3
+		layer = 7
 	}):insert(loveio.output.objects)
 end
 Note.drawUpdate = function(self)
-	local ox = (self.key - 1) / 10
+	local columnStart = luaMania.skin.game.vsrg.columnStart
+	local columnWidth = luaMania.skin.game.vsrg.columnWidth
+	local ox = columnStart + columnWidth * (self.key - 1)
 	local oy = self.column:getCoord(self, "startTime")
 	self.gNote.x = ox
 	self.gNote.y = oy - self.h
@@ -56,7 +58,7 @@ Note.drawUpdate = function(self)
 	end
 end
 Note.drawRemove = function(self)
-	self.gNote:remove()
+	if self.gNote then self.gNote:remove() end
 end
 
 return Note

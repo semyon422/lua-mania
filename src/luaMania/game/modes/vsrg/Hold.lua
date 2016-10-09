@@ -5,7 +5,6 @@ local Hold = vsrg.HitObject:new({})
 Hold.new = function(self, hold)
 	setmetatable(hold, self)
 	self.__index = self
-	hold.name = "hold" .. hold.column.key .. "-" .. hold.columnIndex
 	
 	return hold
 end
@@ -87,19 +86,21 @@ Hold.drawLoad = function(self)
 	self.h = pos:x2y(0.1)
 	self.gHead = loveio.output.classes.Drawable:new({
 		drawable = head, sx = 0.1 / pos:X2x(head:getWidth()),
-		x = 0, y = 0, layer = 3, color = self.color
+		x = 0, y = 0, layer = 6, color = self.color
 	}):insert(loveio.output.objects)
 	self.gTail = loveio.output.classes.Drawable:new({
 		drawable = tail, sx = 0.1 / pos:X2x(tail:getWidth()),
-		x = 0, y = 0, layer = 3, color = self.color
+		x = 0, y = 0, layer = 5, color = self.color
 	}):insert(loveio.output.objects)
 	self.gBody = loveio.output.classes.Drawable:new({
 		drawable = body, sx = 0.1 / pos:X2x(body:getWidth()),
-		x = 0, y = 0, layer = 3, color = self.color
+		x = 0, y = 0, layer = 4, color = self.color
 	}):insert(loveio.output.objects)
 end
 Hold.drawUpdate = function(self)
-	local ox = (self.key - 1) / 10
+	local columnStart = luaMania.skin.game.vsrg.columnStart
+	local columnWidth = luaMania.skin.game.vsrg.columnWidth
+	local ox = columnStart + columnWidth * (self.key - 1)
 	local oyStart = self.column:getCoord(self, "pseudoStartTime") or self.column:getCoord(self, "startTime")
 	local oyEnd = self.column:getCoord(self, "endTime")
 	self.gHead.x = ox
@@ -134,9 +135,9 @@ Hold.drawUpdate = function(self)
 	end
 end
 Hold.drawRemove = function(self)
-	self.gHead:remove()
-	self.gTail:remove()
-	self.gBody:remove()
+	if self.gHead then self.gHead:remove() end
+	if self.gTail then self.gTail:remove() end
+	if self.gBody then self.gBody:remove() end
 end
 
 return Hold

@@ -36,13 +36,25 @@ Column.load = function(self)
 	
 	self.currentHitObject = self.hitObjects[1]
 	
+	local columnStart = luaMania.skin.game.vsrg.columnStart
+	local columnWidth = luaMania.skin.game.vsrg.columnWidth
+	local columnColor = luaMania.skin.game.vsrg.columnColor
 	table.insert(self.vsrg.createdObjects, loveio.output.classes.Rectangle:new({
-		color = {0,0,0,127},
-		x = 0.1 * (self.key - 1),
+		color = columnColor,
+		x = columnStart + columnWidth * (self.key - 1),
 		y = 0,
-		w = 0.1,
+		w = columnWidth,
 		h = 1,
 		layer = 2
+	}):insert(loveio.output.objects))
+	local hitPosition = luaMania.skin.game.vsrg.hitPosition
+	table.insert(self.vsrg.createdObjects, loveio.output.classes.Rectangle:new({
+		color = {255,255,255,63},
+		x = columnStart + columnWidth * (self.key - 1),
+		y = 1 - hitPosition,
+		w = columnWidth,
+		H = 2,
+		layer = 3
 	}):insert(loveio.output.objects))
 	
 	self.keyInfo = {
@@ -126,10 +138,11 @@ Column.getCoord = function(self, hitObject, key)
 		coord = (time - currentTime) * velocity
 	end
 	
+	local hitPosition = luaMania.skin.game.vsrg.hitPosition
 	if currentTime >= 0 then
-		return 1 - self.vsrg.speed*coord/1000
+		return 1 - self.vsrg.speed*coord/1000 - hitPosition
 	else
-		return 1 - self.vsrg.speed*(coord - currentTime)/1000
+		return 1 - self.vsrg.speed*(coord - currentTime)/1000 - hitPosition
 	end
 end
 
