@@ -22,4 +22,9 @@ function love.load()
 	luaMania.load()
 
 	love.graphics.setBackgroundColor(127, 127, 127)
+	loveio.input.callbacks.keypressed.goFullscreen = function(key)
+		if key == "f11" then
+			love.window.setFullscreen(not (love.window.getFullscreen()))
+		end
+	end
 end

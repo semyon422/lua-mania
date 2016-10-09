@@ -1,4 +1,4 @@
-local init = function(lmObjects, lmui, luaMania)
+local init = function(lmui, luaMania)
 --------------------------------
 local gameState = loveio.LoveioObject:new()
 
@@ -9,32 +9,30 @@ gameState.data = {
 		["mainMenu"] = {
 			close = {},
 			open = {
-				lmObjects["menuBackground"],
-				lmObjects["playButton"],
-				lmObjects["fpsDisplay"],
-				lmObjects["cursor"],
-				lmObjects["cliUi"]
+				lmui["menuBackground"],
+				lmui["playButton"],
+				lmui["fpsDisplay"],
+				lmui["cursor"],
+				lmui["cliUi"]
 			}
 		},
 		["mapList"] = {
 			close = {
-				lmObjects["playButton"],
-				lmObjects["game"],
-				lmObjects["backButton"]
+				lmui["playButton"],
+				lmui["game"],
+				lmui["backButton"]
 			},
 			open = {
-				lmObjects["mapList"],
-				lmObjects["menuBackground"]
+				lmui["mapList"],
 			}
 		},
 		["game"] = {
 			close = {
-				lmObjects["mapList"],
-				lmObjects["menuBackground"]
+				lmui["mapList"],
 			},
 			open = {
-				lmObjects["game"],
-				lmObjects["backButton"]
+				lmui["game"],
+				lmui["backButton"]
 			}
 		}
 	}
@@ -46,8 +44,7 @@ gameState.update = function(self, dt)
 			object:remove()
 		end
 		for _, object in pairs(data.states[data.state].open) do
-			objects[tostring(object)] = object
-			object:reload()
+			object:insert(loveio.objects):reload()
 		end
 		log("gameState: " .. data.state)
 		data.switched = true

@@ -35,6 +35,7 @@ end
 LoveioObject.reload = function(self)
 	self:unload()
 	self:load()
+	self.loaded = true
 end
 LoveioObject.insert = function(self, target)
 	self.insertTraget = target

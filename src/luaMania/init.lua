@@ -16,7 +16,7 @@ luaMania.skin = require("res/defaultSkin")(luaMania)
 --configManager.save(luaMania.config, "config.txt")
 
 luaMania.load = function()
-	objects.gameState = luaMania.ui.objects.gameState
+	objects.gameState = luaMania.ui.gameState
 	luaMania.cache.data = cacheManager.generate(luaMania.cache.rules)
 end
 
