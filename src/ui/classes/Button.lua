@@ -15,7 +15,8 @@ Button.load = function(self)
 		x = self.x, y = self.y,
 		w = self.w, h = self.h,
 		mode = "fill", color = self.backgroundColor,
-		layer = self.layer
+		layer = self.layer,
+		pos = self.pos
 	}):insert(loveio.output.objects)
 	
 	loveio.input.callbacks.mousepressed[tostring(self)] = function(mx, my)
@@ -43,7 +44,8 @@ Button.valueChanged = function(self)
 		text = self.value, xAlign = self.xAlign, yAlign = self.yAlign,
 		font = self.font,
 		color = self.textColor,
-		layer = self.layer + 1
+		layer = self.layer + 1,
+		pos = self.pos
 	}):insert(loveio.output.objects)
 	self.oldValue = value
 end

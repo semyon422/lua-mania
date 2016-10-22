@@ -21,8 +21,6 @@ vsrg.load = function(self)
 		getValue = function() return self.combo end
 	}):insert(loveio.objects)
 	
-	self.speed = luaMania.config["game.vsrg.speed"].value
-	
 	self.hitSounds = {}
 	self.playingHitSounds = {}
 	self.hitSoundsRules = {
@@ -36,7 +34,7 @@ vsrg.load = function(self)
 	for eventSampleIndex, eventSample in pairs(self.map.eventSamples) do
 		if not self.hitSounds[eventSample.fileName] then
 			local filePath = helpers.getFilePath(eventSample.fileName, self.hitSoundsRules)
-			local sourceType = luaMania.config["game.vsrg.hitSoundSourceType"].value
+			local sourceType = luaMania.config["game.vsrg.hitSoundSourceType"]:get()
 			if not filePath then
 				self.hitSounds[eventSample.fileName] = love.audio.newSource(love.sound.newSoundData(1))
 			else
@@ -51,11 +49,46 @@ vsrg.load = function(self)
 	
 	self.currentTimingPoint = self.map.timingPoints[1]
 	
+	self.keyBindPlay = luaMania.config["keyBind.game.vsrg.play"]:get()
+	self.keyBindPause = luaMania.config["keyBind.game.vsrg.pause"]:get()
+	self.keyBindSpeedUp = luaMania.config["keyBind.game.vsrg.speedUp"]:get()
+	self.keyBindSpeedDown = luaMania.config["keyBind.game.vsrg.speedDown"]:get()
+	self.keyBindOffsetUp = luaMania.config["keyBind.game.vsrg.offsetUp"]:get()
+	self.keyBindOffsetDown = luaMania.config["keyBind.game.vsrg.offsetDown"]:get()
+	self.keyBindVelocityPowerUp = luaMania.config["keyBind.game.vsrg.velocityPowerUp"]:get()
+	self.keyBindVelocityPowerDown = luaMania.config["keyBind.game.vsrg.velocityPowerDown"]:get()
 	loveio.input.callbacks.keypressed.newGame = function(key)
-		if key == "f1" then
+		if key == self.keyBindPause then
 			self.map.audioState = "paused"
-		elseif key == "f2" then
+		elseif key == self.keyBindPlay then
 			self.map.audioState = "started"
+		elseif key == self.keyBindSpeedUp then
+			local oldValue = luaMania.config["game.vsrg.speed"]:get()
+			luaMania.config["game.vsrg.speed"]:set(oldValue + 0.1)
+			print("speed = " .. oldValue + 0.1)
+		elseif key == self.keyBindSpeedDown then
+			local oldValue = luaMania.config["game.vsrg.speed"]:get()
+			if oldValue > 0.1 then
+				luaMania.config["game.vsrg.speed"]:set(oldValue - 0.1)
+				print("speed = " .. oldValue - 0.1)
+			end
+		elseif key == self.keyBindOffsetUp then
+			local oldValue = luaMania.config["game.vsrg.offset"]:get()
+			luaMania.config["game.vsrg.offset"]:set(oldValue + 1)
+		elseif key == self.keyBindOffsetDown then
+			local oldValue = luaMania.config["game.vsrg.offset"]:get()
+			luaMania.config["game.vsrg.offset"]:set(oldValue - 1)
+		elseif key == self.keyBindVelocityPowerUp then
+			local oldValue = luaMania.config["game.vsrg.velocityPower"]:get()
+			luaMania.config["game.vsrg.velocityPower"]:set(oldValue + 0.1)
+			print("velocityPower = " .. oldValue + 0.1)
+		elseif key == self.keyBindVelocityPowerDown then
+			local oldValue = luaMania.config["game.vsrg.velocityPower"]:get()
+			if oldValue > 0.1 then
+				luaMania.config["game.vsrg.velocityPower"]:set(oldValue - 0.1)
+				print("velocityPower = " .. oldValue - 0.1)
+				print(oldValue == 0.2)
+			end
 		end
 	end
 	
@@ -69,9 +102,9 @@ vsrg.load = function(self)
 		}):insert(self.columns)
 	end
 	
-	self.audioPitch = luaMania.config["game.vsrg.audioPitch"].value
+	self.audioPitch = luaMania.config["game.vsrg.audioPitch"]:get()
 	if self.map.audioFilename ~= "virtual" then
-		local sourceType = luaMania.config["game.vsrg.audioSourceType"].value
+		local sourceType = luaMania.config["game.vsrg.audioSourceType"]:get()
 		self.map.audio = love.audio.newSource(self.map.mapPath .. "/" .. self.map.audioFilename, sourceType)
 		self.map.audio2 = love.audio.newSource(self.map.mapPath .. "/" .. self.map.audioFilename, sourceType)
 	else
@@ -106,7 +139,7 @@ vsrg.postUpdate = function(self)
 		if not self.map.audio:isPaused() then self.map.audio:pause() end
 	end
 	
-	self.map.currentTime = self.map.currentTime + luaMania.config["game.vsrg.offset"].value
+	self.map.currentTime = self.map.currentTime + luaMania.config["game.vsrg.offset"]:get()
 	if #self.map.eventSamples > 0 then
 		while true do
 			if self.currentEventSample and self.currentEventSample.startTime <= self.map.currentTime then

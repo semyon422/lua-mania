@@ -52,7 +52,7 @@ configManager.load = function(filePath)
 				lastLineNumber = lastLineNumber + 1
 			end
 			config[key] = configManager.configItem:new({line = lastLineNumber})
-			config[key]:set(stringValue)
+			config[key]:set(value or stringValue)
 		end
 	end
 	return config

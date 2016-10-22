@@ -14,7 +14,7 @@ Column.load = function(self)
 			for hitSoundIndex, hitSoundName in pairs(hitObject.hitSoundsList) do
 				if not self.vsrg.hitSounds[hitSoundName] then
 					local filePath = helpers.getFilePath(hitSoundName, self.vsrg.hitSoundsRules)
-					local sourceType = luaMania.config["game.vsrg.hitSoundSourceType"].value
+					local sourceType = luaMania.config["game.vsrg.hitSoundSourceType"]:get()
 					if not filePath then
 						self.vsrg.hitSounds[hitSoundName] = love.audio.newSource(love.sound.newSoundData(1))
 					else
@@ -59,7 +59,7 @@ Column.load = function(self)
 	
 	self.keyInfo = {
 		key = self.key,
-		bind = luaMania.config["game.vsrg." .. self.map.keymode .. "K." .. self.key].value,
+		bind = luaMania.config["keyBind.game.vsrg." .. self.map.keymode .. "K"]:get()[self.key],
 		isDown = false
 	}
 	loveio.input.callbacks.keypressed[tostring(self)] = function(key)
@@ -92,8 +92,10 @@ Column.getCoord = function(self, hitObject, key)
 	local currentTime = self.map.currentTime
 	local coord = 0
 	
-	local velocityPower = luaMania.config["game.vsrg.velocityPower"].value
-	local velocityMode = tonumber(luaMania.config["game.vsrg.velocityMode"].value)
+	
+	local speed = luaMania.config["game.vsrg.speed"]:get()
+	local velocityPower = luaMania.config["game.vsrg.velocityPower"]:get()
+	local velocityMode = tonumber(luaMania.config["game.vsrg.velocityMode"]:get())
 	
 	if velocityMode == 1 then
 		if time > currentTime then
@@ -140,9 +142,9 @@ Column.getCoord = function(self, hitObject, key)
 	
 	local hitPosition = luaMania.skin.game.vsrg.hitPosition
 	if currentTime >= 0 then
-		return 1 - self.vsrg.speed*coord/1000 - hitPosition
+		return 1 - speed*coord/1000 - hitPosition
 	else
-		return 1 - self.vsrg.speed*(coord - currentTime)/1000 - hitPosition
+		return 1 - speed*(coord - currentTime)/1000 - hitPosition
 	end
 end
 
