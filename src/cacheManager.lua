@@ -13,7 +13,7 @@ cacheManager.lookup = function(path, list)
 end
 	
 cacheManager.generate = function(rules)
-	local cacheManagerdObjects = {}
+	local objects = {}
 	
 	local rules = rules or {}
 	local path = rules.path or "."
@@ -24,20 +24,32 @@ cacheManager.generate = function(rules)
 	for _, filePath in pairs(list) do
 		local cacheManagerdObject = callback(filePath)
 		if cacheManagerdObject then
-			table.insert(cacheManagerdObjects, cacheManagerdObject)
+			table.insert(objects, cacheManagerdObject)
 		end
 	end
-	if sort then table.sort(cacheManagerdObjects, sort) end
+	if sort then table.sort(objects, sort) end
 	
-	return cacheManagerdObjects
+	return objects
 end
 
-cacheManager.save = function(cacheManagerdObjects, filePath)
-
+cacheManager.save = function(objects, filePath)
+	local file = io.open(filePath, "w")
+	
+	file:write("local cache = {}\n")
+	for index, object in ipairs(objects) do
+		file:write("cache[#cache + 1] = {")
+		for key, value in pairs(object) do
+			file:write(key .. " = " .. string.format("%q", value) .. ", ")
+		end
+		file:write("}\n")
+	end
+	file:write("return cache")
 end
 
 cacheManager.load = function(filePath)
+	local status, cache = pcall(loadfile(filePath))
 
+	return cache or {}
 end
 
 return cacheManager

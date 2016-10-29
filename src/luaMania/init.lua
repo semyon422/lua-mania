@@ -17,7 +17,17 @@ luaMania.skin = require("res/defaultSkin")(luaMania)
 
 luaMania.load = function()
 	objects.gameState = luaMania.ui.gameState
-	luaMania.cache.data = cacheManager.generate(luaMania.cache.rules)
+	loveio.input.callbacks.keypressed.someBinds = function(key)
+		if key == "f7" then
+			luaMania.cache.data = cacheManager.generate(luaMania.cache.rules)
+			if objects[tostring(luaMania.ui.mapList)] then luaMania.ui.mapList:reload() end
+		elseif key == "f8" then
+			cacheManager.save(luaMania.cache.data, "cache.lua")
+		elseif key == "f9" then
+			luaMania.cache.data = cacheManager.load("cache.lua")
+			if objects[tostring(luaMania.ui.mapList)] then luaMania.ui.mapList:reload() end
+		end
+	end
 end
 
 return luaMania
