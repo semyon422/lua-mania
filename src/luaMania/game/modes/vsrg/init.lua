@@ -57,6 +57,8 @@ vsrg.load = function(self)
 	self.keyBindOffsetDown = luaMania.config["keyBind.game.vsrg.offsetDown"]:get()
 	self.keyBindVelocityPowerUp = luaMania.config["keyBind.game.vsrg.velocityPowerUp"]:get()
 	self.keyBindVelocityPowerDown = luaMania.config["keyBind.game.vsrg.velocityPowerDown"]:get()
+	self.keyBindAudioPitchUp = luaMania.config["keyBind.game.vsrg.audioPitchUp"]:get()
+	self.keyBindAudioPitchDown = luaMania.config["keyBind.game.vsrg.audioPitchDown"]:get()
 	loveio.input.callbacks.keypressed.newGame = function(key)
 		if key == self.keyBindPause then
 			self.map.audioState = "paused"
@@ -87,7 +89,18 @@ vsrg.load = function(self)
 			if oldValue > 0.1 then
 				luaMania.config["game.vsrg.velocityPower"]:set(oldValue - 0.1)
 				print("velocityPower = " .. oldValue - 0.1)
-				print(oldValue == 0.2)
+			end
+		elseif key == self.keyBindAudioPitchUp then
+			local oldValue = luaMania.config["game.vsrg.audioPitch"]:get()
+			luaMania.config["game.vsrg.audioPitch"]:set(oldValue + 0.1)
+			self.map.audio:setPitch(oldValue + 0.1)
+			print("audioPitch = " .. oldValue + 0.1)
+		elseif key == self.keyBindAudioPitchDown then
+			local oldValue = luaMania.config["game.vsrg.audioPitch"]:get()
+			if oldValue > 0.1 then
+				luaMania.config["game.vsrg.audioPitch"]:set(oldValue - 0.1)
+				self.map.audio:setPitch(oldValue - 0.1)
+				print("audioPitch = " .. oldValue - 0.1)
 			end
 		end
 	end
@@ -109,7 +122,7 @@ vsrg.load = function(self)
 		self.map.audio2 = love.audio.newSource(self.map.mapPath .. "/" .. self.map.audioFilename, sourceType)
 	else
 		local lastHitObject = self.map.hitObjects[#self.map.hitObjects]
-		local samples = 44100 * (lastHitObject.endTime and lastHitObject.endTime or lastHitObject.startTime) / 1000
+		local samples = 44100 * ((lastHitObject.endTime and lastHitObject.endTime or lastHitObject.startTime) / 1000 + 2)
 		local soundData = love.sound.newSoundData(samples)
 		self.map.audio = love.audio.newSource(soundData)
 	end

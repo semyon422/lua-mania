@@ -93,7 +93,7 @@ Column.getCoord = function(self, hitObject, key)
 	local coord = 0
 	
 	
-	local speed = luaMania.config["game.vsrg.speed"]:get()
+	local speed = luaMania.config["game.vsrg.speed"]:get() / luaMania.config["game.vsrg.audioPitch"]:get()
 	local velocityPower = luaMania.config["game.vsrg.velocityPower"]:get()
 	local velocityMode = tonumber(luaMania.config["game.vsrg.velocityMode"]:get())
 	

@@ -58,24 +58,35 @@ configManager.load = function(filePath)
 	return config
 end
 
-configManager.toOneDim = function(config)
+configManager.toConfig = function(config)
 	if not config then return end
 	local newConfig = {}
-	local lookup
-	lookup = function(configTable, prefix)
-		for configKey, configValue in pairs(configTable) do
-			if type(configValue) == "table" then
-				lookup(configValue, prefix .. configKey .. ".")
-			else
-				newConfig[prefix .. configKey] = configManager.configItem:new():set(configValue)
-			end
-		end
-		return list
+	
+	for configKey, configValue in pairs(config) do
+		newConfig[configKey] = configManager.configItem:new():set(configValue)
 	end
 
-	lookup(config, "")
-	
 	return newConfig
 end
+
+-- configManager.toOneDim = function(config)
+	-- if not config then return end
+	-- local newConfig = {}
+	-- local lookup
+	-- lookup = function(configTable, prefix)
+		-- for configKey, configValue in pairs(configTable) do
+			-- if type(configValue) == "table" then
+				-- lookup(configValue, prefix .. configKey .. ".")
+			-- else
+				-- newConfig[prefix .. configKey] = configManager.configItem:new():set(configValue)
+			-- end
+		-- end
+		-- return list
+	-- end
+
+	-- lookup(config, "")
+	
+	-- return newConfig
+-- end
 
 return configManager

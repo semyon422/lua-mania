@@ -54,6 +54,7 @@ mapList.unload = function(self)
 			button:remove()
 		end
 	end
+	loveio.input.callbacks.wheelmoved[tostring(self)] = nil
 end
 
 mapList.angle2coord = function(angle, r, ox, oy)
