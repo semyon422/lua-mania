@@ -65,42 +65,43 @@ vsrg.load = function(self)
 		elseif key == self.keyBindPlay then
 			self.map.audioState = "started"
 		elseif key == self.keyBindSpeedUp then
-			local oldValue = luaMania.config["game.vsrg.speed"]:get()
-			luaMania.config["game.vsrg.speed"]:set(oldValue + 0.1)
-			print("speed = " .. oldValue + 0.1)
+			local newValue = luaMania.config["game.vsrg.speed"]:get() + 0.1
+			luaMania.config["game.vsrg.speed"]:set(newValue)
+			print("speed = " .. newValue)
 		elseif key == self.keyBindSpeedDown then
-			local oldValue = luaMania.config["game.vsrg.speed"]:get()
-			if oldValue > 0.1 then
-				luaMania.config["game.vsrg.speed"]:set(oldValue - 0.1)
-				print("speed = " .. oldValue - 0.1)
+			local newValue = luaMania.config["game.vsrg.speed"]:get() - 0.1
+			if newValue >= 0.1 then
+				luaMania.config["game.vsrg.speed"]:set(newValue)
+				print("speed = " .. newValue)
 			end
 		elseif key == self.keyBindOffsetUp then
-			local oldValue = luaMania.config["game.vsrg.offset"]:get()
-			luaMania.config["game.vsrg.offset"]:set(oldValue + 1)
+			local newValue = luaMania.config["game.vsrg.offset"]:get() + 1
+			luaMania.config["game.vsrg.offset"]:set(newValue)
 		elseif key == self.keyBindOffsetDown then
-			local oldValue = luaMania.config["game.vsrg.offset"]:get()
-			luaMania.config["game.vsrg.offset"]:set(oldValue - 1)
+			local newValue = luaMania.config["game.vsrg.offset"]:get() - 1
+			luaMania.config["game.vsrg.offset"]:set(newValue)
 		elseif key == self.keyBindVelocityPowerUp then
-			local oldValue = luaMania.config["game.vsrg.velocityPower"]:get()
-			luaMania.config["game.vsrg.velocityPower"]:set(oldValue + 0.1)
-			print("velocityPower = " .. oldValue + 0.1)
+			local newValue = luaMania.config["game.vsrg.velocityPower"]:get() + 0.1
+			luaMania.config["game.vsrg.velocityPower"]:set(newValue)
+			print("velocityPower = " .. newValue)
 		elseif key == self.keyBindVelocityPowerDown then
-			local oldValue = luaMania.config["game.vsrg.velocityPower"]:get()
-			if oldValue > 0.1 then
-				luaMania.config["game.vsrg.velocityPower"]:set(oldValue - 0.1)
-				print("velocityPower = " .. oldValue - 0.1)
+			local newValue = luaMania.config["game.vsrg.velocityPower"]:get() + 0.1
+			if newValue >= 0.1 then
+				luaMania.config["game.vsrg.velocityPower"]:set(newValue)
+				print("velocityPower = " .. newValue)
 			end
 		elseif key == self.keyBindAudioPitchUp then
-			local oldValue = luaMania.config["game.vsrg.audioPitch"]:get()
-			luaMania.config["game.vsrg.audioPitch"]:set(oldValue + 0.1)
-			self.map.audio:setPitch(oldValue + 0.1)
-			print("audioPitch = " .. oldValue + 0.1)
+			local newValue = luaMania.config["game.vsrg.audioPitch"]:get() + 0.1
+			luaMania.config["game.vsrg.audioPitch"]:set(newValue)
+			self.map.audio:setPitch(newValue)
+			print("audioPitch = " .. newValue)
 		elseif key == self.keyBindAudioPitchDown then
-			local oldValue = luaMania.config["game.vsrg.audioPitch"]:get()
-			if oldValue > 0.1 then
-				luaMania.config["game.vsrg.audioPitch"]:set(oldValue - 0.1)
-				self.map.audio:setPitch(oldValue - 0.1)
-				print("audioPitch = " .. oldValue - 0.1)
+			local newValue = luaMania.config["game.vsrg.audioPitch"]:get() - 0.1
+			if newValue >= 0.1 then
+				luaMania.config["game.vsrg.audioPitch"]:set(newValue)
+				self.map.audio:setPitch(newValue)
+				self.audioPitch = newValue
+				print("audioPitch = " .. newValue)
 			end
 		end
 	end
@@ -115,18 +116,16 @@ vsrg.load = function(self)
 		}):insert(self.columns)
 	end
 	
-	self.audioPitch = luaMania.config["game.vsrg.audioPitch"]:get()
 	if self.map.audioFilename ~= "virtual" then
 		local sourceType = luaMania.config["game.vsrg.audioSourceType"]:get()
 		self.map.audio = love.audio.newSource(self.map.mapPath .. "/" .. self.map.audioFilename, sourceType)
-		self.map.audio2 = love.audio.newSource(self.map.mapPath .. "/" .. self.map.audioFilename, sourceType)
 	else
 		local lastHitObject = self.map.hitObjects[#self.map.hitObjects]
 		local samples = 44100 * ((lastHitObject.endTime and lastHitObject.endTime or lastHitObject.startTime) / 1000 + 2)
 		local soundData = love.sound.newSoundData(samples)
 		self.map.audio = love.audio.newSource(soundData)
 	end
-	self.map.audio:setPitch(self.audioPitch)
+	self.map.audio:setPitch(luaMania.config["game.vsrg.audioPitch"]:get())
 	self.map.audioStartTime = love.timer.getTime()*1000 + 1000
 	self.map.audioState = "delayed"
 end
@@ -209,6 +208,7 @@ vsrg.unload = function(self)
 		hitSound:stop()
 		self.playingHitSounds[hitSoundIndex] = nil
 	end
+	loveio.input.callbacks.keypressed.newGame = nil
 end
 
 return vsrg

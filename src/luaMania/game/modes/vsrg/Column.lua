@@ -93,7 +93,8 @@ Column.getCoord = function(self, hitObject, key)
 	local coord = 0
 	
 	
-	local speed = luaMania.config["game.vsrg.speed"]:get() / luaMania.config["game.vsrg.audioPitch"]:get()
+	local speed = luaMania.config["game.vsrg.speed"]:get()
+	local audioPitch = luaMania.config["game.vsrg.audioPitch"]:get()
 	local velocityPower = luaMania.config["game.vsrg.velocityPower"]:get()
 	local velocityMode = tonumber(luaMania.config["game.vsrg.velocityMode"]:get())
 	
@@ -102,7 +103,7 @@ Column.getCoord = function(self, hitObject, key)
 			for timingPointIndex = self.vsrg.currentTimingPoint.index, hitObjectTimingPoint.index do
 				local timingPoint = self.map.timingPoints[timingPointIndex]
 				if timingPoint.startTime < time and timingPoint.endTime > currentTime then
-					local velocity = timingPoint.velocity ^ velocityPower / self.vsrg.audioPitch
+					local velocity = timingPoint.velocity ^ velocityPower / audioPitch
 					if timingPoint.startTime <= currentTime and timingPoint.endTime > currentTime then
 						if time > timingPoint.startTime and time <= timingPoint.endTime then
 							coord = coord + (time - currentTime) * velocity
@@ -120,7 +121,7 @@ Column.getCoord = function(self, hitObject, key)
 			for timingPointIndex = hitObjectTimingPoint.index, self.vsrg.currentTimingPoint.index do
 				local timingPoint = self.map.timingPoints[timingPointIndex]
 				if timingPoint.endTime > time and timingPoint.startTime < currentTime then
-					local velocity = timingPoint.velocity ^ velocityPower
+					local velocity = timingPoint.velocity ^ velocityPower / audioPitch
 					if timingPoint.startTime <= currentTime and timingPoint.endTime > currentTime then
 						if time > timingPoint.startTime and time <= timingPoint.endTime then
 							coord = coord + (time - currentTime) * velocity
