@@ -94,13 +94,18 @@ vsrg.load = function(self)
 			local newValue = luaMania.config["game.vsrg.audioPitch"]:get() + 0.1
 			luaMania.config["game.vsrg.audioPitch"]:set(newValue)
 			self.map.audio:setPitch(newValue)
+			for _, sample in pairs(self.playingHitSounds) do
+				sample:setPitch(newValue)
+			end
 			print("audioPitch = " .. newValue)
 		elseif key == self.keyBindAudioPitchDown then
 			local newValue = luaMania.config["game.vsrg.audioPitch"]:get() - 0.1
 			if newValue >= 0.1 then
 				luaMania.config["game.vsrg.audioPitch"]:set(newValue)
 				self.map.audio:setPitch(newValue)
-				self.audioPitch = newValue
+				for _, sample in pairs(self.playingHitSounds) do
+					sample:setPitch(newValue)
+				end
 				print("audioPitch = " .. newValue)
 			end
 		end
@@ -153,12 +158,13 @@ vsrg.postUpdate = function(self)
 	
 	self.map.currentTime = self.map.currentTime + luaMania.config["game.vsrg.offset"]:get()
 	if #self.map.eventSamples > 0 then
+		local audioPitch = luaMania.config["game.vsrg.audioPitch"]:get()
 		while true do
 			if self.currentEventSample and self.currentEventSample.startTime <= self.map.currentTime then
 				if self.hitSounds[self.currentEventSample.fileName] then
 					local eventSample = self.hitSounds[self.currentEventSample.fileName]:clone()
 					eventSample:setVolume(self.currentEventSample.volume or 1)
-					eventSample:setPitch(self.audioPitch)
+					eventSample:setPitch(audioPitch)
 					eventSample:play()
 					table.insert(self.playingHitSounds, eventSample)
 				end
