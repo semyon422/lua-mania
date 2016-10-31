@@ -2,12 +2,13 @@ local init = function(output, loveio)
 --------------------------------
 local Position = {}
 
---TODO: ratio, resolution, align, scale, offset
---e.g.: {ratios = {4/3, 5/3}, resolution = {{640, 480}, {800, 500}}, scale = {0.9, 1}, offset = {-20, 30}}
 Position.new = function(self, position)
 	local position = position or {}
 	position.ratios = position.ratios or {0, 0}
 	position.resolutions = position.resolutions or {{1, 1}, {1, 1}}
+	position.align = position.align or {"center", "center"}
+	position.scale = position.scale or {1, 1}
+	position.offset = position.offset or {0, 0}
 	position.box = {}
 	
 	setmetatable(position, self)
@@ -61,22 +62,32 @@ Position.update = function(self)
 			end
 		end
 		
-		if rW / rH > self.ratio then
-			self.box.h = rH
-			self.box.w = rH * self.ratio
-			self.box.x = (rW - self.box.w) / 2
-			self.box.y = 0
-		elseif rW / rH < self.ratio then
-			self.box.w = rW
-			self.box.h = rW / self.ratio
-			self.box.y = (rH - self.box.h) / 2
-			self.box.x = 0
+		if rR > self.ratio then
+			self.box.h = rH * self.scale[2]
+			self.box.w = rH * self.ratio * self.scale[1]
+		elseif rR < self.ratio then
+			self.box.w = rW * self.scale[1]
+			self.box.h = rW / self.ratio * self.scale[2]
 		else
-			self.box.w = rW
-			self.box.h = rH
-			self.box.y = 0
-			self.box.x = 0
+			self.box.w = rW * self.scale[1]
+			self.box.h = rH * self.scale[2]
 		end
+		if self.align[1] == "left" then
+			self.box.x = 0
+		elseif self.align[1] == "center" then
+			self.box.x = (rW - self.box.w) / 2
+		elseif self.align[1] == "right" then
+			self.box.x = rW - self.box.w
+		end
+		if self.align[2] == "top" then
+			self.box.y = 0
+		elseif self.align[2] == "center" then
+			self.box.y = (rH - self.box.h) / 2
+		elseif self.align[2] == "bottom" then
+			self.box.y = rH - self.box.h
+		end
+		self.box.x = self.box.x + self.offset[1] * self.box.w
+		self.box.y = self.box.y + self.offset[2] * self.box.h
 	end
 end
 
