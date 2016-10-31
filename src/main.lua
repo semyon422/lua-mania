@@ -8,9 +8,8 @@ mainConfig = configManager.load("config.txt")
 cacheManager = require("cacheManager")
 
 loveio = require("loveio")
--- pos = loveio.output.Position:new({1, 1}, tonumber(mainConfig["position.ratio"] and mainConfig["position.ratio"].value))
 pos = loveio.output.Position:new({
-	ratios = {4/3, 4/3}, resolutions = {{1, 1}, {1, 1}}
+	ratios = {mainConfig["position.ratio"]:get()}, resolutions = {{1, 1}}
 })
 objects = {}
 loveio.init(objects)

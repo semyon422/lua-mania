@@ -6,13 +6,13 @@ Drawable.draw = function(self)
 	local oldColor = {love.graphics.getColor()}
 	love.graphics.setColor(self.color)
 	love.graphics.draw(self.drawable,
-					   self:get("X", true),
-					   self:get("Y", true),
-					   self:get("R"),
+					   self:getAbs("x", true),
+					   self:getAbs("y", true),
+					   self.r,
 					   self.sx,
 					   self.sy,
-					   self:get("OX"),
-					   self:get("OY"))
+					   self:getAbs("ox"),
+					   self:getAbs("oy"))
 	love.graphics.setColor(oldColor)
 end
 

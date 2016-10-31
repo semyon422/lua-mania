@@ -10,10 +10,10 @@ Rectangle.draw = function(self)
 	local oldColor = {love.graphics.getColor()}
 	love.graphics.setColor(self.color)
 	love.graphics.rectangle(self.mode,
-						    self:get("X", true),
-							self:get("Y", true),
-							self:get("W"),
-							self:get("H"))
+						    self:getAbs("x", true),
+							self:getAbs("y", true),
+							self:getAbs("w"),
+							self:getAbs("h"))
 	love.graphics.setColor(oldColor)
 end
 

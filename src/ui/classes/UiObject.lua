@@ -24,8 +24,7 @@ UiObject.update = function(self)
 	end
 end
 
-UiObject.set = loveio.output.classes.OutputObject.set
-UiObject.get = loveio.output.classes.OutputObject.get
+UiObject.getAbs = loveio.output.classes.OutputObject.getAbs
 
 UiObject.valueChanged = function(self)
 

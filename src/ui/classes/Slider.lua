@@ -28,20 +28,20 @@ Slider.load = function(self)
 		color = self.textColor
 	}):insert(loveio.output.objects)
 	loveio.input.callbacks.mousepressed[tostring(self)] = function(mx, my)
-		local x = self:get("X", true)
-		local y = self:get("Y", true)
-		local w = self:get("W")
-		local h = self:get("H")
+		local x = self:getAbs("x", true)
+		local y = self:getAbs("y", true)
+		local w = self:getAbs("w")
+		local h = self:getAbs("h")
 		if mx >= x and mx <= x + w and my >= y and my <= y + h then
 			self.pressed = true
 			loveio.input.callbacks.mousemoved[tostring(self)](mx, my)
 		end
 	end
 	loveio.input.callbacks.mousemoved[tostring(self)] = function(mx, my)
-		local x = self:get("X", true)
-		local y = self:get("Y", true)
-		local w = self:get("W")
-		local h = self:get("H")
+		local x = self:getAbs("x", true)
+		local y = self:getAbs("y", true)
+		local w = self:getAbs("w")
+		local h = self:getAbs("h")
 		if self.pressed then
 			self.value = (mx - (x + h / 2)) / (w - h) * (self.maxvalue - self.minvalue)
 			if type(self.round) == "function" then

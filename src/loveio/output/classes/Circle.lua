@@ -9,9 +9,9 @@ Circle.draw = function(self)
 	local oldColor = {love.graphics.getColor()}
 	love.graphics.setColor(self.color)
 	love.graphics.circle(self.mode,
-						 self:get("X", true),
-						 self:get("Y", true),
-						 self:get("R"))
+						 self:getAbs("x", true),
+						 self:getAbs("y", true),
+						 self:getAbs("r"))
 	love.graphics.setColor(oldColor)
 end
 

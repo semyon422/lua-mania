@@ -9,12 +9,12 @@ Text.text = ""
 Text.font = love.graphics.getFont()
 
 Text.draw = function(self)
-	local Y = self:get("Y", true)
+	local y = self:getAbs("y", true)
 	local lineCount = #explode("\n", tostring(self.text))
 	if self.yAlign == "center" then
-		Y = math.floor(self:get("Y", true) - (self.font:getHeight() / 2) * lineCount)
+		y = math.floor(self:getAbs("y", true) - (self.font:getHeight() / 2) * lineCount)
 	elseif self.yAlign == "top" then
-		Y = math.floor(self:get("Y", true) - self.font:getHeight() * lineCount)
+		y = math.floor(self:getAbs("y", true) - self.font:getHeight() * lineCount)
 	end
 	
 	local oldColor = {love.graphics.getColor()}
@@ -22,15 +22,15 @@ Text.draw = function(self)
 	love.graphics.setFont(self.font)
 	if not multipleColors then love.graphics.setColor(255, 255, 255, 255) end
 	love.graphics.printf({self.color, tostring(self.text)},
-						 math.floor(self:get("X", true)),
-						 math.floor(Y),
-						 self:get("LIMIT"),
+						 math.floor(self:getAbs("x", true)),
+						 math.floor(y),
+						 self:getAbs("limit"),
 						 self.xAlign,
 						 self.r,
 						 self.sx,
 						 self.sy,
-						 self:get("OX"),
-						 self:get("OX"),
+						 self:getAbs("ox"),
+						 self:getAbs("oy"),
 						 self.kx,
 						 self.ky)
 	love.graphics.setColor(oldColor)

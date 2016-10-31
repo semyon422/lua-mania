@@ -31,13 +31,14 @@ Picture.load = function(self)
 	self.drawable = love.graphics.newImage(self.value)
 	self.drawableObject = loveio.output.classes.Drawable:new({
 		drawable = self.drawable,
-		layer = self.layer
+		layer = self.layer,
+		pos = self.pos
 	}):insert(loveio.output.objects)
 	
 	loveio.input.callbacks.resize[tostring(self)] = function(w, h)
-		local X, Y, scale = (self.modes[self.mode] or self.modes.fit)(pos:x2X(1), pos:y2Y(1), self.drawable)
-		self.drawableObject.X = X
-		self.drawableObject.Y = Y
+		local x, y, scale = (self.modes[self.mode] or self.modes.fit)(pos:x2X(1), pos:y2Y(1), self.drawable)
+		self.drawableObject.x = pos:X2x(x)
+		self.drawableObject.y = pos:Y2y(y)
 		self.drawableObject.sx = scale
 	end
 	loveio.input.callbacks.resize[tostring(self)]()

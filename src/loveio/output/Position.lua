@@ -35,7 +35,7 @@ Position.update = function(self)
 			else
 				self.ratio = self.ratios[1]
 			end
-			if self.resolutions[1] == 0 then
+			if self.resolutions[1][1] == 0 or self.resolutions[1][2] == 0 then
 				self.resolution = {rW, rH}
 			else
 				self.resolution = self.resolutions[1]
