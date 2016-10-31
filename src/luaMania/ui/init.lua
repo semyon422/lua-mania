@@ -7,16 +7,16 @@ lmui.cliUi = cli.CliUi:new({
 	x = 0, y = 0, w = 1, h = 0.5
 })
 lmui.fpsDisplay = ui.classes.Button:new({
-	x = 1 - 0.05, y = 0, w = 0.05, h = pos:x2y(0.05),
+	x = 1 - 0.05, y = 0, w = 0.05, h = 0.05,
 	getValue = function() return love.timer.getFPS() end,
 	action = function(self) print("FPS: " .. self.value) end,
 	backgroundColor = {255, 255, 255, 31},
-	pos = loveio.output.Position:new({1,1})
+	pos = loveio.output.Position:new({})
 })
 lmui.mapList = require("luaMania.ui.mapList")
 lmui.menuBackground = ui.classes.Picture:new({
 	value = "res/bg.jpg",
-	pos = loveio.output.Position:new({1,1}),
+	pos = loveio.output.Position:new({}),
 	mode = "fit",
 	layer = 0
 })
