@@ -4,8 +4,8 @@ local Position = {}
 
 Position.new = function(self, position)
 	local position = position or {}
-	position.ratios = position.ratios or {0, 0}
-	position.resolutions = position.resolutions or {{1, 1}, {1, 1}}
+	position.ratios = position.ratios or {0}
+	position.resolutions = position.resolutions or {{1, 1}}
 	position.align = position.align or {"center", "center"}
 	position.scale = position.scale or {1, 1}
 	position.offset = position.offset or {0, 0}
@@ -29,36 +29,51 @@ Position.update = function(self)
 		local rH = self.realHeight
 		local rR = self.realRatio
 		
-		local minRat = self.ratios[1]
-		local maxRat = self.ratios[2]
-		local minRes = self.resolutions[1]
-		local maxRes = self.resolutions[2]
-		
-		if minRat == maxRat then
-			if minRat == 0 then
-				self.ratio = rR
+		if #self.ratios == 1 then
+			if self.ratios[1] == 0 then
+				self.ratio = self.realRatio
 			else
-				self.ratio = minRat
-				print(self.ratio)
+				self.ratio = self.ratios[1]
 			end
-			self.resolution = minRes
-		else
-			if rR <= minRat then
-				self.ratio = minRat
-				self.resolution = minRes
-			elseif rR >= maxRat then
-				self.ratio = maxRat
-				self.resolution = maxRes
+			if self.resolutions[1] == 0 then
+				self.resolution = {rW, rH}
 			else
-				self.ratio = rR
-				local x, y = minRes[1], minRes[2]
-				if minRes[1] ~= maxRes[1] then
-					x = minRes[1] + ((self.ratio - minRat) / (maxRat - minRat)) * (maxRes[1] - minRes[1])
+				self.resolution = self.resolutions[1]
+			end
+		else
+			if self.realRatio <= self.ratios[1] then
+				self.ratio = self.ratios[1]
+				self.resolution = self.resolutions[1]
+			elseif self.realRatio >= self.ratios[#self.ratios] then
+				self.ratio = self.ratios[#self.ratios]
+				self.resolution = self.resolutions[#self.resolutions]
+			else
+				local minIndex, maxIndex
+				for index = 1, #self.ratios - 1 do
+					local ratio = self.ratios[index]
+					local nextRatio = self.ratios[index + 1]
+					if self.realRatio > ratio and self.realRatio < nextRatio then
+						minIndex, maxIndex = index, index + 1
+						break
+					elseif self.realRatio == ratio then
+						minIndex, maxIndex = index, index
+						break
+					elseif self.realRatio == nextRatio then
+						minIndex, maxIndex = index + 1, index + 1
+						break
+					end
 				end
-				if minRes[2] ~= maxRes[2] then
-					y = minRes[2] + ((self.ratio - minRat) / (maxRat - minRat)) * (maxRes[2] - minRes[2])
+				self.ratio = self.realRatio
+				local minResolution, maxResolution = self.resolutions[minIndex], self.resolutions[maxIndex]
+				local minRatio, maxRatio = self.ratios[minIndex], self.ratios[maxIndex]
+				local w, h = minResolution[1], maxResolution[2]
+				if minResolution[1] ~= maxResolution[1] then
+					w = minResolution[1] + ((self.ratio - minRatio) / (maxRatio - minRatio)) * (maxResolution[1] - minResolution[1])
 				end
-				self.resolution = {x, y}
+				if minResolution[2] ~= maxResolution[2] then
+					h = minResolution[2] + ((self.ratio - minRatio) / (maxRatio - minRatio)) * (maxResolution[2] - minResolution[2])
+				end
+				self.resolution = {w, h}
 			end
 		end
 		
