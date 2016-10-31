@@ -26,6 +26,8 @@ local import = function(self, filePath)
 		elseif blockName == "Events" and trim(line) ~= "" then
 			if string.sub(line, 1, 6) == "Sample" then
 				table.insert(self.eventSamples, self.EventSample:new({beatmap = self}):import(line))
+			elseif not self.backgroundPath and string.sub(line, 1, 5) == "0,0,\"" then
+				self.backgroundPath = self.mapPath .. "/" .. explode("\"", line)[2]
 			end
 		elseif blockName == "TimingPoints" and trim(line) ~= "" then
 			table.insert(self.timingPoints, self.TimingPoint:new({beatmap = self}):import(line))

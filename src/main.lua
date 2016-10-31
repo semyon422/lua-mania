@@ -9,7 +9,7 @@ cacheManager = require("cacheManager")
 
 loveio = require("loveio")
 pos = loveio.output.Position:new({
-	ratios = {mainConfig["position.ratio"]:get()}, resolutions = {{1, 1}}
+	ratios = {0.01, mainConfig["position.ratio"]:get()}, resolutions = {{1, 1}, {1, 1}}
 })
 objects = {}
 loveio.init(objects)

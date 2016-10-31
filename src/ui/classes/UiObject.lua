@@ -27,7 +27,6 @@ end
 UiObject.getAbs = loveio.output.classes.OutputObject.getAbs
 
 UiObject.valueChanged = function(self)
-
 end
 
 UiObject.activate = function(self)

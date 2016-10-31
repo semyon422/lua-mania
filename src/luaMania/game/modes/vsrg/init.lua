@@ -20,6 +20,12 @@ vsrg.load = function(self)
 		value = self.combo,
 		getValue = function() return self.combo end
 	}):insert(loveio.objects)
+	if self.map.backgroundPath then
+		luaMania.ui.menuBackground.prevValue = luaMania.ui.menuBackground.value
+		luaMania.ui.menuBackground.value = self.map.backgroundPath
+		luaMania.ui.menuBackground:reload()
+		self.backgroundChanged = true
+	end
 	
 	self.hitSounds = {}
 	self.playingHitSounds = {}
@@ -197,6 +203,12 @@ vsrg.postUpdate = function(self)
 end
 
 vsrg.unload = function(self)
+	if self.backgroundChanged then
+		luaMania.ui.menuBackground.value = luaMania.ui.menuBackground.prevValue
+		luaMania.ui.menuBackground.prevValue = nil
+		luaMania.ui.menuBackground:reload()
+		self.backgroundChanged = false
+	end
 	if self.columns then
 		for columnIndex, column in pairs(self.columns) do
 			column:remove()
