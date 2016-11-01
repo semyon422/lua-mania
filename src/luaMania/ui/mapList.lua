@@ -19,6 +19,7 @@ Button.postUpdate = function(self)
 	else
 		self.x = self.ox
 	end
+	
 end
 
 mapList.load = function(self)
@@ -27,15 +28,45 @@ mapList.load = function(self)
 	self.oy = 0
 	self.dy = 0.125
 	
+	self.works = {}
+	
 	self:calcButtons()
 	
 	loveio.input.callbacks.wheelmoved[tostring(self)] = function(_, direction)
 		if direction == -1 then
-			self.scroll = self.scroll + 0.1
+			--self.scroll = self.scroll + 0.1
+			local scroll = 0
+			self.works.scrollUp = function()
+				if scroll < 1 then
+					self.scroll = self.scroll + love.timer.getDelta() * 2
+					scroll = scroll + love.timer.getDelta() * 2
+					self:calcButtons()
+				else
+					self.works.scrollUp = nil
+				end
+			end
+			self.works.scrollDown = nil
 		elseif direction == 1 then
-			self.scroll = self.scroll - 0.1
+			--self.scroll = self.scroll - 0.1
+			local scroll = 1
+			self.works.scrollDown = function()
+				if scroll > 0 then
+					self.scroll = self.scroll - love.timer.getDelta() * 2
+					scroll = scroll - love.timer.getDelta() * 2
+					self:calcButtons()
+				else
+					self.works.scrollDown = nil
+				end
+			end
+			self.works.scrollUp = nil
 		end
 		self:calcButtons()
+	end
+end
+
+mapList.postUpdate = function(self)
+	for _, work in pairs(self.works) do
+		work()
 	end
 end
 
@@ -46,7 +77,7 @@ mapList.calcButtons = function(self)
 	end
 	for cacheIndex, cacheItem in ipairs(luaMania.cache.data) do
 		local y = self.oy + self.dy * (cacheIndex - 1 - self.scroll)
-		if y >= 0 and y <= 1 then
+		if y >= -0.1 and y <= 1 then
 			local button = Button:new({
 				x = 0, y = y, w = 0.5, h = 0.1,
 				value = cacheItem.title .. " - " .. cacheItem.version,
