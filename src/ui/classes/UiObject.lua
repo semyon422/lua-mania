@@ -11,6 +11,7 @@ UiObject.layer = 1
 UiObject.objectCount = 1
 
 UiObject.update = function(self)
+	self:preUpdate()
 	if self.hidden then return end
 	if self.getValue then self.value = self.getValue() end
 	
@@ -22,6 +23,7 @@ UiObject.update = function(self)
 		self:load()
 		self.loaded = true
 	end
+	self:postUpdate()
 end
 
 UiObject.getAbs = loveio.output.classes.OutputObject.getAbs
