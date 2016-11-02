@@ -58,10 +58,12 @@ local import = function(self, filePath)
 						local part = (pointIndex - 1) / lenght
 						local startTime = math.floor((measure + part) * self.measureLenght)
 						if channel == 1 then
-							table.insert(self.eventSamples, {
-								startTime = startTime,
-								fileName = self.wav[point]
-							})
+							if self.wav[point] then
+								table.insert(self.eventSamples, {
+									startTime = startTime,
+									fileName = self.wav[point]
+								})
+							end
 						elseif channel >= 11 then
 							table.insert(self.hitObjects, {
 								startTime = startTime,

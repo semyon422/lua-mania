@@ -1,6 +1,7 @@
 local function getFilePath(filename, rules)
 	if not rules then return end
 	
+	local filename = trim(filename)
 	local filePath = nil
 	
 	for _, format in ipairs(rules.formats) do
