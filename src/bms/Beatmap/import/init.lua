@@ -47,6 +47,8 @@ local import = function(self, filePath)
 			elseif string.sub(line, 2, 4) == "BPM" and not self.bpm then
 				self.bpm = tonumber(string.sub(line, 6, -1))
 				self.measureLenght = 60000 / self.bpm * 4
+			elseif string.sub(line, 2, 10) == "STAGEFILE" and not self.backgroundPath then
+				self.backgroundPath = self.mapPath .. "/" .. string.sub(line, 12, -1)
 			elseif string.sub(line, 7, 7) == ":" then
 				local measure = string.sub(line, 2, 4)
 				local channel = tonumber(string.sub(line, 5, 6))

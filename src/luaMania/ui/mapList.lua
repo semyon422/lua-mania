@@ -24,7 +24,7 @@ end
 
 mapList.load = function(self)
 	self.buttons = {}
-	self.scroll = 0
+	self.scroll = luaMania.cache.mapListScroll or 0
 	self.oy = 0
 	self.dy = 0.125
 	
@@ -68,6 +68,7 @@ mapList.postUpdate = function(self)
 	for _, work in pairs(self.works) do
 		work()
 	end
+	luaMania.cache.mapListScroll = self.scroll
 end
 
 mapList.calcButtons = function(self)

@@ -139,6 +139,10 @@ vsrg.load = function(self)
 	self.map.audio:setPitch(luaMania.config["game.vsrg.audioPitch"]:get())
 	self.map.audioStartTime = love.timer.getTime()*1000 + 1000
 	self.map.audioState = "delayed"
+	self.map.currentTime = -1000
+	for _, column in pairs(self.columns) do
+		if column.update then column:update() end
+	end
 end
 
 vsrg.postUpdate = function(self)
