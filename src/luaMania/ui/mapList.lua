@@ -4,51 +4,40 @@ mapList.pos = loveio.output.Position:new({ratios = {1}, align = {"right", "cente
 
 local Button = ui.classes.Button:new()
 mapList.Button = Button
-Button.ox = 0.5
+Button.xSpawn = 0.5
+Button.xSpeedMultiplier = 4
+Button.ySpeedMultiplier = 2
 Button.pos = mapList.pos
 Button.underMouse = false
 Button.postUpdate = function(self)
-	if self.y >= 0.1 and self.y <= 0.9 then
+	local limit = self.mapList.dy * (self.cacheIndex - 1 + self.mapList.scroll) - 0.05
+	self.y = self.y + love.timer.getDelta() * (limit - self.y) * self.ySpeedMultiplier
+	if self.y >= 0 and self.y <= 1 then
 		if self.y < 0.5 then
-			local limit = self.ox - self.y + 0.1
-			if self.x > limit then
-				self.x = self.x - love.timer.getDelta() * (self.x / limit - 1)
-			elseif self.x < limit then
-				self.x = self.x + love.timer.getDelta() * (limit / self.x - 1)
-			end
+			local limit = self.xSpawn - self.y
+			self.x = self.x + love.timer.getDelta() * (limit - self.x) * self.xSpeedMultiplier
 		elseif self.y > 0.5 then
-			local limit = self.ox - (0.9 - self.y)
-			if self.x > limit then
-				self.x = self.x - love.timer.getDelta() * (self.x / limit - 1)
-			elseif self.x < limit then
-				self.x = self.x + love.timer.getDelta() * (limit / self.x - 1)
-			end
+			local limit = self.xSpawn - (1 - self.y)
+			self.x = self.x + love.timer.getDelta() * (limit - self.x) * self.xSpeedMultiplier
 		else
-			local limit = self.ox - 0.4
-			if self.x > limit then
-				self.x = self.x - love.timer.getDelta() * (self.x / limit - 1)
-			elseif self.x < limit then
-				self.x = self.x + love.timer.getDelta() * (limit / self.x - 1)
-			end
+			local limit = self.xSpawn - 0.5
+			self.x = self.x + love.timer.getDelta() * (limit - self.x) * self.xSpeedMultiplier
 		end
 	else
-		local limit = self.ox
-		if self.x < limit then
-			self.x = self.x + love.timer.getDelta() * (limit / self.x - 1)
-		elseif self.x > limit then
-			self.x = self.x - love.timer.getDelta() * (self.x / limit - 1)
-		end
+		local limit = self.xSpawn
+		self.x = self.x - love.timer.getDelta() * (self.x - limit) * self.xSpeedMultiplier
 	end
+
 	if self.oldX ~= self.x or self.oldY ~= self.y then
 		self:reload()
 		self.oldX = self.x
+		self.oldY = self.y
 	end
 end
 
 mapList.load = function(self)
 	self.buttons = {}
 	self.scroll = luaMania.cache.mapListScroll or 0
-	self.oy = 0
 	self.dy = 0.125
 	
 	self.works = {}
@@ -57,48 +46,15 @@ mapList.load = function(self)
 	
 	loveio.input.callbacks.wheelmoved[tostring(self)] = function(_, direction)
 		if direction == -1 then
-			--self.scroll = self.scroll + 0.1
-			local scroll = 0
-			local mod = 2
-			if self.works.scrollUp then
-				mod = 8
-			end
-			self.works.scrollUp = function()
-				if scroll < 1 then
-					self.scroll = self.scroll + love.timer.getDelta() * mod
-					scroll = scroll + love.timer.getDelta() * mod
-					self:calcButtons()
-				else
-					self.works.scrollUp = nil
-				end
-			end
-			self.works.scrollDown = nil
+			self.scroll = self.scroll + 1
 		elseif direction == 1 then
-			--self.scroll = self.scroll - 0.1
-			local scroll = 1
-			local mod = 2
-			if self.works.scrollDown then
-				mod = 8
-			end
-			self.works.scrollDown = function()
-				if scroll > 0 then
-					self.scroll = self.scroll - love.timer.getDelta() * mod
-					scroll = scroll - love.timer.getDelta() * mod
-					self:calcButtons()
-				else
-					self.works.scrollDown = nil
-				end
-			end
-			self.works.scrollUp = nil
+			self.scroll = self.scroll - 1
 		end
 		self:calcButtons()
 	end
 end
 
 mapList.postUpdate = function(self)
-	for _, work in pairs(self.works) do
-		work()
-	end
 	luaMania.cache.mapListScroll = self.scroll
 end
 
@@ -109,24 +65,25 @@ mapList.calcButtons = function(self)
 		cacheIndexKeys[button.cacheIndex] = button
 	end
 	for cacheIndex, cacheItem in ipairs(luaMania.cache.data) do
-		local y = self.oy + self.dy * (cacheIndex - 1 - self.scroll) - self.h / 2
+		local y = self.dy * (cacheIndex - 1 + self.scroll) - 0.05
 		if cacheIndexKeys[cacheIndex] then
-			cacheIndexKeys[cacheIndex].y = y
-			if y < -0.1 or y > 1.1 then
+			local yReal = cacheIndexKeys[cacheIndex].y
+			if yReal < -0.2 or yReal > 1.2 then
 				cacheIndexKeys[cacheIndex]:remove()
 				self.buttons[tostring(cacheIndexKeys[cacheIndex])] = nil
 			end
 		end
 		
-		if y >= -0.1 and y <= 1.1 then
+		if y >= -0.2 and y <= 1.2 then
 			if not cacheIndexKeys[cacheIndex] then
 				local button = Button:new({
-					x = Button.ox, y = y, w = 0.5, h = 0.1,
+					x = Button.xSpawn, y = y, yLimit = y, w = 0.5, h = 0.1,
 					value = cacheItem.title .. " - " .. cacheItem.version,
 					action = function()
 						luaMania.cache.position = cacheIndex
 						luaMania.cli:run("gameState set game")
 					end,
+					mapList = self,
 					backgroundColor = {255, 255, 255, 31},
 					pos = self.pos,
 					cacheIndex = cacheIndex
@@ -135,7 +92,7 @@ mapList.calcButtons = function(self)
 			else
 				cacheIndexKeys[cacheIndex]:reload()
 			end
-		elseif y > 1.1 then
+		elseif y > 1.2 then
 			break
 		end
 	end
