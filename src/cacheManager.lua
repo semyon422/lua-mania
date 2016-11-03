@@ -22,9 +22,10 @@ cacheManager.generate = function(rules)
 	
 	local list = cacheManager.lookup(path)
 	for _, filePath in pairs(list) do
-		local cacheManagerdObject = callback(filePath)
-		if cacheManagerdObject then
-			table.insert(objects, cacheManagerdObject)
+		local object = callback(filePath)
+		if object then
+			object.type = "cacheItem"
+			table.insert(objects, object)
 		end
 	end
 	if sort then table.sort(objects, sort) end

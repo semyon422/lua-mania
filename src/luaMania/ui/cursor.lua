@@ -35,4 +35,13 @@ cursor.load = function()
 	end
 end
 
+cursor.unload = function()
+	if cursor.object then
+		cursor.object:remove()
+		loveio.input.callbacks.mousepressed.cursor = nil
+		loveio.input.callbacks.mousemoved.cursor = nil
+		loveio.input.callbacks.mousereleased.cursor = nil
+	end
+end
+
 return cursor

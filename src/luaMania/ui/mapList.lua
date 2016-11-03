@@ -5,7 +5,7 @@ mapList.pos = loveio.output.Position:new({ratios = {1}, align = {"right", "cente
 local Button = ui.classes.Button:new()
 mapList.Button = Button
 Button.w = 0.5
-Button.h = 0.12
+Button.h = 0.125
 Button.xSpawn = 0.5
 Button.xSpeedMultiplier = 4
 Button.ySpeedMultiplier = 2
@@ -36,6 +36,7 @@ Button.postUpdate = function(self)
 	local mx, my = self.pos:X2x(loveio.input.mouse.x, true), self.pos:Y2y(loveio.input.mouse.y, true)
 	if mx >= self.x and mx <= self.x + self.w and my >= self.y and my <= self.y + self.h then
 		self.xTargetOffset = -0.1
+		self.yTargetOffset = 0
 		for _, button in pairs(self.mapList.buttons) do
 			if button.itemIndex < self.itemIndex then
 				button.yTargetOffset = -0.05
@@ -45,27 +46,48 @@ Button.postUpdate = function(self)
 		end
 		self.mapList.buttonUnderMouse = self
 	elseif self.mapList.buttonUnderMouse == self then
-		self.xTargetOffset = 0
 		for _, button in pairs(self.mapList.buttons) do
 			button.yTargetOffset = 0
 		end
-		self.mapList.mouseOnButton = nil
+		self.mapList.buttonUnderMouse = nil
+	elseif self.mapList.buttonUnderMouse ~= self then
+		self.xTargetOffset = 0
 	end
 end
 
 mapList.load = function(self)
 	self.buttons = {}
-	self.scroll = luaMania.cache.mapListScroll or 0
-	self.dy = 0.125
+	self.dy = 0.1
 	self.scrollOffset = 1 / self.dy / 2
+	self.scroll = luaMania.cache.mapListScroll or -self.scrollOffset
 	self.circle = {}
 	self.circle.x = 1.5
 	self.circle.y = 0.5
 	self.liveZone = 0.25
 	
-	self.list = luaMania.cache.data
-	
-	self.works = {}
+	-- self.list = luaMania.cache.data
+	self.list = self.list or {
+		{
+			title = "Play",
+			action = function()
+				luaMania.cache.data = cacheManager.load("cache.lua")
+				self.list = luaMania.cache.data				
+				self:reload()
+			end
+		},
+		{
+			title = "Options",
+			action = function()
+				print("options")
+			end
+		},
+		{
+			title = "Exit",
+			action = function()
+				love.event.quit()
+			end
+		}
+	}
 	
 	self:calcButtons()
 	
@@ -91,7 +113,6 @@ mapList.postUpdate = function(self)
 end
 
 mapList.calcButtons = function(self)
-	self.list = luaMania.cache.data
 	local itemIndexKeys = {}
 	for buttonIndex, button in pairs(self.buttons) do
 		button.buttonIndex = buttonIndex
@@ -105,13 +126,12 @@ mapList.calcButtons = function(self)
 				if y >= 0 - Button.h and y <= 1 + Button.h then
 					xSpawn = self.circle.x
 				end
+				
+				local value, action = self:itemGetInfo(item, itemIndex)
 				local button = Button:new({
 					x = xSpawn, y = y,
-					value = item.title .. " - " .. item.version,
-					action = function()
-						luaMania.cache.position = itemIndex
-						luaMania.cli:run("gameState set game")
-					end,
+					value = value,
+					action = action,
 					mapList = self,
 					backgroundColor = {255, 255, 255, 31},
 					pos = self.pos,
@@ -122,6 +142,21 @@ mapList.calcButtons = function(self)
 		elseif y > 1.2 then
 			break
 		end
+	end
+end
+
+mapList.itemGetInfo = function(self, item, itemIndex)
+	if item.type == "cacheItem" then
+		local value = item.title .. " - " .. item.version
+		local action = function(self)
+			luaMania.cache.position = itemIndex
+			luaMania.cli:run("gameState set game")
+		end
+		return value, action
+	else
+		local value = item.title
+		local action = item.action
+		return value, action
 	end
 end
 

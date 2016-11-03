@@ -3,26 +3,19 @@ local init = function(lmui, luaMania)
 local gameState = loveio.LoveioObject:new()
 
 gameState.data = {
-	state = "mainMenu",
+	state = "mapList",
 	switched = false,
 	states = {
-		["mainMenu"] = {
-			close = {},
-			open = {
-				lmui["menuBackground"],
-				lmui["playButton"],
-				lmui["fpsDisplay"],
-				lmui["cursor"],
-				lmui["cliUi"]
-			}
-		},
 		["mapList"] = {
 			close = {
-				lmui["playButton"],
 				lmui["game"],
 				lmui["backButton"]
 			},
 			open = {
+				lmui["menuBackground"],
+				lmui["fpsDisplay"],
+				lmui["cursor"],
+				lmui["cliUi"],
 				lmui["mapList"],
 			}
 		},
