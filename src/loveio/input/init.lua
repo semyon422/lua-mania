@@ -4,7 +4,6 @@ local input = {}
 
 input.navigation = require("loveio.input.navigation")(input, loveio)
 
-
 input.callbackNames = {
 	"keypressed",
 	"keyreleased",

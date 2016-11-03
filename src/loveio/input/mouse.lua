@@ -2,12 +2,12 @@ local init = function(input, loveio)
 --------------------------------
 local mouse = {}
 
-mouse.X = 0
-mouse.Y = 0
+mouse.x = 0
+mouse.y = 0
 
 input.callbacks.mousemoved["loveio.input.mouse"] = function(mx, my)
-	mouse.X = mx
-	mouse.Y = my
+	mouse.x = mx
+	mouse.y = my
 end
 	
 return mouse

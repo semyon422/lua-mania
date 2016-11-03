@@ -5,22 +5,21 @@ mapList.pos = loveio.output.Position:new({ratios = {1}, align = {"right", "cente
 local Button = ui.classes.Button:new()
 mapList.Button = Button
 Button.w = 0.5
-Button.h = 0.1
+Button.h = 0.12
 Button.xSpawn = 0.5
 Button.xSpeedMultiplier = 4
 Button.ySpeedMultiplier = 2
 Button.pos = mapList.pos
-Button.underMouse = false
 Button.postUpdate = function(self)
-	local yTarget = self.mapList.dy * (self.itemIndex - 1 - self.mapList.scroll) - self.h / 2
+	local yTarget = (self.yTargetOffset or 0) + self.mapList.dy * (self.itemIndex - 1 - self.mapList.scroll) - self.h / 2
 	self.y = self.y + love.timer.getDelta() * (yTarget - self.y) * self.ySpeedMultiplier
 	
 	if self.y >= 0 - self.h and self.y <= 1 + self.h then
 		local circle = self.mapList.circle
-		local xTarget = circle.x - math.sqrt(circle.y^2 + (circle.x - self.xSpawn)^2 - (self.y - circle.y)^2)
+		local xTarget = (self.xTargetOffset or 0) + circle.x - math.sqrt(circle.y^2 + (circle.x - self.xSpawn)^2 - (self.y - circle.y)^2)
 		self.x = self.x + love.timer.getDelta() * (xTarget - self.x) * self.xSpeedMultiplier
 	else
-		local limit = self.xSpawn
+		local limit = (self.xTargetOffset or 0) + self.xSpawn
 		self.x = self.x - love.timer.getDelta() * (self.x - limit) * self.xSpeedMultiplier
 	end
 	if self.oldX ~= self.x or self.oldY ~= self.y then
@@ -32,6 +31,25 @@ Button.postUpdate = function(self)
 	   (self.y < 0 - self.mapList.liveZone - Button.h or self.y > 1 + self.mapList.liveZone) then
 		self:remove()
 		self.mapList.buttons[tostring(self)] = nil
+	end
+	
+	local mx, my = self.pos:X2x(loveio.input.mouse.x, true), self.pos:Y2y(loveio.input.mouse.y, true)
+	if mx >= self.x and mx <= self.x + self.w and my >= self.y and my <= self.y + self.h then
+		self.xTargetOffset = -0.1
+		for _, button in pairs(self.mapList.buttons) do
+			if button.itemIndex < self.itemIndex then
+				button.yTargetOffset = -0.05
+			elseif button.itemIndex > self.itemIndex then
+				button.yTargetOffset = 0.05
+			end
+		end
+		self.mapList.buttonUnderMouse = self
+	elseif self.mapList.buttonUnderMouse == self then
+		self.xTargetOffset = 0
+		for _, button in pairs(self.mapList.buttons) do
+			button.yTargetOffset = 0
+		end
+		self.mapList.mouseOnButton = nil
 	end
 end
 
