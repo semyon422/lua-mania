@@ -4,7 +4,9 @@ mapList.pos = loveio.output.Position:new({ratios = {1}, align = {"right", "cente
 
 local Button = ui.classes.Button:new()
 mapList.Button = Button
-Button.w = 0.5
+Button.xAlign = "left"
+Button.xPadding = 0.05
+Button.w = 0.8
 Button.h = 0.125
 Button.xSpawn = 0.5
 Button.xSpeedMultiplier = 4
@@ -147,7 +149,7 @@ end
 
 mapList.itemGetInfo = function(self, item, itemIndex)
 	if item.type == "cacheItem" then
-		local value = item.title .. " - " .. item.version
+		local value = item.title .. "\n" .. item.artist .. " // " .. (item.creator or item.format) .. "\n" .. item.version
 		local action = function(self)
 			luaMania.cache.position = itemIndex
 			luaMania.cli:run("gameState set game")
