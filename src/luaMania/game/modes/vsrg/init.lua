@@ -127,15 +127,6 @@ vsrg.load = function(self)
 		}):insert(self.columns)
 	end
 	
-	if self.map.audioFilename ~= "virtual" then
-		local sourceType = luaMania.config["game.vsrg.audioSourceType"]:get()
-		self.map.audio = love.audio.newSource(self.map.mapPath .. "/" .. self.map.audioFilename, sourceType)
-	else
-		local lastHitObject = self.map.hitObjects[#self.map.hitObjects]
-		local samples = 44100 * ((lastHitObject.endTime and lastHitObject.endTime or lastHitObject.startTime) / 1000 + 2)
-		local soundData = love.sound.newSoundData(samples)
-		self.map.audio = love.audio.newSource(soundData)
-	end
 	self.map.audio:setPitch(luaMania.config["game.vsrg.audioPitch"]:get())
 	self.map.audioStartTime = love.timer.getTime()*1000 + 1000
 	self.map.audioState = "delayed"
@@ -166,7 +157,7 @@ vsrg.postUpdate = function(self)
 		if not self.map.audio:isPaused() then self.map.audio:pause() end
 	end
 	
-	self.map.currentTime = self.map.currentTime + luaMania.config["game.vsrg.offset"]:get()
+	self.map.currentTime = math.floor(self.map.currentTime + luaMania.config["game.vsrg.offset"]:get())
 	if #self.map.eventSamples > 0 then
 		local audioPitch = luaMania.config["game.vsrg.audioPitch"]:get()
 		while true do

@@ -9,7 +9,7 @@ function love.conf(t)
 	t.gammacorrect = false
 	
 	t.window.title = "lua-mania"
-	t.window.icon = nil
+	t.window.icon = "res/logo/icon.png"
 	t.window.width = 800
 	t.window.height = 600
 	t.window.borderless = false
