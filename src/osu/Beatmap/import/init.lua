@@ -45,7 +45,7 @@ local import = function(self, filePath)
 		self.audio = love.audio.newSource(self.mapPath .. "/" .. self.audioFilename, sourceType)
 	else
 		local lastHitObject = self.hitObjects[#self.hitObjects]
-		local samples = 44100 * ((lastHitObject.endTime and lastHitObject.endTime or lastHitObject.startTime) / 1000 + 2)
+		local samples = 44100 * (600)
 		local soundData = love.sound.newSoundData(samples)
 		self.audio = love.audio.newSource(soundData)
 	end

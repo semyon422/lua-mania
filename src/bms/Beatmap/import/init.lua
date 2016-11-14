@@ -13,6 +13,11 @@ local import = function(self, filePath)
 	local file = io.open(filePath, "r")
 	local fileLines = {}
 
+	
+	local samples = 44100 * (600)
+	local soundData = love.sound.newSoundData(samples)
+	self.audio = love.audio.newSource(soundData)
+	
 	self.audioFilename = "virtual"
 	self.keymode = 8
 	self.hitObjects = {}

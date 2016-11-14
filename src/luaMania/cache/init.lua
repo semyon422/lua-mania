@@ -26,6 +26,25 @@ cache.rules = {
 	callback = cache.callback
 }
 
+loveio.input.callbacks.keypressed.cacheHandle = function(key)
+	if luaMania.ui.mapList.state == "songs" then
+		if key == "f7" then
+			luaMania.cache.data = cacheManager.generate(luaMania.cache.rules)
+			if objects[tostring(luaMania.ui.mapList)] then
+				luaMania.ui.mapList.list = luaMania.cache.data
+				luaMania.ui.mapList:calcButtons()
+			end
+		elseif key == "f8" then
+			cacheManager.save(luaMania.cache.data, "cache.lua")
+		elseif key == "f9" then
+			luaMania.cache.data = cacheManager.load("cache.lua")
+			if objects[tostring(luaMania.ui.mapList)] then
+				luaMania.ui.mapList.list = luaMania.cache.data
+				luaMania.ui.mapList:calcButtons()
+			end
+		end
+	end
+end
 
 return cache
 --------------------------------

@@ -67,11 +67,14 @@ mapList.load = function(self)
 	self.circle.y = 0.5
 	self.liveZone = 0.25
 	
+	self.state = self.state or "mainMenu"
+	
 	-- self.list = luaMania.cache.data
 	self.list = self.list or {
 		{
 			title = "Play",
 			action = function()
+				self.state = "songs"
 				luaMania.cache.data = cacheManager.load("cache.lua")
 				self.list = luaMania.cache.data				
 				self:reload()

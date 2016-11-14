@@ -20,7 +20,7 @@ vsrg.load = function(self)
 		value = self.combo,
 		getValue = function() return self.combo end
 	}):insert(loveio.objects)
-	if self.map.backgroundPath and love.filesystem.exists(self.map.backgroundPath) then
+	if self.map.backgroundPath and love.filesystem.exists(self.map.backgroundPath) and love.filesystem.isFile(self.map.backgroundPath) then
 		luaMania.ui.menuBackground.prevValue = luaMania.ui.menuBackground.value
 		luaMania.ui.menuBackground.value = self.map.backgroundPath
 		luaMania.ui.menuBackground:reload()
