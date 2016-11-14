@@ -33,6 +33,11 @@ TimingPoint.import = function(self, line)
 	elseif self.timingChange == 1 then
 		self.baseVelocity = 1
 		self.inherited = false
+		if self.beatLength < 0 then
+			self.baseBeatLenght = self.beatLength
+			self.baseVelocity = -100 / self.baseBeatLenght
+			self.inherited = true
+		end
 	end
 	
 	self.index = #self.beatmap.timingPoints + 1

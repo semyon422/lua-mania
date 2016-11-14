@@ -28,6 +28,7 @@ vsrg.load = function(self)
 	end
 	
 	self.hitSounds = {}
+	self.wrongHitSounds = {}
 	self.playingHitSounds = {}
 	self.hitSoundsRules = {
 		formats = {"wav", "mp3", "ogg"},

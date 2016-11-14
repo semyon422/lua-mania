@@ -18,7 +18,15 @@ Column.load = function(self)
 					if not filePath then
 						self.vsrg.hitSounds[hitSoundName] = love.audio.newSource(love.sound.newSoundData(1))
 					else
-						self.vsrg.hitSounds[hitSoundName] = love.audio.newSource(filePath, sourceType)
+						-- self.vsrg.hitSounds[hitSoundName] = love.audio.newSource(filePath, sourceType)
+						local status, value = pcall(love.audio.newSource, filePath, sourceType)
+						if status then
+							self.vsrg.hitSounds[hitSoundName] = value
+						elseif not self.vsrg.wrongHitSounds[hitSoundName] then
+							self.vsrg.hitSounds[hitSoundName] = love.audio.newSource(love.sound.newSoundData(1))
+							self.vsrg.wrongHitSounds[hitSoundName] = true
+							print("Can't load hitsound: " .. filePath .. "(" .. value .. ")")
+						end
 					end
 				end
 			end
