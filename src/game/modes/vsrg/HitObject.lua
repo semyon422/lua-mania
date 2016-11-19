@@ -1,4 +1,4 @@
-local init = function(vsrg, game, luaMania)
+local init = function(vsrg, game)
 --------------------------------
 local VsrgHitObject = {}
 

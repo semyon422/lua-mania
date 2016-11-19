@@ -1,4 +1,4 @@
-local init = function(game, luaMania)
+local init = function(game)
 --------------------------------
 local lmx = loveio.LoveioObject:new()
 
