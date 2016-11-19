@@ -20,6 +20,7 @@ cli = require("cli")
 
 osu = require("osu")
 bms = require("bms")
+lmx = require("lmx")
 luaMania = require("luaMania")
 luaMania.load()
 

@@ -26,6 +26,7 @@ local function bmsCacher(filePath)
 		artist = artist,
 		version = version,
 		filePath = filePath,
+		mode = "vsrg",
 		format = "bms"
 	}
 end

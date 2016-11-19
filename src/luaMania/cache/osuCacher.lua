@@ -35,6 +35,7 @@ local function osuCache(filePath)
 		creator = creator,
 		source = source,
 		filePath = filePath,
+		mode = "vsrg",
 		format = "osu"
 	}
 end

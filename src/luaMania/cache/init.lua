@@ -5,6 +5,7 @@ local cache = {}
 cache.cachers = {}
 cache.cachers.osu = require("luaMania.cache.osuCacher")(cache, luaMania)
 cache.cachers.bms = require("luaMania.cache.bmsCacher")(cache, luaMania)
+cache.cachers.lmx = require("luaMania.cache.lmxCacher")(cache, luaMania)
 
 cache.data = {}
 
@@ -17,6 +18,9 @@ cache.callback = function(filePath)
 		end
 		if fileType == "bms" or fileType == "bme" then
 			return cache.cachers.bms(filePath)
+		end
+		if fileType == "lmx" then
+			return cache.cachers.lmx(filePath)
 		end
 	end
 end
