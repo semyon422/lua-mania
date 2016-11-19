@@ -28,9 +28,13 @@ vsrg.load = function(self)
 	self.comboCounter = ui.classes.Button:new({
 		x = 0.15, y = 0.45, w = 0.1, h = 0.1,
 		value = self.combo,
-		getValue = function() return self.combo end
+		getValue = function() return self.combo end,
+		layer = 20
 	}):insert(loveio.objects)
-	if self.map.backgroundPath and love.filesystem.exists(self.map.backgroundPath) and love.filesystem.isFile(self.map.backgroundPath) then
+	
+	if (mainConfig["enableBackground"] and mainConfig["enableBackground"]:get()) == 0 then
+		uiBase.menuBackground:unload()
+	elseif self.map.backgroundPath and love.filesystem.exists(self.map.backgroundPath) and love.filesystem.isFile(self.map.backgroundPath) then
 		uiBase.menuBackground.prevValue = uiBase.menuBackground.value
 		uiBase.menuBackground.value = self.map.backgroundPath
 		uiBase.menuBackground:reload()

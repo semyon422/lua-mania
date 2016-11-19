@@ -18,14 +18,20 @@ output.draw = function()
 	local objects = output.objects
 	local minLayer = 1
 	local maxLayer = 1
+	local layers = {}
 	for _, object in pairs(objects) do
-		if object.layer and object.layer < minLayer then minLayer = object.layer end
-		if object.layer and object.layer > maxLayer then maxLayer = object.layer end
+		if object.layer then
+			if object.layer < minLayer then minLayer = object.layer end
+			if object.layer > maxLayer then maxLayer = object.layer end
+			layers[object.layer] = true
+		end
 	end
 	for layer = minLayer, maxLayer do
-		for objectIndex, object in pairs(objects) do
-			if object.layer == layer then
-				object:draw()
+		if layers[layer] then
+			for objectIndex, object in pairs(objects) do
+				if object.layer == layer then
+					object:draw()
+				end
 			end
 		end
 	end

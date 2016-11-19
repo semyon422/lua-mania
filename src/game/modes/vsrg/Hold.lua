@@ -79,21 +79,22 @@ Hold.update = function(self)
 end
 
 Hold.drawLoad = function(self)
+	local skin = self.column.vsrg.skin
 	local head = self.column.vsrg.skin.game.vsrg.head
 	local tail = self.column.vsrg.skin.game.vsrg.tail
 	local body = self.column.vsrg.skin.game.vsrg.body
 	self.color = {255, 255, 255, 255}
-	self.h = pos:x2y(0.1)
+	self.h = pos:x2y(skin.game.vsrg.columnWidth)
 	self.gHead = loveio.output.classes.Drawable:new({
-		drawable = head, sx = 0.1 / pos:X2x(head:getWidth()),
+		drawable = head, sx = skin.game.vsrg.columnWidth / pos:X2x(head:getWidth()),
 		x = 0, y = 0, layer = 6, color = self.color
 	}):insert(loveio.output.objects)
 	self.gTail = loveio.output.classes.Drawable:new({
-		drawable = tail, sx = 0.1 / pos:X2x(tail:getWidth()),
+		drawable = tail, sx = skin.game.vsrg.columnWidth / pos:X2x(tail:getWidth()),
 		x = 0, y = 0, layer = 5, color = self.color
 	}):insert(loveio.output.objects)
 	self.gBody = loveio.output.classes.Drawable:new({
-		drawable = body, sx = 0.1 / pos:X2x(body:getWidth()),
+		drawable = body, sx = skin.game.vsrg.columnWidth / pos:X2x(body:getWidth()),
 		x = 0, y = 0, layer = 4, color = self.color
 	}):insert(loveio.output.objects)
 end

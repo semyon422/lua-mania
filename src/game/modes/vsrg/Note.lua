@@ -34,12 +34,13 @@ Note.update = function(self)
 end
 
 Note.drawLoad = function(self)
+	local skin = self.column.vsrg.skin
 	local circle = self.column.vsrg.skin.game.vsrg.circle
 	self.color = {255, 255, 255, 255}
-	self.h = pos:x2y(0.1)
+	self.h = pos:x2y(skin.game.vsrg.columnWidth)
 	self.gNote = loveio.output.classes.Drawable:new({
 		drawable = circle,
-		x = 0, y = 0, sx = 0.1 / pos:X2x(circle:getWidth()),
+		x = 0, y = 0, sx = skin.game.vsrg.columnWidth / pos:X2x(circle:getWidth()),
 		layer = 7
 	}):insert(loveio.output.objects)
 end

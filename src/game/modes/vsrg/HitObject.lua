@@ -48,11 +48,12 @@ VsrgHitObject.h = 0
 
 VsrgHitObject.playHitSound = function(self)
 	local audioPitch = mainConfig["game.vsrg.audioPitch"]:get()
+	local hitSoundVolumePower = mainConfig["game.vsrg.hitSoundVolumePower"]:get()
 	for hitSoundIndex, hitSoundName in pairs(self.hitSoundsList) do
 		if self.column.vsrg.hitSounds[hitSoundName] then
 			local hitSound = self.column.vsrg.hitSounds[hitSoundName]:clone()
 			hitSound:setVolume(self.volume or 1)
-			hitSound:setPitch(audioPitch)
+			hitSound:setPitch(audioPitch^hitSoundVolumePower)
 			hitSound:play()
 		end
 	end
