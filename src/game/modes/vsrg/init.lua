@@ -2,6 +2,15 @@ local init = function(game)
 --------------------------------
 local vsrg = loveio.LoveioObject:new()
 
+vsrg.defaultKeyBinds = {
+	[4] = {"d", "f", "j", "k"},
+	[5] = {"d", "f", "space", "j", "k"},
+	[6] = {"s", "d", "f", "j", "k", "l"},
+	[7] = {"s", "d", "f", "space", "j", "k", "l"},
+	[8] = {"a", "s", "d", "f", "j", "k", "l", ";"},
+	[9] = {"a", "s", "d", "f", "space", "j", "k", "l", ";"}
+}
+
 vsrg.map = {}
 
 vsrg.skin = require("res/defaultSkin")()
@@ -53,6 +62,26 @@ vsrg.load = function(self)
 	if #self.map.eventSamples > 0 then
 		self.currentEventSampleIndex = 1
 		self.currentEventSample = self.map.eventSamples[self.currentEventSampleIndex]
+	end
+	for hitObjectIndex, hitObject in ipairs(self.map.hitObjects) do
+		for hitSoundIndex, hitSoundName in pairs(hitObject.hitSoundsList) do
+			if not self.hitSounds[hitSoundName] then
+				local filePath = helpers.getFilePath(hitSoundName, self.hitSoundsRules)
+				local sourceType = mainConfig["game.vsrg.hitSoundSourceType"]:get()
+				if not filePath then
+					self.hitSounds[hitSoundName] = love.audio.newSource(love.sound.newSoundData(1))
+				else
+					local status, value = pcall(love.audio.newSource, filePath, sourceType)
+					if status then
+						self.hitSounds[hitSoundName] = value
+					elseif not self.vsrg.wrongHitSounds[hitSoundName] then
+						self.hitSounds[hitSoundName] = love.audio.newSource(love.sound.newSoundData(1))
+						self.wrongHitSounds[hitSoundName] = true
+						print("Can't load hitsound: " .. filePath .. "(" .. value .. ")")
+					end
+				end
+			end
+		end
 	end
 	
 	self.currentTimingPoint = self.map.timingPoints[1]
@@ -133,9 +162,6 @@ vsrg.load = function(self)
 	self.map.audioStartTime = love.timer.getTime()*1000 + 1000
 	self.map.audioState = "delayed"
 	self.map.currentTime = -1000
-	for _, column in pairs(self.columns) do
-		if column.update then column:update() end
-	end
 end
 
 vsrg.postUpdate = function(self)

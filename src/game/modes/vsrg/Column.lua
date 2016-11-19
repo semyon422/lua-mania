@@ -11,26 +11,6 @@ Column.load = function(self)
 	self.hitObjects = {}
 	for hitObjectIndex, hitObject in ipairs(self.map.hitObjects) do
 		if hitObject.key == self.key then
-			for hitSoundIndex, hitSoundName in pairs(hitObject.hitSoundsList) do
-				if not self.vsrg.hitSounds[hitSoundName] then
-					local filePath = helpers.getFilePath(hitSoundName, self.vsrg.hitSoundsRules)
-					local sourceType = mainConfig["game.vsrg.hitSoundSourceType"]:get()
-					if not filePath then
-						self.vsrg.hitSounds[hitSoundName] = love.audio.newSource(love.sound.newSoundData(1))
-					else
-						-- self.vsrg.hitSounds[hitSoundName] = love.audio.newSource(filePath, sourceType)
-						local status, value = pcall(love.audio.newSource, filePath, sourceType)
-						if status then
-							self.vsrg.hitSounds[hitSoundName] = value
-						elseif not self.vsrg.wrongHitSounds[hitSoundName] then
-							self.vsrg.hitSounds[hitSoundName] = love.audio.newSource(love.sound.newSoundData(1))
-							self.vsrg.wrongHitSounds[hitSoundName] = true
-							print("Can't load hitsound: " .. filePath .. "(" .. value .. ")")
-						end
-					end
-				end
-			end
-			
 			hitObject.columnIndex = #self.hitObjects + 1
 			hitObject.column = self
 			if hitObject.endTime then
@@ -67,7 +47,7 @@ Column.load = function(self)
 	
 	self.keyInfo = {
 		key = self.key,
-		bind = mainConfig["keyBind.game.vsrg." .. self.map.keymode .. "K"]:get()[self.key],
+		bind = (mainConfig["keyBind.game.vsrg." .. self.map.keymode .. "K"] and mainConfig["keyBind.game.vsrg." .. self.map.keymode .. "K"]:get()[self.key]) or self.vsrg.defaultKeyBinds[self.map.keymode][self.key],
 		isDown = false
 	}
 	loveio.input.callbacks.keypressed[tostring(self)] = function(key)

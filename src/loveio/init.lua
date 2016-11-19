@@ -60,7 +60,7 @@ loveio.init = function(objects)
 			end
 			loveio.drawProfiler:stop()
 	 
-			if love.timer then love.timer.sleep(0.001) end
+			if love.timer then love.timer.sleep(math.max(0, 0.001 - love.timer.getTime())) end
 		end
 	 
 	end
