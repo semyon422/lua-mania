@@ -41,7 +41,7 @@ local import = function(self, filePath)
 	end
 	
 	if self.audioFilename ~= "virtual" then
-		local sourceType = luaMania.config["game.vsrg.audioSourceType"]:get()
+		local sourceType = (mainConfig["game.vsrg.audioSourceType"] and mainConfig["game.vsrg.audioSourceType"]:get()) or "stream"
 		self.audio = love.audio.newSource(self.mapPath .. "/" .. self.audioFilename, sourceType)
 	else
 		local lastHitObject = self.hitObjects[#self.hitObjects]

@@ -79,9 +79,9 @@ Hold.update = function(self)
 end
 
 Hold.drawLoad = function(self)
-	local head = luaMania.skin.game.vsrg.head
-	local tail = luaMania.skin.game.vsrg.tail
-	local body = luaMania.skin.game.vsrg.body
+	local head = self.column.vsrg.skin.game.vsrg.head
+	local tail = self.column.vsrg.skin.game.vsrg.tail
+	local body = self.column.vsrg.skin.game.vsrg.body
 	self.color = {255, 255, 255, 255}
 	self.h = pos:x2y(0.1)
 	self.gHead = loveio.output.classes.Drawable:new({
@@ -98,8 +98,8 @@ Hold.drawLoad = function(self)
 	}):insert(loveio.output.objects)
 end
 Hold.drawUpdate = function(self)
-	local columnStart = luaMania.skin.game.vsrg.columnStart
-	local columnWidth = luaMania.skin.game.vsrg.columnWidth
+	local columnStart = self.column.vsrg.skin.game.vsrg.columnStart
+	local columnWidth = self.column.vsrg.skin.game.vsrg.columnWidth
 	local ox = columnStart + columnWidth * (self.key - 1)
 	local oyStart = self.column:getCoord(self, "pseudoStartTime") or self.column:getCoord(self, "startTime")
 	local oyEnd = self.column:getCoord(self, "endTime")

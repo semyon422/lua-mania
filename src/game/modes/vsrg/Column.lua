@@ -14,7 +14,7 @@ Column.load = function(self)
 			for hitSoundIndex, hitSoundName in pairs(hitObject.hitSoundsList) do
 				if not self.vsrg.hitSounds[hitSoundName] then
 					local filePath = helpers.getFilePath(hitSoundName, self.vsrg.hitSoundsRules)
-					local sourceType = luaMania.config["game.vsrg.hitSoundSourceType"]:get()
+					local sourceType = mainConfig["game.vsrg.hitSoundSourceType"]:get()
 					if not filePath then
 						self.vsrg.hitSounds[hitSoundName] = love.audio.newSource(love.sound.newSoundData(1))
 					else
@@ -44,9 +44,9 @@ Column.load = function(self)
 	
 	self.currentHitObject = self.hitObjects[1]
 	
-	local columnStart = luaMania.skin.game.vsrg.columnStart
-	local columnWidth = luaMania.skin.game.vsrg.columnWidth
-	local columnColor = luaMania.skin.game.vsrg.columnColor
+	local columnStart = self.vsrg.skin.game.vsrg.columnStart
+	local columnWidth = self.vsrg.skin.game.vsrg.columnWidth
+	local columnColor = self.vsrg.skin.game.vsrg.columnColor
 	table.insert(self.vsrg.createdObjects, loveio.output.classes.Rectangle:new({
 		color = columnColor,
 		x = columnStart + columnWidth * (self.key - 1),
@@ -55,7 +55,7 @@ Column.load = function(self)
 		h = 1,
 		layer = 2
 	}):insert(loveio.output.objects))
-	local hitPosition = luaMania.skin.game.vsrg.hitPosition
+	local hitPosition = self.vsrg.skin.game.vsrg.hitPosition
 	table.insert(self.vsrg.createdObjects, loveio.output.classes.Rectangle:new({
 		color = {255,255,255,63},
 		x = columnStart + columnWidth * (self.key - 1),
@@ -67,7 +67,7 @@ Column.load = function(self)
 	
 	self.keyInfo = {
 		key = self.key,
-		bind = luaMania.config["keyBind.game.vsrg." .. self.map.keymode .. "K"]:get()[self.key],
+		bind = mainConfig["keyBind.game.vsrg." .. self.map.keymode .. "K"]:get()[self.key],
 		isDown = false
 	}
 	loveio.input.callbacks.keypressed[tostring(self)] = function(key)
@@ -101,10 +101,10 @@ Column.getCoord = function(self, hitObject, key)
 	local coord = 0
 	
 	
-	local speed = luaMania.config["game.vsrg.speed"]:get()
-	local audioPitch = luaMania.config["game.vsrg.audioPitch"]:get()
-	local velocityPower = luaMania.config["game.vsrg.velocityPower"]:get()
-	local velocityMode = tonumber(luaMania.config["game.vsrg.velocityMode"]:get())
+	local speed = mainConfig["game.vsrg.speed"]:get()
+	local audioPitch = mainConfig["game.vsrg.audioPitch"]:get()
+	local velocityPower = mainConfig["game.vsrg.velocityPower"]:get()
+	local velocityMode = tonumber(mainConfig["game.vsrg.velocityMode"]:get())
 	
 	if velocityMode == 1 then
 		if time > currentTime then
@@ -149,7 +149,7 @@ Column.getCoord = function(self, hitObject, key)
 		coord = (time - currentTime) * velocity
 	end
 	
-	local hitPosition = luaMania.skin.game.vsrg.hitPosition
+	local hitPosition = self.vsrg.skin.game.vsrg.hitPosition
 	if currentTime >= 0 then
 		return 1 - speed*coord/1000 - hitPosition
 	else

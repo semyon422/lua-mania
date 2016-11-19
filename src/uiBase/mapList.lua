@@ -61,7 +61,7 @@ mapList.load = function(self)
 	self.buttons = {}
 	self.dy = 0.1
 	self.scrollOffset = 1 / self.dy / 2
-	self.scroll = luaMania.cache.mapListScroll or -self.scrollOffset
+	self.scroll = self.scroll or -self.scrollOffset
 	self.circle = {}
 	self.circle.x = 1.5
 	self.circle.y = 0.5
@@ -69,14 +69,12 @@ mapList.load = function(self)
 	
 	self.state = self.state or "mainMenu"
 	
-	-- self.list = luaMania.cache.data
 	self.list = self.list or {
 		{
 			title = "Play",
 			action = function()
 				self.state = "songs"
-				luaMania.cache.data = cacheManager.load("cache.lua")
-				self.list = luaMania.cache.data				
+				self.list = mainCache
 				self:reload()
 			end
 		},
@@ -114,7 +112,7 @@ mapList.scrollTo = function(self, scroll)
 end
 
 mapList.postUpdate = function(self)
-	luaMania.cache.mapListScroll = self.scroll
+	-- luaMania.cache.mapListScroll = self.scroll
 end
 
 mapList.calcButtons = function(self)
@@ -154,8 +152,7 @@ mapList.itemGetInfo = function(self, item, itemIndex)
 	if item.type == "cacheItem" then
 		local value = item.title .. "\n" .. item.artist .. " // " .. (item.creator or item.format) .. "\n" .. item.version
 		local action = function(self)
-			luaMania.cache.position = itemIndex
-			luaMania.cli:run("gameState set game")
+			mainCli:run("gameState set game " .. itemIndex)
 		end
 		return value, action
 	else
@@ -174,12 +171,5 @@ mapList.unload = function(self)
 	end
 	loveio.input.callbacks.wheelmoved[tostring(self)] = nil
 end
-
-mapList.angle2coord = function(angle, r, ox, oy)
-	local x = math.cos(angle)*(r or 1) + (ox or 0)
-	local y = -math.sin(angle)*(r or 1) + (oy or 0)
-	return x, y
-end
-
 
 return mapList

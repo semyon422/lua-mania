@@ -1,18 +1,23 @@
-local init = function(luaMania)
+local init = function()
 --------------------------------
 local game = loveio.LoveioObject:new()
 
-game.path = "luaMania/game/"
+game.path = "game/"
+
+game.gameState = require(game.path .. "gameState")(game)
+
+game.cachePosition = 1
+
 game.modes = {}
-game.modes.vsrg = require(game.path .. "/modes/vsrg")(game, luaMania)
-game.modes.lmx = require(game.path .. "/modes/lmx")(game, luaMania)
+game.modes.vsrg = require(game.path .. "/modes/vsrg")(game)
+game.modes.lmx = require(game.path .. "/modes/lmx")(game)
 game.formats = {
 	["bms"] = bms,
 	["osu"] = osu,
 	["lmx"] = lmx
 }
 game.load = function()
-	local cachedObject = luaMania.cache.data[luaMania.cache.position]
+	local cachedObject = mainCache[game.cachePosition]
 	local format = cachedObject.format
 	local mode = cachedObject.mode
 	game.newGame = game.modes[mode]:new():insert(loveio.objects)

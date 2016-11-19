@@ -18,7 +18,7 @@ VsrgHitObject.judgement = {
 }
 
 VsrgHitObject.getJudgement = function(self, deltaTime)
-	local audioPitch = luaMania.config["game.vsrg.audioPitch"]:get()
+	local audioPitch = mainConfig["game.vsrg.audioPitch"]:get()
 	local deltaTime = deltaTime / audioPitch
 	
 	local outJudgement, outDelay
@@ -47,7 +47,7 @@ end
 VsrgHitObject.h = 0
 
 VsrgHitObject.playHitSound = function(self)
-	local audioPitch = luaMania.config["game.vsrg.audioPitch"]:get()
+	local audioPitch = mainConfig["game.vsrg.audioPitch"]:get()
 	for hitSoundIndex, hitSoundName in pairs(self.hitSoundsList) do
 		if self.column.vsrg.hitSounds[hitSoundName] then
 			local hitSound = self.column.vsrg.hitSounds[hitSoundName]:clone()

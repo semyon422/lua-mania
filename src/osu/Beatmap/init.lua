@@ -19,6 +19,7 @@ Beatmap.new = function(self)
 end
 
 Beatmap.import = require(osu.path .. "Beatmap/import")(Beatmap, osu)
+Beatmap.genCache = require(osu.path .. "Beatmap/genCache")(Beatmap, osu)
 
 Beatmap.EventSample = require(osu.path .. "Beatmap/EventSample")(Beatmap, osu)
 Beatmap.TimingPoint = require(osu.path .. "Beatmap/TimingPoint")(Beatmap, osu)

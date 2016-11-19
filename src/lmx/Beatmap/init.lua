@@ -16,6 +16,7 @@ Beatmap.new = function(self)
 end
 
 Beatmap.import = require(lmx.path .. "Beatmap/import")(Beatmap, lmx)
+Beatmap.genCache = require(lmx.path .. "Beatmap/genCache")(Beatmap, lmx)
 
 return Beatmap
 --------------------------------

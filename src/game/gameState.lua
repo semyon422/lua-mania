@@ -1,4 +1,4 @@
-local init = function(lmui, luaMania)
+local init = function(game)
 --------------------------------
 local gameState = loveio.LoveioObject:new()
 
@@ -8,24 +8,23 @@ gameState.data = {
 	states = {
 		["mapList"] = {
 			close = {
-				lmui["game"],
-				lmui["backButton"]
+				game,
+				uiBase["backButton"]
 			},
 			open = {
-				lmui["menuBackground"],
-				lmui["fpsDisplay"],
-				lmui["cursor"],
-				lmui["cliUi"],
-				lmui["mapList"],
+				uiBase["menuBackground"],
+				uiBase["fpsDisplay"],
+				uiBase["cursor"],
+				uiBase["mapList"],
 			}
 		},
 		["game"] = {
 			close = {
-				lmui["mapList"],
+				uiBase["mapList"],
 			},
 			open = {
-				lmui["game"],
-				lmui["backButton"]
+				game,
+				uiBase["backButton"]
 			}
 		}
 	}

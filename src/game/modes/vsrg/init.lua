@@ -1,15 +1,16 @@
-local init = function(game, luaMania)
+local init = function(game)
 --------------------------------
 local vsrg = loveio.LoveioObject:new()
 
 vsrg.map = {}
 
+vsrg.skin = require("res/defaultSkin")()
 vsrg.path = game.path .. "modes/vsrg/"
 
-vsrg.HitObject = require(vsrg.path .. "HitObject")(vsrg, game, luaMania)
-vsrg.Note = require(vsrg.path .. "Note")(vsrg, game, luaMania)
-vsrg.Hold = require(vsrg.path .. "Hold")(vsrg, game, luaMania)
-vsrg.Column = require(vsrg.path .. "Column")(vsrg, game, luaMania)
+vsrg.HitObject = require(vsrg.path .. "HitObject")(vsrg, game)
+vsrg.Note = require(vsrg.path .. "Note")(vsrg, game)
+vsrg.Hold = require(vsrg.path .. "Hold")(vsrg, game)
+vsrg.Column = require(vsrg.path .. "Column")(vsrg, game)
 
 vsrg.load = function(self)
 	self.columns = {}
@@ -21,9 +22,9 @@ vsrg.load = function(self)
 		getValue = function() return self.combo end
 	}):insert(loveio.objects)
 	if self.map.backgroundPath and love.filesystem.exists(self.map.backgroundPath) and love.filesystem.isFile(self.map.backgroundPath) then
-		luaMania.ui.menuBackground.prevValue = luaMania.ui.menuBackground.value
-		luaMania.ui.menuBackground.value = self.map.backgroundPath
-		luaMania.ui.menuBackground:reload()
+		uiBase.menuBackground.prevValue = uiBase.menuBackground.value
+		uiBase.menuBackground.value = self.map.backgroundPath
+		uiBase.menuBackground:reload()
 		self.backgroundChanged = true
 	end
 	
@@ -41,7 +42,7 @@ vsrg.load = function(self)
 	for eventSampleIndex, eventSample in pairs(self.map.eventSamples) do
 		if not self.hitSounds[eventSample.fileName] then
 			local filePath = helpers.getFilePath(eventSample.fileName, self.hitSoundsRules)
-			local sourceType = luaMania.config["game.vsrg.hitSoundSourceType"]:get()
+			local sourceType = mainConfig["game.vsrg.hitSoundSourceType"]:get()
 			if not filePath then
 				self.hitSounds[eventSample.fileName] = love.audio.newSource(love.sound.newSoundData(1))
 			else
@@ -56,59 +57,59 @@ vsrg.load = function(self)
 	
 	self.currentTimingPoint = self.map.timingPoints[1]
 	
-	self.keyBindPlay = luaMania.config["keyBind.game.vsrg.play"]:get()
-	self.keyBindPause = luaMania.config["keyBind.game.vsrg.pause"]:get()
-	self.keyBindSpeedUp = luaMania.config["keyBind.game.vsrg.speedUp"]:get()
-	self.keyBindSpeedDown = luaMania.config["keyBind.game.vsrg.speedDown"]:get()
-	self.keyBindOffsetUp = luaMania.config["keyBind.game.vsrg.offsetUp"]:get()
-	self.keyBindOffsetDown = luaMania.config["keyBind.game.vsrg.offsetDown"]:get()
-	self.keyBindVelocityPowerUp = luaMania.config["keyBind.game.vsrg.velocityPowerUp"]:get()
-	self.keyBindVelocityPowerDown = luaMania.config["keyBind.game.vsrg.velocityPowerDown"]:get()
-	self.keyBindAudioPitchUp = luaMania.config["keyBind.game.vsrg.audioPitchUp"]:get()
-	self.keyBindAudioPitchDown = luaMania.config["keyBind.game.vsrg.audioPitchDown"]:get()
+	self.keyBindPlay = mainConfig["keyBind.game.vsrg.play"]:get()
+	self.keyBindPause = mainConfig["keyBind.game.vsrg.pause"]:get()
+	self.keyBindSpeedUp = mainConfig["keyBind.game.vsrg.speedUp"]:get()
+	self.keyBindSpeedDown = mainConfig["keyBind.game.vsrg.speedDown"]:get()
+	self.keyBindOffsetUp = mainConfig["keyBind.game.vsrg.offsetUp"]:get()
+	self.keyBindOffsetDown = mainConfig["keyBind.game.vsrg.offsetDown"]:get()
+	self.keyBindVelocityPowerUp = mainConfig["keyBind.game.vsrg.velocityPowerUp"]:get()
+	self.keyBindVelocityPowerDown = mainConfig["keyBind.game.vsrg.velocityPowerDown"]:get()
+	self.keyBindAudioPitchUp = mainConfig["keyBind.game.vsrg.audioPitchUp"]:get()
+	self.keyBindAudioPitchDown = mainConfig["keyBind.game.vsrg.audioPitchDown"]:get()
 	loveio.input.callbacks.keypressed.newGame = function(key)
 		if key == self.keyBindPause then
 			self.map.audioState = "paused"
 		elseif key == self.keyBindPlay then
 			self.map.audioState = "started"
 		elseif key == self.keyBindSpeedUp then
-			local newValue = luaMania.config["game.vsrg.speed"]:get() + 0.1
-			luaMania.config["game.vsrg.speed"]:set(newValue)
+			local newValue = mainConfig["game.vsrg.speed"]:get() + 0.1
+			mainConfig["game.vsrg.speed"]:set(newValue)
 			print("speed = " .. newValue)
 		elseif key == self.keyBindSpeedDown then
-			local newValue = luaMania.config["game.vsrg.speed"]:get() - 0.1
+			local newValue = mainConfig["game.vsrg.speed"]:get() - 0.1
 			if newValue >= 0.1 then
-				luaMania.config["game.vsrg.speed"]:set(newValue)
+				mainConfig["game.vsrg.speed"]:set(newValue)
 				print("speed = " .. newValue)
 			end
 		elseif key == self.keyBindOffsetUp then
-			local newValue = luaMania.config["game.vsrg.offset"]:get() + 1
-			luaMania.config["game.vsrg.offset"]:set(newValue)
+			local newValue = mainConfig["game.vsrg.offset"]:get() + 1
+			mainConfig["game.vsrg.offset"]:set(newValue)
 		elseif key == self.keyBindOffsetDown then
-			local newValue = luaMania.config["game.vsrg.offset"]:get() - 1
-			luaMania.config["game.vsrg.offset"]:set(newValue)
+			local newValue = mainConfig["game.vsrg.offset"]:get() - 1
+			mainConfig["game.vsrg.offset"]:set(newValue)
 		elseif key == self.keyBindVelocityPowerUp then
-			local newValue = luaMania.config["game.vsrg.velocityPower"]:get() + 0.1
-			luaMania.config["game.vsrg.velocityPower"]:set(newValue)
+			local newValue = mainConfig["game.vsrg.velocityPower"]:get() + 0.1
+			mainConfig["game.vsrg.velocityPower"]:set(newValue)
 			print("velocityPower = " .. newValue)
 		elseif key == self.keyBindVelocityPowerDown then
-			local newValue = luaMania.config["game.vsrg.velocityPower"]:get() + 0.1
+			local newValue = mainConfig["game.vsrg.velocityPower"]:get() + 0.1
 			if newValue >= 0.1 then
-				luaMania.config["game.vsrg.velocityPower"]:set(newValue)
+				mainConfig["game.vsrg.velocityPower"]:set(newValue)
 				print("velocityPower = " .. newValue)
 			end
 		elseif key == self.keyBindAudioPitchUp then
-			local newValue = luaMania.config["game.vsrg.audioPitch"]:get() + 0.1
-			luaMania.config["game.vsrg.audioPitch"]:set(newValue)
+			local newValue = mainConfig["game.vsrg.audioPitch"]:get() + 0.1
+			mainConfig["game.vsrg.audioPitch"]:set(newValue)
 			self.map.audio:setPitch(newValue)
 			for _, sample in pairs(self.playingHitSounds) do
 				sample:setPitch(newValue)
 			end
 			print("audioPitch = " .. newValue)
 		elseif key == self.keyBindAudioPitchDown then
-			local newValue = luaMania.config["game.vsrg.audioPitch"]:get() - 0.1
+			local newValue = mainConfig["game.vsrg.audioPitch"]:get() - 0.1
 			if newValue >= 0.1 then
-				luaMania.config["game.vsrg.audioPitch"]:set(newValue)
+				mainConfig["game.vsrg.audioPitch"]:set(newValue)
 				self.map.audio:setPitch(newValue)
 				for _, sample in pairs(self.playingHitSounds) do
 					sample:setPitch(newValue)
@@ -128,7 +129,7 @@ vsrg.load = function(self)
 		}):insert(self.columns)
 	end
 	
-	self.map.audio:setPitch(luaMania.config["game.vsrg.audioPitch"]:get())
+	self.map.audio:setPitch(mainConfig["game.vsrg.audioPitch"]:get())
 	self.map.audioStartTime = love.timer.getTime()*1000 + 1000
 	self.map.audioState = "delayed"
 	self.map.currentTime = -1000
@@ -158,9 +159,9 @@ vsrg.postUpdate = function(self)
 		if not self.map.audio:isPaused() then self.map.audio:pause() end
 	end
 	
-	self.map.currentTime = math.floor(self.map.currentTime + luaMania.config["game.vsrg.offset"]:get())
+	self.map.currentTime = math.floor(self.map.currentTime + mainConfig["game.vsrg.offset"]:get())
 	if #self.map.eventSamples > 0 then
-		local audioPitch = luaMania.config["game.vsrg.audioPitch"]:get()
+		local audioPitch = mainConfig["game.vsrg.audioPitch"]:get()
 		while true do
 			if self.currentEventSample and self.currentEventSample.startTime <= self.map.currentTime then
 				if self.hitSounds[self.currentEventSample.fileName] then
@@ -200,9 +201,9 @@ end
 
 vsrg.unload = function(self)
 	if self.backgroundChanged then
-		luaMania.ui.menuBackground.value = luaMania.ui.menuBackground.prevValue
-		luaMania.ui.menuBackground.prevValue = nil
-		luaMania.ui.menuBackground:reload()
+		uiBase.menuBackground.value = uiBase.menuBackground.prevValue
+		uiBase.menuBackground.prevValue = nil
+		uiBase.menuBackground:reload()
 		self.backgroundChanged = false
 	end
 	if self.columns then

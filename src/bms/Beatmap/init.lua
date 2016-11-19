@@ -1,4 +1,4 @@
-local init = function(osu)
+local init = function(bms)
 --------------------------------
 local Beatmap = {}
 
@@ -12,7 +12,8 @@ Beatmap.new = function(self)
 	return beatmap
 end
 
-Beatmap.import = require(osu.path .. "Beatmap/import")(Beatmap, bms)
+Beatmap.import = require(bms.path .. "Beatmap/import")(Beatmap, bms)
+Beatmap.genCache = require(bms.path .. "Beatmap/genCache")(Beatmap, bms)
 
 return Beatmap
 --------------------------------
