@@ -28,4 +28,4 @@ game.vsrg.hitSoundVolumePower = 1
 keyBind.game.vsrg.play = "f1"
 keyBind.game.vsrg.pause = "f2"
 
-enableBackground = 0
+enableBackground = 1

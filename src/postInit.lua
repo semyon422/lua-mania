@@ -1,10 +1,5 @@
 local keypressed = loveio.input.callbacks.keypressed
 
-keypressed.goFullscreen = function(key)
-	if key == "f11" then
-		love.window.setFullscreen(not (love.window.getFullscreen()))
-	end
-end
 keypressed.printProfilersInfo = function(key)
 	if key == "f10" then
 		local updateDelta = string.format("%0.2f", loveio.updateProfiler:getDelta())
@@ -65,3 +60,50 @@ mainCli:bind("gameState", function(command)
 		game.gameState.data.switched = false
 	end
 end)
+
+
+local windowMode = windowManager.Mode:new(800, 600, {
+	fullscreen = false, fullscreentype = "desktop",
+	vsync = false, msaa = 0,
+	resizable = true,
+})
+local desktopWidth, desktopHeight = love.window.getDesktopDimensions()
+local fullscreenMode = windowManager.Mode:new(desktopWidth, desktopHeight, {
+	fullscreen = true, fullscreentype = "desktop",
+	vsync = false, msaa = 0,
+	resizable = true,
+})
+local highPerformanceMode = windowManager.Mode:new(640, 480, {
+	fullscreen = true, fullscreentype = "exclusive",
+	vsync = false, msaa = 0,
+	resizable = false,
+})
+windowManager.currentMode = windowMode
+keypressed.switchWindowMode = function(key)
+	if key == "f11" then
+		if windowManager.currentMode ~= windowMode then
+			windowManager.currentMode = windowMode
+		else
+			windowManager.currentMode = fullscreenMode
+		end
+		mainConfig["enableBackground"]:set(highPerformanceMode.oldBGStatus or mainConfig["enableBackground"]:get())
+		windowManager.currentMode:enable()
+		love.resize(love.graphics.getWidth(), love.graphics.getHeight())
+	elseif key == "f12" then
+		if windowManager.currentMode ~= windowMode then
+			windowManager.currentMode = windowMode
+			mainConfig["enableBackground"]:set(highPerformanceMode.oldBGStatus or mainConfig["enableBackground"]:get())
+		else
+			windowManager.currentMode = highPerformanceMode
+			highPerformanceMode.oldBGStatus = mainConfig["enableBackground"]:get()
+			mainConfig["enableBackground"]:set(0)
+		end
+		windowManager.currentMode:enable()
+		love.resize(love.graphics.getWidth(), love.graphics.getHeight())
+	end
+end
+
+
+
+
+

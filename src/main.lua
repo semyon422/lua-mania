@@ -8,6 +8,8 @@ mainConfig = configManager.load("config.txt")
 cacheManager = require("cacheManager")
 mainCache = cacheManager.load("cache.lua")
 
+windowManager = require("windowManager")
+
 loveio = require("loveio")
 loveio.init()
 
