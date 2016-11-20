@@ -3,7 +3,7 @@ Profiler = require("Profiler")
 log = helpers.logger.log
 
 configManager = require("configManager")
-mainConfig = configManager.load("config.txt")
+mainConfig = configManager.Config:new():load("config.txt")
 
 cacheManager = require("cacheManager")
 mainCache = cacheManager.load("cache.lua")
@@ -14,7 +14,7 @@ loveio = require("loveio")
 loveio.init()
 
 pos = loveio.output.Position:new({
-	ratios = {0.01, 4/3}, resolutions = {{1, 1}, {1, 1}}
+	ratios = {0.01, mainConfig:get("position.ratio", 4/3)}, resolutions = {{1, 1}, {1, 1}}
 })
 
 ui = require("ui")

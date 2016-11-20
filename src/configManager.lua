@@ -1,44 +1,35 @@
 local configManager = {}
 
-configManager.configItem = {}
-configManager.configItem.new = function(self, item)
-	local item = item or {}
-	setmetatable(item, self)
+configManager.Config = {}
+
+configManager.Config.new = function(self)
+	local config = {}
+	config.data = {}
+	
+	setmetatable(config, self)
 	self.__index = self
-	return item
-end
-configManager.configItem.set = function(self, value, needLoad)
-	self.stringValue = tostring(value)
-	if needLoad then
-		self.status, self.value = pcall(loadstring("return " .. self.stringValue))
-	else
-		self.value = value
-	end
-	return self
-end
-configManager.configItem.get = function(self)
-	return self.value
+	return config
 end
 
-configManager.save = function(config, filePath)
+configManager.Config.save = function(self, filePath)
 	local file = io.open(filePath, "w")
 	
 	local keyLines = {}
-	for key, data in pairs(config) do
+	for key, data in pairs(self.data) do
 		keyLines[data.line] = key
 	end
 	
-	outString = ""
+	out = {}
 	for _, key in ipairs(keyLines) do
-		local data = config[key]
-		outString = outString .. key .. " = " .. data.stringValue .. "\n"
+		local data = self.data[key]
+		table.insert(out, key .. " = " .. data.stringValue)
 	end
-	file:write(outString)
+	file:write(table.concat(out, "\n"))
+	return self
 end
 
-configManager.load = function(filePath)
+configManager.Config.load = function(self, filePath)
 	local file = io.open(filePath, "r")
-	local config = {}
 	
 	local lastLineNumber = 0
 	for line in file:lines() do
@@ -48,45 +39,37 @@ configManager.load = function(filePath)
 			table.remove(breakedLine, 1)
 			local stringValue = trim(table.concat(breakedLine))
 			local status, value = pcall(loadstring("return " .. stringValue))
-			if not config[key] then
+			if not self.data[key] then
 				lastLineNumber = lastLineNumber + 1
 			end
-			config[key] = configManager.configItem:new({line = lastLineNumber})
-			config[key]:set(value or stringValue)
+			self.data[key] = {line = lastLineNumber}
+			self.data[key].stringValue = stringValue
+			self.data[key].value = value or stringValue
 		end
 	end
-	return config
+	return self
 end
 
-configManager.toConfig = function(config)
-	if not config then return end
-	local newConfig = {}
-	
-	for configKey, configValue in pairs(config) do
-		newConfig[configKey] = configManager.configItem:new():set(configValue)
+configManager.Config.get = function(self, key, defaultValue)
+	if self.data[key] then
+		return self.data[key].value
+	else
+		return defaultValue
 	end
-
-	return newConfig
 end
 
--- configManager.toOneDim = function(config)
-	-- if not config then return end
-	-- local newConfig = {}
-	-- local lookup
-	-- lookup = function(configTable, prefix)
-		-- for configKey, configValue in pairs(configTable) do
-			-- if type(configValue) == "table" then
-				-- lookup(configValue, prefix .. configKey .. ".")
-			-- else
-				-- newConfig[prefix .. configKey] = configManager.configItem:new():set(configValue)
-			-- end
-		-- end
-		-- return list
-	-- end
-
-	-- lookup(config, "")
+configManager.Config.set = function(self, key, value, needLoad)
+	self.data[key] = self.data[key] or {}
+	local configItem = self.data[key]
 	
-	-- return newConfig
--- end
+	configItem.stringValue = tostring(value)
+	if needLoad then
+		configItem.status, configItem.value = pcall(loadstring("return " .. configItem.stringValue))
+	else
+		configItem.value = value
+	end
+	
+	return configItem.value
+end
 
 return configManager

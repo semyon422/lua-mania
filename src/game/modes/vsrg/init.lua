@@ -32,7 +32,7 @@ vsrg.load = function(self)
 		layer = 20
 	}):insert(loveio.objects)
 	
-	if (mainConfig["enableBackground"] and mainConfig["enableBackground"]:get()) == 0 then
+	if mainConfig:get("enableBackground", 1) == 0 then
 		uiBase.menuBackground:unload()
 	elseif self.map.backgroundPath and love.filesystem.exists(self.map.backgroundPath) and love.filesystem.isFile(self.map.backgroundPath) then
 		uiBase.menuBackground.prevValue = uiBase.menuBackground.value
@@ -55,7 +55,7 @@ vsrg.load = function(self)
 	for eventSampleIndex, eventSample in pairs(self.map.eventSamples) do
 		if not self.hitSounds[eventSample.fileName] then
 			local filePath = helpers.getFilePath(eventSample.fileName, self.hitSoundsRules)
-			local sourceType = mainConfig["game.vsrg.hitSoundSourceType"]:get()
+			local sourceType =  mainConfig:get("game.vsrg.hitSoundSourceType", "static")
 			if not filePath then
 				self.hitSounds[eventSample.fileName] = love.audio.newSource(love.sound.newSoundData(1))
 			else
@@ -71,7 +71,7 @@ vsrg.load = function(self)
 		for hitSoundIndex, hitSoundName in pairs(hitObject.hitSoundsList) do
 			if not self.hitSounds[hitSoundName] then
 				local filePath = helpers.getFilePath(hitSoundName, self.hitSoundsRules)
-				local sourceType = mainConfig["game.vsrg.hitSoundSourceType"]:get()
+				local sourceType = mainConfig:get("game.vsrg.hitSoundSourceType", "static")
 				if not filePath then
 					self.hitSounds[hitSoundName] = love.audio.newSource(love.sound.newSoundData(1))
 				else
@@ -90,59 +90,59 @@ vsrg.load = function(self)
 	
 	self.currentTimingPoint = self.map.timingPoints[1]
 	
-	self.keyBindPlay = mainConfig["keyBind.game.vsrg.play"]:get()
-	self.keyBindPause = mainConfig["keyBind.game.vsrg.pause"]:get()
-	self.keyBindSpeedUp = mainConfig["keyBind.game.vsrg.speedUp"]:get()
-	self.keyBindSpeedDown = mainConfig["keyBind.game.vsrg.speedDown"]:get()
-	self.keyBindOffsetUp = mainConfig["keyBind.game.vsrg.offsetUp"]:get()
-	self.keyBindOffsetDown = mainConfig["keyBind.game.vsrg.offsetDown"]:get()
-	self.keyBindVelocityPowerUp = mainConfig["keyBind.game.vsrg.velocityPowerUp"]:get()
-	self.keyBindVelocityPowerDown = mainConfig["keyBind.game.vsrg.velocityPowerDown"]:get()
-	self.keyBindAudioPitchUp = mainConfig["keyBind.game.vsrg.audioPitchUp"]:get()
-	self.keyBindAudioPitchDown = mainConfig["keyBind.game.vsrg.audioPitchDown"]:get()
+	self.keyBindPlay = mainConfig:get("keyBind.game.vsrg.play", "")
+	self.keyBindPause = mainConfig:get("keyBind.game.vsrg.pause", "")
+	self.keyBindSpeedUp = mainConfig:get("keyBind.game.vsrg.speedUp", "")
+	self.keyBindSpeedDown = mainConfig:get("keyBind.game.vsrg.speedDown", "")
+	self.keyBindOffsetUp = mainConfig:get("keyBind.game.vsrg.offsetUp", "")
+	self.keyBindOffsetDown = mainConfig:get("keyBind.game.vsrg.offsetDown", "")
+	self.keyBindVelocityPowerUp = mainConfig:get("keyBind.game.vsrg.velocityPowerUp", "")
+	self.keyBindVelocityPowerDown = mainConfig:get("keyBind.game.vsrg.velocityPowerDown", "")
+	self.keyBindAudioPitchUp = mainConfig:get("keyBind.game.vsrg.audioPitchUp", "")
+	self.keyBindAudioPitchDown = mainConfig:get("keyBind.game.vsrg.audioPitchDown", "")
 	loveio.input.callbacks.keypressed.newGame = function(key)
 		if key == self.keyBindPause then
 			self.map.audioState = "paused"
 		elseif key == self.keyBindPlay then
 			self.map.audioState = "started"
 		elseif key == self.keyBindSpeedUp then
-			local newValue = mainConfig["game.vsrg.speed"]:get() + 0.1
-			mainConfig["game.vsrg.speed"]:set(newValue)
+			local newValue = mainConfig:get("game.vsrg.speed", 1) + 0.1
+			mainConfig:set("game.vsrg.speed", newValue)
 			print("speed = " .. newValue)
 		elseif key == self.keyBindSpeedDown then
-			local newValue = mainConfig["game.vsrg.speed"]:get() - 0.1
+			local newValue = mainConfig:get("game.vsrg.speed", 1) - 0.1
 			if newValue >= 0.1 then
-				mainConfig["game.vsrg.speed"]:set(newValue)
+				mainConfig:set("game.vsrg.speed", newValue)
 				print("speed = " .. newValue)
 			end
 		elseif key == self.keyBindOffsetUp then
-			local newValue = mainConfig["game.vsrg.offset"]:get() + 1
-			mainConfig["game.vsrg.offset"]:set(newValue)
+			local newValue = mainConfig:get("game.vsrg.offset", 0) + 1
+			mainConfig:set("game.vsrg.offset", newValue)
 		elseif key == self.keyBindOffsetDown then
-			local newValue = mainConfig["game.vsrg.offset"]:get() - 1
-			mainConfig["game.vsrg.offset"]:set(newValue)
+			local newValue = mainConfig:get("game.vsrg.offset", 0) - 1
+			mainConfig:set("game.vsrg.offset", newValue)
 		elseif key == self.keyBindVelocityPowerUp then
-			local newValue = mainConfig["game.vsrg.velocityPower"]:get() + 0.1
-			mainConfig["game.vsrg.velocityPower"]:set(newValue)
+			local newValue = mainConfig:get("game.vsrg.velocityPower", 1) + 0.1
+			mainConfig:set("game.vsrg.velocityPower", newValue)
 			print("velocityPower = " .. newValue)
 		elseif key == self.keyBindVelocityPowerDown then
-			local newValue = mainConfig["game.vsrg.velocityPower"]:get() + 0.1
+			local newValue = mainConfig:get("game.vsrg.velocityPower", 1) - 0.1
 			if newValue >= 0.1 then
-				mainConfig["game.vsrg.velocityPower"]:set(newValue)
+				mainConfig:set("game.vsrg.velocityPower", newValue)
 				print("velocityPower = " .. newValue)
 			end
 		elseif key == self.keyBindAudioPitchUp then
-			local newValue = mainConfig["game.vsrg.audioPitch"]:get() + 0.1
-			mainConfig["game.vsrg.audioPitch"]:set(newValue)
+			local newValue = mainConfig:get("game.vsrg.audioPitch", 1) + 0.1
+			mainConfig:set("game.vsrg.audioPitch", newValue)
 			self.map.audio:setPitch(newValue)
 			for _, sample in pairs(self.playingHitSounds) do
 				sample:setPitch(newValue)
 			end
 			print("audioPitch = " .. newValue)
 		elseif key == self.keyBindAudioPitchDown then
-			local newValue = mainConfig["game.vsrg.audioPitch"]:get() - 0.1
+			local newValue = mainConfig:get("game.vsrg.audioPitch", 1) - 0.1
 			if newValue >= 0.1 then
-				mainConfig["game.vsrg.audioPitch"]:set(newValue)
+				mainConfig:set("game.vsrg.audioPitch", newValue)
 				self.map.audio:setPitch(newValue)
 				for _, sample in pairs(self.playingHitSounds) do
 					sample:setPitch(newValue)
@@ -162,7 +162,7 @@ vsrg.load = function(self)
 		}):insert(self.columns)
 	end
 	
-	self.map.audio:setPitch(mainConfig["game.vsrg.audioPitch"]:get())
+	self.map.audio:setPitch(mainConfig:get("game.vsrg.audioPitch", 1))
 	self.map.audioStartTime = love.timer.getTime()*1000 + 1000
 	self.map.audioState = "delayed"
 	self.map.currentTime = -1000
@@ -189,9 +189,9 @@ vsrg.postUpdate = function(self)
 		if not self.map.audio:isPaused() then self.map.audio:pause() end
 	end
 	
-	self.map.currentTime = math.floor(self.map.currentTime + mainConfig["game.vsrg.offset"]:get())
+	self.map.currentTime = math.floor(self.map.currentTime + mainConfig:get("game.vsrg.offset", 1))
 	if #self.map.eventSamples > 0 then
-		local audioPitch = mainConfig["game.vsrg.audioPitch"]:get()
+		local audioPitch = mainConfig:get("game.vsrg.audioPitch", 1)
 		while true do
 			if self.currentEventSample and self.currentEventSample.startTime <= self.map.currentTime then
 				if self.hitSounds[self.currentEventSample.fileName] then

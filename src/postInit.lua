@@ -5,13 +5,11 @@ keypressed.printProfilersInfo = function(key)
 		local updateDelta = string.format("%0.2f", loveio.updateProfiler:getDelta())
 		local drawDelta = string.format("%0.2f", loveio.drawProfiler:getDelta())
 		local globalDelta = drawDelta + updateDelta
-		print("profilers: callbacks, upate, draw")
+		print("profilers: callbacks, update, draw; fps = " .. love.timer.getFPS())
 		print("upd: " .. updateDelta .. "ms " .. string.format("%0.2f", updateDelta / globalDelta * 100) .. "%")
 		print("drw: " .. drawDelta .. "ms " .. string.format("%0.2f", drawDelta / globalDelta * 100) .. "%")
 	end
 end
-
-
 
 cacheCallback = function(filePath)
 	if love.filesystem.isFile(filePath) then
@@ -86,24 +84,19 @@ keypressed.switchWindowMode = function(key)
 		else
 			windowManager.currentMode = fullscreenMode
 		end
-		mainConfig["enableBackground"]:set(highPerformanceMode.oldBGStatus or mainConfig["enableBackground"]:get())
+		mainConfig:set("enableBackground", highPerformanceMode.oldBGStatus or mainConfig:get("enableBackground", 0))
 		windowManager.currentMode:enable()
 		love.resize(love.graphics.getWidth(), love.graphics.getHeight())
 	elseif key == "f12" then
 		if windowManager.currentMode ~= windowMode then
 			windowManager.currentMode = windowMode
-			mainConfig["enableBackground"]:set(highPerformanceMode.oldBGStatus or mainConfig["enableBackground"]:get())
+			mainConfig:set("enableBackground", highPerformanceMode.oldBGStatus or mainConfig:get("enableBackground", 0))
 		else
 			windowManager.currentMode = highPerformanceMode
-			highPerformanceMode.oldBGStatus = mainConfig["enableBackground"]:get()
-			mainConfig["enableBackground"]:set(0)
+			highPerformanceMode.oldBGStatus = mainConfig:get("enableBackground", 0)
+			mainConfig:set("enableBackground", 0)
 		end
 		windowManager.currentMode:enable()
 		love.resize(love.graphics.getWidth(), love.graphics.getHeight())
 	end
 end
-
-
-
-
-

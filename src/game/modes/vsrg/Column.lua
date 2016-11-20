@@ -47,7 +47,7 @@ Column.load = function(self)
 	
 	self.keyInfo = {
 		key = self.key,
-		bind = (mainConfig["keyBind.game.vsrg." .. self.map.keymode .. "K"] and mainConfig["keyBind.game.vsrg." .. self.map.keymode .. "K"]:get()[self.key]) or self.vsrg.defaultKeyBinds[self.map.keymode][self.key],
+		bind = mainConfig:get("keyBind.game.vsrg." .. self.map.keymode .. "K", self.vsrg.defaultKeyBinds[self.map.keymode])[self.key],
 		isDown = false
 	}
 	loveio.input.callbacks.keypressed[tostring(self)] = function(key)
@@ -81,10 +81,10 @@ Column.getCoord = function(self, hitObject, key)
 	local coord = 0
 	
 	
-	local speed = mainConfig["game.vsrg.speed"]:get()
-	local audioPitch = mainConfig["game.vsrg.audioPitch"]:get()
-	local velocityPower = mainConfig["game.vsrg.velocityPower"]:get()
-	local velocityMode = tonumber(mainConfig["game.vsrg.velocityMode"]:get())
+	local speed = mainConfig:get("game.vsrg.speed", 1)
+	local audioPitch = mainConfig:get("game.vsrg.audioPitch", 1)
+	local velocityPower = mainConfig:get("game.vsrg.velocityPower", 1)
+	local velocityMode = mainConfig:get("game.vsrg.velocityMode", 1)
 	
 	if velocityMode == 1 then
 		if time > currentTime then
