@@ -4,23 +4,11 @@ local Picture = classes.UiObject:new()
 
 Picture.modes = {}
 Picture.modes.fit = function(gw, gh, drawable)
-	local scale = 1
-	local w, h = drawable:getWidth(), drawable:getHeight()
-	if gw < w * scale then
-		-- nothing
-	end
-	if gh < h * scale then
-		scale = gh / h
-	end
-	if gw > w * scale then
-		scale = gw / w
-	end
-	if gh > h * scale then
-		scale = gh / h
-	end
-	local x = (gw / 2) - (w*scale / 2)
-	local y = (gh / 2) - (h*scale / 2)
-	return x, y, scale
+	local base = {x = 0, y = 0, w = gw, h = gh}
+	local box = {w = drawable:getWidth(), h = drawable:getHeight()}
+	local dims = loveio.output.Position.getDimensionsSimple(base, box, {"center", "center"}, "out")
+	
+	return dims.x, dims.y, dims.scale
 end
 
 Picture.layer = 2

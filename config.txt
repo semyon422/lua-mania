@@ -23,7 +23,7 @@ game.vsrg.velocityMode = 1
 keyBind.game.vsrg.velocityPowerUp = "f6"
 keyBind.game.vsrg.velocityPowerDown = "f5"
 
-game.vsrg.hitSoundVolumePower = 1
+game.vsrg.hitSoundVolumePower = 2
 
 keyBind.game.vsrg.play = "f1"
 keyBind.game.vsrg.pause = "f2"

@@ -36,7 +36,6 @@ local import = function(self, filePath)
 			table.insert(timingPointsSection, line)
 		elseif blockName == "HitObjects" and trim(line) ~= "" then
 			table.insert(hitObjectsSection, line)
-			-- table.insert(self.hitObjects, self.HitObject:new({beatmap = self}):import(line))
 		end
 	end
 	

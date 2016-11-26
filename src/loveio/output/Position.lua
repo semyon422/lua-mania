@@ -7,6 +7,7 @@ Position.new = function(self, position)
 	position.ratios = position.ratios or {0}
 	position.resolutions = position.resolutions or {{1, 1}}
 	position.align = position.align or {"center", "center"}
+	position.locate = position.locate or "in"
 	position.scale = position.scale or {1, 1}
 	position.offset = position.offset or {0, 0}
 	position.box = {}
@@ -77,35 +78,99 @@ Position.update = function(self)
 			end
 		end
 		
-		if rR > self.ratio then
-			self.box.h = rH * self.scale[2]
-			self.box.w = rH * self.ratio * self.scale[1]
-		elseif rR < self.ratio then
-			self.box.w = rW * self.scale[1]
-			self.box.h = rW / self.ratio * self.scale[2]
-		else
-			self.box.w = rW * self.scale[1]
-			self.box.h = rH * self.scale[2]
-		end
-		if self.align[1] == "left" then
-			self.box.x = 0
-		elseif self.align[1] == "center" then
-			self.box.x = (rW - self.box.w) / 2
-		elseif self.align[1] == "right" then
-			self.box.x = rW - self.box.w
-		end
-		if self.align[2] == "top" then
-			self.box.y = 0
-		elseif self.align[2] == "center" then
-			self.box.y = (rH - self.box.h) / 2
-		elseif self.align[2] == "bottom" then
-			self.box.y = rH - self.box.h
-		end
+		-- local ox, oy = Position.getOffsets(rW/rH, self.ratio, self.align, "in")
+		-- local cx, cy = Position.getCentralCoords(0, 0, rW, rH, ox, oy)
+		-- local scale = Position.getScale(rW, rH, self.ratio, 1, "in")
+		-- local x, y, w, h = Position.getDimensions(cx, cy, self.ratio, 1, scale)
+		
+		local base = {x = 0, y = 0, w = rW, h = rH}
+		local box = {w = self.ratio, h = 1}
+		local dims = Position.getDimensionsSimple(base, box, self.align, self.locate)
+		self.box.x, self.box.y, self.box.w, self.box.h = dims.x, dims.y, dims.w, dims.h
 		self.box.x = self.box.x + self.offset[1] * self.box.w
 		self.box.y = self.box.y + self.offset[2] * self.box.h
 	end
 end
 
+Position.getOX = function(ratioBase, ratioBox, align)
+	if align == "left" then
+		return (ratioBox - ratioBase) / (2 * ratioBase)
+	elseif align == "center" then
+		return 0
+	elseif align == "right" then
+		return -(ratioBox - ratioBase) / (2 * ratioBase)
+	end
+end
+Position.getOY = function(ratioBase, ratioBox, align)
+	if align == "top" then
+		return (1/ratioBox - 1/ratioBase) / (2 * 1/ratioBase)
+	elseif align == "center" then
+		return 0
+	elseif align == "bottom" then
+		return -(1/ratioBox - 1/ratioBase) / (2 * 1/ratioBase)
+	end
+end
+Position.getOffsets = function(ratioBase, ratioBox, align, locate)
+	if (locate == "in" and ratioBase > ratioBox) or (locate == "out" and ratioBase < ratioBox) then
+		return Position.getOX(ratioBase, ratioBox, align[1]), 0
+	elseif (locate == "in" and ratioBase < ratioBox) or (locate == "out" and ratioBase > ratioBox) then
+		return 0, Position.getOY(ratioBase, ratioBox, align[2])
+	else
+		return 0, 0
+	end
+end
+
+Position.getCentralCoords = function(x, y, w, h, ox, oy)
+	return x + (w * (0.5 + ox)), y + (h * (0.5 + oy))
+end
+Position.getScale = function(bw, bh, w, h, locate)
+	local scale = 1
+	if locate == "out" then
+		if bw / bh < w / h then
+			scale = bh / h
+		else -- if bw / bh > w / h then
+			scale = bw / w
+		end
+	elseif locate == "in" then
+		if bw / bh < w / h then
+			scale = bw / w
+		else -- if bw / bh > w / h then
+			scale = bh / h
+		end
+	end
+	return scale
+end
+Position.getDimensions = function(cx, cy, w, h, scale)
+	local x = cx - (w * scale / 2)
+	local y = cy - (h * scale / 2)
+	local w = w * scale
+	local h = h * scale
+	return x, y, w, h
+end
+Position.getDimensionsSimple = function(base, box, align, locate)
+	local xBase, yBase, wBase, hBase = base.x, base.y, base.w, base.h
+	local wBox, hBox = box.w, box.h
+
+	local ox, oy = Position.getOffsets(wBase/hBase, wBox/hBox, align, locate)
+	local cx, cy = Position.getCentralCoords(xBase, yBase, wBase, hBase, ox, oy)
+	local scale = Position.getScale(wBase, hBase, wBox, hBox, locate)
+	
+	local x = cx - (wBox * scale / 2)
+	local y = cy - (hBox * scale / 2)
+	local w = wBox * scale
+	local h = hBox * scale
+	return {
+		x = x,
+		y = y,
+		w = w,
+		h = h,
+		ox = ox,
+		oy = oy,
+		cx = cx,
+		cy = cy,
+		scale = scale
+	}
+end
 Position.x2y = function(self, x)
 	if not x then return end
 	self:update()
