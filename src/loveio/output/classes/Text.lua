@@ -11,10 +11,12 @@ Text.font = love.graphics.getFont()
 Text.draw = function(self)
 	local y = self:getAbs("y", true)
 	local lineCount = #explode("\n", tostring(self.text))
+	local sx = self.sx or 1
+	local sy = self.sy or sx
 	if self.yAlign == "center" then
-		y = math.floor(self:getAbs("y", true) - (self.font:getHeight() / 2) * lineCount)
+		y = math.floor(self:getAbs("y", true) - (self.font:getHeight()*sy / 2) * lineCount)
 	elseif self.yAlign == "top" then
-		y = math.floor(self:getAbs("y", true) - self.font:getHeight() * lineCount)
+		y = math.floor(self:getAbs("y", true) - self.font:getHeight()*sy * lineCount)
 	end
 	
 	local oldColor = {love.graphics.getColor()}

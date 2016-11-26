@@ -34,6 +34,15 @@ uiBase.backButton = ui.classes.Button:new({
 	pos = loveio.output.Position:new({ratios = {1}, align = {"right", "bottom"}})
 })
 uiBase.cursor = require("uiBase.cursor")
+-- uiBase.testbutton = ui.classes.PictureButton:new({
+	-- x = 0.1,
+	-- y = 0.1,
+	-- w = 0.2, h = 0.1,
+	-- value = "play",
+	-- action = function() end,
+	-- pos = loveio.output.Position:new({ratios = {1}, align = {"center", "center"}}),
+	-- imagePath = "res/testbutton.png"
+-- })
 
 return uiBase
 --------------------------------

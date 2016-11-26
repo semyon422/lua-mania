@@ -11,6 +11,7 @@ Button.textColor = {255, 255, 255, 255}
 Button.backgroundColor = {0, 0, 0, 127}
 
 Button.load = function(self)
+	local pos = self.pos or pos
 	self["rectangle-1"] = loveio.output.classes.Rectangle:new({
 		x = self.x, y = self.y,
 		w = self.w, h = self.h,

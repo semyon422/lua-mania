@@ -2,16 +2,23 @@ local mapList = ui.classes.UiObject:new()
 
 mapList.pos = loveio.output.Position:new({ratios = {1}, align = {"right", "center"}})
 
-local Button = ui.classes.Button:new()
+local Button = ui.classes.PictureButton:new()
 mapList.Button = Button
 Button.xAlign = "left"
 Button.xPadding = 0.05
 Button.w = 0.8
-Button.h = 0.125
+Button.h = 1/6
 Button.xSpawn = 0.5
 Button.xSpeedMultiplier = 4
 Button.ySpeedMultiplier = 2
 Button.pos = mapList.pos
+Button.imagePath = "res/mapListButton.png"
+Button.drawable = love.graphics.newImage(Button.imagePath)
+Button.align = {"left", "center"}
+Button.locate = "out"
+Button.font = love.graphics.newFont("res/fonts/OpenSans/OpenSansRegular/OpenSansRegular.ttf", 16)
+Button.fontBaseResolution = {mapList.pos:x2X(1), mapList.pos:y2Y(1)}
+
 Button.postUpdate = function(self)
 	local yTarget = (self.yTargetOffset or 0) + self.mapList.dy * (self.itemIndex - 1 - self.mapList.scroll) - self.h / 2
 	self.y = self.y + love.timer.getDelta() * (yTarget - self.y) * self.ySpeedMultiplier
@@ -59,7 +66,7 @@ end
 
 mapList.load = function(self)
 	self.buttons = {}
-	self.dy = 0.1
+	self.dy = 1/8
 	self.scrollOffset = 1 / self.dy / 2
 	self.scroll = self.scroll or -self.scrollOffset
 	self.circle = {}
@@ -136,9 +143,10 @@ mapList.calcButtons = function(self)
 					value = value,
 					action = action,
 					mapList = self,
-					backgroundColor = {255, 255, 255, 31},
+					-- backgroundColor = {255, 255, 255, 31},
 					pos = self.pos,
-					itemIndex = itemIndex
+					itemIndex = itemIndex,
+					layer = 1000 - itemIndex
 				}):insert(loveio.objects)
 				self.buttons[tostring(button)] = button
 			end
