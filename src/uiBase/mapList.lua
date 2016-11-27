@@ -1,5 +1,6 @@
 local mapList = ui.classes.UiObject:new()
 
+-- mapList.pos = loveio.output.Position:new({ratios = {1}, align = {"right", "center"}, scale = {0.5, 0.5}})
 mapList.pos = loveio.output.Position:new({ratios = {1}, align = {"right", "center"}})
 
 local Button = ui.classes.PictureButton:new()
@@ -20,17 +21,21 @@ Button.font = love.graphics.newFont("res/fonts/OpenSans/OpenSansRegular/OpenSans
 Button.fontBaseResolution = {mapList.pos:x2X(1), mapList.pos:y2Y(1)}
 
 Button.postUpdate = function(self)
-	local yTarget = (self.yTargetOffset or 0) + self.mapList.dy * (self.itemIndex - 1 - self.mapList.scroll) - self.h / 2
-	self.y = self.y + love.timer.getDelta() * (yTarget - self.y) * self.ySpeedMultiplier
+	local dt =  math.min(1/60, love.timer.getDelta())
 	
-	if self.y >= 0 - self.h and self.y <= 1 + self.h then
+	local yTarget, xTarget
+	yTarget = (self.yTargetOffset or 0) + self.mapList.dy * (self.itemIndex - 1 - self.mapList.scroll)
+	self.y = self.y + dt * (yTarget - self.y) * self.ySpeedMultiplier
+	
+	if self.y >= 0 - self.h and self.y <= 1 then
 		local circle = self.mapList.circle
-		local xTarget = (self.xTargetOffset or 0) + circle.x - math.sqrt(circle.y^2 + (circle.x - self.xSpawn)^2 - (self.y - circle.y)^2)
-		self.x = self.x + love.timer.getDelta() * (xTarget - self.x) * self.xSpeedMultiplier
+		xTarget = (self.xTargetOffset or 0) + circle.x - math.sqrt(circle.y^2 + (circle.x - self.xSpawn)^2 - (self.y + self.h/2 - circle.y)^2)
+		self.x = self.x + dt * (xTarget - self.x) * self.xSpeedMultiplier
 	else
 		local limit = (self.xTargetOffset or 0) + self.xSpawn
-		self.x = self.x - love.timer.getDelta() * (self.x - limit) * self.xSpeedMultiplier
+		self.x = self.x - dt * (self.x - limit) * self.xSpeedMultiplier
 	end
+	
 	if self.oldX ~= self.x or self.oldY ~= self.y then
 		self:reload()
 		self.oldX = self.x
@@ -103,7 +108,7 @@ mapList.load = function(self)
 	
 	loveio.input.callbacks.wheelmoved[tostring(self)] = function(_, direction)
 		local scroll = self.scroll + self.scrollOffset
-		if (scroll < #self.list + 1 and scroll > 0) or
+		if (scroll < #self.list and scroll > 0) or
 		   (scroll >= #self.list and direction == -1) or
 		   (scroll <= 0 and direction == 1) then
 			self.scroll = self.scroll + direction
@@ -118,10 +123,6 @@ mapList.scrollTo = function(self, scroll)
 	end
 end
 
-mapList.postUpdate = function(self)
-	-- luaMania.cache.mapListScroll = self.scroll
-end
-
 mapList.calcButtons = function(self)
 	local itemIndexKeys = {}
 	for buttonIndex, button in pairs(self.buttons) do
@@ -129,11 +130,12 @@ mapList.calcButtons = function(self)
 		itemIndexKeys[button.itemIndex] = button
 	end
 	for itemIndex, item in ipairs(self.list) do
-		local y = self.dy * (itemIndex - 1 - self.scroll) - Button.h / 2
+		local y = self.dy * (itemIndex - 1 - self.scroll)
 		if y >= 0 - self.liveZone - Button.h and y <= 1 + self.liveZone then
 			if not itemIndexKeys[itemIndex] then
 				local xSpawn = Button.xSpawn
-				if y >= 0 - Button.h and y <= 1 + Button.h then
+				-- if y >= 0 - Button.h and y <= 1 + Button.h then
+				if y >= 0 and y <= 1 then
 					xSpawn = self.circle.x
 				end
 				
@@ -143,7 +145,6 @@ mapList.calcButtons = function(self)
 					value = value,
 					action = action,
 					mapList = self,
-					-- backgroundColor = {255, 255, 255, 31},
 					pos = self.pos,
 					itemIndex = itemIndex,
 					layer = 1000 - itemIndex

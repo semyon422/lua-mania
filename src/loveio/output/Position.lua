@@ -85,7 +85,7 @@ Position.update = function(self)
 		
 		local base = {x = 0, y = 0, w = rW, h = rH}
 		local box = {w = self.ratio, h = 1}
-		local dims = Position.getDimensionsSimple(base, box, self.align, self.locate)
+		local dims = Position.getDimensionsSimple(base, box, self.align, self.locate, self.scale)
 		self.box.x, self.box.y, self.box.w, self.box.h = dims.x, dims.y, dims.w, dims.h
 		self.box.x = self.box.x + self.offset[1] * self.box.w
 		self.box.y = self.box.y + self.offset[2] * self.box.h
@@ -147,18 +147,19 @@ Position.getDimensions = function(cx, cy, w, h, scale)
 	local h = h * scale
 	return x, y, w, h
 end
-Position.getDimensionsSimple = function(base, box, align, locate)
+Position.getDimensionsSimple = function(base, box, align, locate, aScale)
 	local xBase, yBase, wBase, hBase = base.x, base.y, base.w, base.h
 	local wBox, hBox = box.w, box.h
+	local asx, asy = ((aScale and aScale[1]) or 1), ((aScale and aScale[2]) or 1)
 
 	local ox, oy = Position.getOffsets(wBase/hBase, wBox/hBox, align, locate)
 	local cx, cy = Position.getCentralCoords(xBase, yBase, wBase, hBase, ox, oy)
 	local scale = Position.getScale(wBase, hBase, wBox, hBox, locate)
 	
-	local x = cx - (wBox * scale / 2)
-	local y = cy - (hBox * scale / 2)
-	local w = wBox * scale
-	local h = hBox * scale
+	local x = cx - (wBox * scale * asx / 2) 
+	local y = cy - (hBox * scale * asy / 2)
+	local w = wBox * scale * asx
+	local h = hBox * scale * asy
 	return {
 		x = x,
 		y = y,
@@ -168,7 +169,7 @@ Position.getDimensionsSimple = function(base, box, align, locate)
 		oy = oy,
 		cx = cx,
 		cy = cy,
-		scale = scale
+		scale = scale * asx
 	}
 end
 Position.x2y = function(self, x)
