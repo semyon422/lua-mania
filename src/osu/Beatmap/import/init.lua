@@ -80,9 +80,9 @@ local import = function(self, filePath)
 	for timingPointIndex = 1, #self.timingPoints do
 		local current = self.timingPoints[timingPointIndex]
 		
-		current.lenghtTime = current.endTime - current.startTime
+		current.lengthTime = current.endTime - current.startTime
 		beatLength2beatLengths[current.beatLength] = beatLength2beatLengths[current.beatLength] or {current.beatLength, 0, #beatLengths + 1}
-		beatLength2beatLengths[current.beatLength][2] = beatLength2beatLengths[current.beatLength][2] + current.lenghtTime
+		beatLength2beatLengths[current.beatLength][2] = beatLength2beatLengths[current.beatLength][2] + current.lengthTime
 		beatLengths[beatLength2beatLengths[current.beatLength][3]] = beatLength2beatLengths[current.beatLength]
 	end
 	table.sort(beatLengths, function(a, b)

@@ -15,6 +15,9 @@ end
 Beatmap.import = require(bms.path .. "Beatmap/import")(Beatmap, bms)
 Beatmap.genCache = require(bms.path .. "Beatmap/genCache")(Beatmap, bms)
 
+Beatmap.TimingPoint = require(bms.path .. "Beatmap/TimingPoint")(Beatmap, bms)
+Beatmap.HitObject = require(bms.path .. "Beatmap/HitObject")(Beatmap, bms)
+
 return Beatmap
 --------------------------------
 end
