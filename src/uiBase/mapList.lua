@@ -19,17 +19,24 @@ Button.align = {"left", "center"}
 Button.locate = "out"
 Button.font = love.graphics.newFont("res/fonts/OpenSans/OpenSansRegular/OpenSansRegular.ttf", 16)
 Button.fontBaseResolution = {mapList.pos:x2X(1), mapList.pos:y2Y(1)}
+Button.xTargetOffsetSelected = 0
 
 Button.postUpdate = function(self)
 	local dt =  math.min(1/60, love.timer.getDelta())
 	
+	if self.mapList.selectedButton == self then
+		self.xTargetOffsetSelected = -0.2
+	else
+		self.xTargetOffsetSelected = 0
+	end
 	local yTarget, xTarget
 	yTarget = (self.yTargetOffset or 0) + self.mapList.dy * (self.itemIndex - 1 - self.mapList.scroll)
 	self.y = self.y + dt * (yTarget - self.y) * self.ySpeedMultiplier
 	
 	if self.y >= 0 - self.h and self.y <= 1 then
 		local circle = self.mapList.circle
-		xTarget = (self.xTargetOffset or 0) + circle.x - math.sqrt(circle.y^2 + (circle.x - self.xSpawn)^2 - (self.y + self.h/2 - circle.y)^2)
+		xTarget = (self.xTargetOffset or 0) + self.xTargetOffsetSelected 
++ circle.x - math.sqrt(circle.y^2 + (circle.x - self.xSpawn)^2 - (self.y + self.h/2 - circle.y)^2)
 		self.x = self.x + dt * (xTarget - self.x) * self.xSpeedMultiplier
 	else
 		local limit = (self.xTargetOffset or 0) + self.xSpawn
@@ -115,11 +122,22 @@ mapList.load = function(self)
 		end
 		self:calcButtons()
 	end
+	loveio.input.callbacks.keypressed[tostring(self)] = function(key)
+		local key = tonumber(key)
+		if love.keyboard.isDown("lshift") and key then
+			if key ~= 0 then
+				self:scrollTo(math.ceil(#self.list/9*(key-1)))
+			else
+				self:scrollTo(#self.list/9*9)
+			end
+			self:calcButtons()
+		end
+	end
 end
 
 mapList.scrollTo = function(self, scroll)
 	if scroll >= 0 and scroll <= #self.list then
-		self.scroll = scroll
+		self.scroll = scroll - self.scrollOffset
 	end
 end
 
@@ -160,8 +178,13 @@ end
 mapList.itemGetInfo = function(self, item, itemIndex)
 	if item.type == "cacheItem" then
 		local value = item.title .. "\n" .. item.artist .. " // " .. (item.creator or item.format) .. "\n" .. item.version
+		local mapList = self
 		local action = function(self)
-			mainCli:run("gameState set game " .. itemIndex)
+			if mapList.selectedButton == self then
+				mainCli:run("gameState set game " .. itemIndex)
+			else
+				mapList.selectedButton = self
+			end
 		end
 		return value, action
 	else

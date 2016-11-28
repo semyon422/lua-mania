@@ -14,4 +14,5 @@ Supported formats: `osu, bme`
 - f10 - print profilers info
 - f11 - toggle fullscreen
 - f12 - toggle high performance fullscreen (low resolution + without BG)
-
+- shift + 1/2/.../9/0 - scroll maplist to 0%/10%/.../100%/110%
+- wheel - scroll maplist

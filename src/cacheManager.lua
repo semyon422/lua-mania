@@ -50,7 +50,11 @@ end
 cacheManager.load = function(filePath)
 	local status, cache = pcall(loadfile(filePath))
 
-	return cache or {}
+	if status then
+		return cache or {}
+	else
+		return {}
+	end
 end
 
 return cacheManager
