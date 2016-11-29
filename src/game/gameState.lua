@@ -12,7 +12,7 @@ gameState.data = {
 				uiBase["backButton"]
 			},
 			open = {
-				uiBase["menuBackground"],
+				uiBase["background"],
 				uiBase["fpsDisplay"],
 				uiBase["cursor"],
 				uiBase["mapList"],

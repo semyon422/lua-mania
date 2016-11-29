@@ -33,11 +33,11 @@ vsrg.load = function(self)
 	}):insert(loveio.objects)
 	
 	if mainConfig:get("enableBackground", 1) == 0 then
-		uiBase.menuBackground:unload()
+		uiBase.background:unload()
 	elseif self.map.backgroundPath and love.filesystem.exists(self.map.backgroundPath) and love.filesystem.isFile(self.map.backgroundPath) then
-		uiBase.menuBackground.prevValue = uiBase.menuBackground.value
-		uiBase.menuBackground.value = self.map.backgroundPath
-		uiBase.menuBackground:reload()
+		uiBase.background.prevPath = uiBase.background.path
+		uiBase.background.path = self.map.backgroundPath
+		uiBase.background:reload()
 		self.backgroundChanged = true
 	end
 	
@@ -231,9 +231,9 @@ end
 
 vsrg.unload = function(self)
 	if self.backgroundChanged then
-		uiBase.menuBackground.value = uiBase.menuBackground.prevValue
-		uiBase.menuBackground.prevValue = nil
-		uiBase.menuBackground:reload()
+		uiBase.background.path = uiBase.background.prevPath
+		uiBase.background.prevPath = nil
+		uiBase.background:reload()
 		self.backgroundChanged = false
 	end
 	if self.columns then

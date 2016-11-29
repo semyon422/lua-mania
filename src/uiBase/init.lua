@@ -10,12 +10,9 @@ uiBase.fpsDisplay = ui.classes.Button:new({
 	pos = loveio.output.Position:new({ratios = {1}, align = {"right", "top"}})
 })
 uiBase.mapList = require("uiBase.mapList")
-uiBase.menuBackground = ui.classes.Picture:new({
-	value = "res/bg.jpg",
-	pos = loveio.output.Position:new({ratios = {0}}),
-	mode = "fit",
-	layer = 0
-})
+uiBase.Background = require("uiBase.Background")
+uiBase.background = uiBase.Background:new()
+uiBase.background.path = "res/bg.jpg"
 uiBase.playButton = ui.classes.Button:new({
 	x = 0.4,
 	y = 0.45,

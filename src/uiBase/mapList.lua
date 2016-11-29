@@ -1,6 +1,5 @@
 local mapList = ui.classes.UiObject:new()
 
--- mapList.pos = loveio.output.Position:new({ratios = {1}, align = {"right", "center"}, scale = {0.5, 0.5}})
 mapList.pos = loveio.output.Position:new({ratios = {1}, align = {"right", "center"}})
 
 local Button = ui.classes.PictureButton:new()
@@ -11,7 +10,7 @@ Button.w = 0.8
 Button.h = 1/6
 Button.xSpawn = 0.5
 Button.xSpeedMultiplier = 4
-Button.ySpeedMultiplier = 2
+Button.ySpeedMultiplier = 4
 Button.pos = mapList.pos
 Button.imagePath = "res/mapListButton.png"
 Button.drawable = love.graphics.newImage(Button.imagePath)
@@ -30,13 +29,12 @@ Button.postUpdate = function(self)
 		self.xTargetOffsetSelected = 0
 	end
 	local yTarget, xTarget
-	yTarget = (self.yTargetOffset or 0) + self.mapList.dy * (self.itemIndex - 1 - self.mapList.scroll)
+	yTarget = (self.yTargetOffset or 0) + self.mapList.dy * (self.itemIndex - 1 - self.mapList.scroll + self.mapList.scrollOffset)
 	self.y = self.y + dt * (yTarget - self.y) * self.ySpeedMultiplier
 	
 	if self.y >= 0 - self.h and self.y <= 1 then
 		local circle = self.mapList.circle
-		xTarget = (self.xTargetOffset or 0) + self.xTargetOffsetSelected 
-+ circle.x - math.sqrt(circle.y^2 + (circle.x - self.xSpawn)^2 - (self.y + self.h/2 - circle.y)^2)
+		xTarget = (self.xTargetOffset or 0) + self.xTargetOffsetSelected + circle.x - math.sqrt(circle.y^2 + (circle.x - self.xSpawn)^2 - (self.y + self.h/2 - circle.y)^2)
 		self.x = self.x + dt * (xTarget - self.x) * self.xSpeedMultiplier
 	else
 		local limit = (self.xTargetOffset or 0) + self.xSpawn
@@ -80,9 +78,10 @@ mapList.load = function(self)
 	self.buttons = {}
 	self.dy = 1/8
 	self.scrollOffset = 1 / self.dy / 2
-	self.scroll = self.scroll or -self.scrollOffset
+	self.scroll = self.scroll or 1
+	self.scrollTarget = self.scroll
 	self.circle = {}
-	self.circle.x = 1.5
+	self.circle.x = 1.25
 	self.circle.y = 0.5
 	self.liveZone = 0.25
 	
@@ -114,13 +113,12 @@ mapList.load = function(self)
 	self:calcButtons()
 	
 	loveio.input.callbacks.wheelmoved[tostring(self)] = function(_, direction)
-		local scroll = self.scroll + self.scrollOffset
+		local scroll = self.scroll
 		if (scroll < #self.list and scroll > 0) or
 		   (scroll >= #self.list and direction == -1) or
 		   (scroll <= 0 and direction == 1) then
-			self.scroll = self.scroll + direction
+			self:scrollTo(scroll + direction)
 		end
-		self:calcButtons()
 	end
 	loveio.input.callbacks.keypressed[tostring(self)] = function(key)
 		local key = tonumber(key)
@@ -130,14 +128,24 @@ mapList.load = function(self)
 			else
 				self:scrollTo(#self.list/9*9)
 			end
-			self:calcButtons()
 		end
 	end
 end
 
 mapList.scrollTo = function(self, scroll)
 	if scroll >= 0 and scroll <= #self.list then
-		self.scroll = scroll - self.scrollOffset
+		self.scrollTarget = scroll
+		self:calcButtons()
+	end
+end
+
+mapList.postUpdate = function(self)
+	if self.scroll < self.scrollTarget then
+		self.scroll = self.scroll + 1
+		self:calcButtons()
+	elseif self.scroll > self.scrollTarget then
+		self.scroll = self.scroll - 1
+		self:calcButtons()
 	end
 end
 
@@ -148,7 +156,7 @@ mapList.calcButtons = function(self)
 		itemIndexKeys[button.itemIndex] = button
 	end
 	for itemIndex, item in ipairs(self.list) do
-		local y = self.dy * (itemIndex - 1 - self.scroll)
+		local y = self.dy * (itemIndex - 1 - self.scroll + self.scrollOffset)
 		if y >= 0 - self.liveZone - Button.h and y <= 1 + self.liveZone then
 			if not itemIndexKeys[itemIndex] then
 				local xSpawn = Button.xSpawn
@@ -156,7 +164,11 @@ mapList.calcButtons = function(self)
 				if y >= 0 and y <= 1 then
 					xSpawn = self.circle.x
 				end
-				
+				--if y < 0.5 then
+					--y = 0 - self.liveZone - Button.h
+				--else
+					--y = 1 + self.liveZone
+				--end
 				local value, action = self:itemGetInfo(item, itemIndex)
 				local button = Button:new({
 					x = xSpawn, y = y,
@@ -184,6 +196,7 @@ mapList.itemGetInfo = function(self, item, itemIndex)
 				mainCli:run("gameState set game " .. itemIndex)
 			else
 				mapList.selectedButton = self
+				mapList:scrollTo(self.itemIndex)
 			end
 		end
 		return value, action
