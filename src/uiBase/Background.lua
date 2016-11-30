@@ -30,7 +30,6 @@ Background.load = function(self)
 	        self.drawableObject.yBase = self.pos:Y2y(self.dims.y, true) - self.cParallax / 2 * self.pos:Y2y(self.dims.h)
 	        self.drawableObject.x = self.drawableObject.xBase
 	        self.drawableObject.y = self.drawableObject.yBase
-			print(self.drawableObject.xBase, self.drawableObject.x)
 	        self.drawableObject.sx = self.dims.scale * (1 + self.cParallax)
 	    end
 	    loveio.input.callbacks.resize[tostring(self)](love.graphics.getWidth(), love.graphics.getHeight())

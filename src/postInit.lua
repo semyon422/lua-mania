@@ -100,3 +100,7 @@ keypressed.switchWindowMode = function(key)
 		love.resize(love.graphics.getWidth(), love.graphics.getHeight())
 	end
 end
+
+loveio.input.callbacks.quit.saveMainConfig = function()
+	mainConfig:save("config.txt")
+end

@@ -38,6 +38,7 @@ PictureButton.load = function(self)
 		self.drawableObject.x = self.pos:X2x(self.dims.x, true)
 		self.drawableObject.y = self.pos:Y2y(self.dims.y, true)
 		self.drawableObject.sx = self.dims.scale
+		self:valueChanged()
 	end
 	loveio.input.callbacks.resize[tostring(self)]()
 	self:valueChanged()
@@ -46,8 +47,8 @@ end
 PictureButton.unload = function(self)
 	if self.drawableObject then self.drawableObject:remove() end
 	loveio.input.callbacks.mousepressed[tostring(self)] = nil
+	loveio.input.callbacks.resize[tostring(self)] = nil
 	if self["text-1"] then self["text-1"]:remove() end
-	loveio.output.objects[tostring(self) .. "circle"] = nil
 end
 PictureButton.valueChanged = function(self)
 	if self["text-1"] then self["text-1"]:remove() end

@@ -37,12 +37,12 @@ Column.load = function(self)
 	}):insert(loveio.output.objects))
 	local hitPosition = self.vsrg.skin.game.vsrg.hitPosition
 	table.insert(self.vsrg.createdObjects, loveio.output.classes.Rectangle:new({
-		color = {255,255,255,63},
+		color = {15, 15, 15, 191},
 		x = columnStart + columnWidth * (self.key - 1),
 		y = 1 - hitPosition,
 		w = columnWidth,
 		H = 2,
-		layer = 3
+		layer = 20
 	}):insert(loveio.output.objects))
 	
 	self.keyInfo = {

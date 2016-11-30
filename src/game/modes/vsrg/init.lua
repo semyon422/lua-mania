@@ -26,9 +26,15 @@ vsrg.load = function(self)
 	self.createdObjects = {}
 	self.combo = 0
 	self.comboCounter = ui.classes.Button:new({
-		x = 0.15, y = 0.45, w = 0.1, h = 0.1,
-		value = self.combo,
+		x = 0, y = 0.5 - self.skin.game.vsrg.columnStart / 2, w = self.skin.game.vsrg.columnStart, h = self.skin.game.vsrg.columnStart,
+		value = self.combo, backgroundColor = {0, 0, 0, 191},
 		getValue = function() return self.combo end,
+		layer = 20
+	}):insert(loveio.objects)
+	self.pitchDisplay = ui.classes.Button:new({
+		x = 0, y = 0.25 - self.skin.game.vsrg.columnStart / 2, w = self.skin.game.vsrg.columnStart, h = self.skin.game.vsrg.columnStart,
+		value = "x" .. mainConfig:get("game.vsrg.audioPitch", 1), backgroundColor = {0, 0, 0, 191},
+		getValue = function() return "x" .. mainConfig:get("game.vsrg.audioPitch", 1) end,
 		layer = 20
 	}):insert(loveio.objects)
 	
@@ -90,8 +96,6 @@ vsrg.load = function(self)
 	
 	self.currentTimingPoint = self.map.timingPoints[1]
 	
-	self.keyBindPlay = mainConfig:get("keyBind.game.vsrg.play", "")
-	self.keyBindPause = mainConfig:get("keyBind.game.vsrg.pause", "")
 	self.keyBindSpeedUp = mainConfig:get("keyBind.game.vsrg.speedUp", "")
 	self.keyBindSpeedDown = mainConfig:get("keyBind.game.vsrg.speedDown", "")
 	self.keyBindOffsetUp = mainConfig:get("keyBind.game.vsrg.offsetUp", "")
@@ -101,10 +105,16 @@ vsrg.load = function(self)
 	self.keyBindAudioPitchUp = mainConfig:get("keyBind.game.vsrg.audioPitchUp", "")
 	self.keyBindAudioPitchDown = mainConfig:get("keyBind.game.vsrg.audioPitchDown", "")
 	loveio.input.callbacks.keypressed.newGame = function(key)
-		if key == self.keyBindPause then
-			self.map.audioState = "paused"
-		elseif key == self.keyBindPlay then
-			self.map.audioState = "started"
+		if key == "escape" then
+			if love.keyboard.isDown("lshift") then
+				mainCli:run("gameState set mapList")
+			else
+				if self.map.audioState == "paused" then
+					self.map.audioState = "started"
+				elseif self.map.audioState == "started" then
+					self.map.audioState = "paused"
+				end
+			end
 		elseif key == self.keyBindSpeedUp then
 			local newValue = mainConfig:get("game.vsrg.speed", 1) + 0.1
 			mainConfig:set("game.vsrg.speed", newValue)
@@ -248,6 +258,7 @@ vsrg.unload = function(self)
 		end
 	end
 	self.comboCounter:remove()
+	self.pitchDisplay:remove()
 	self.map.audio:stop()
 	for hitSoundIndex, hitSound in pairs(self.playingHitSounds) do
 		hitSound:stop()

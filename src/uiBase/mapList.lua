@@ -23,7 +23,7 @@ Button.xTargetOffsetSelected = 0
 Button.postUpdate = function(self)
 	local dt =  math.min(1/60, love.timer.getDelta())
 	
-	if self.mapList.selectedButton == self then
+	if self.mapList.selectedItem == self.itemIndex then
 		self.xTargetOffsetSelected = -0.2
 	else
 		self.xTargetOffsetSelected = 0
@@ -113,30 +113,49 @@ mapList.load = function(self)
 	self:calcButtons()
 	
 	loveio.input.callbacks.wheelmoved[tostring(self)] = function(_, direction)
-		local scroll = self.scroll
-		if (scroll < #self.list and scroll > 0) or
-		   (scroll >= #self.list and direction == -1) or
-		   (scroll <= 0 and direction == 1) then
-			self:scrollTo(scroll + direction)
-		end
+		self:scrollTo(self.scroll + direction)
 	end
 	loveio.input.callbacks.keypressed[tostring(self)] = function(key)
-		local key = tonumber(key)
-		if love.keyboard.isDown("lshift") and key then
-			if key ~= 0 then
-				self:scrollTo(math.ceil(#self.list/9*(key-1)))
-			else
-				self:scrollTo(#self.list/9*9)
+		if love.keyboard.isDown("lshift") then
+			if tonumber(key) then
+				local key = tonumber(key)
+				if key ~= 0 then
+					self:scrollTo(math.ceil(#self.list/9*(key-1)))
+				else
+					self:scrollTo(#self.list/9*9)
+				end
+			elseif key == "escape" then
+				love.event.quit()
+			end
+		elseif key == "up" then
+			self:scrollTo(self.scroll - 1)
+		elseif key == "down" then
+			self:scrollTo(self.scroll + 1)
+		elseif key == "left" then
+			self:scrollTo(self.scroll - 1)
+			self.selectedItem = self.scrollTarget
+		elseif key == "right" then
+			self:scrollTo(self.scroll + 1)
+			self.selectedItem = self.scrollTarget
+		elseif key == "return" then
+			if self.selectedItem then
+				for _, button in pairs(self.buttons) do
+					if button.itemIndex == self.selectedItem then
+						button:action()
+					end
+				end
 			end
 		end
 	end
 end
 
 mapList.scrollTo = function(self, scroll)
-	if scroll >= 0 and scroll <= #self.list then
-		self.scrollTarget = scroll
-		self:calcButtons()
+	local scroll = scroll
+	if scroll < 1 then scroll = 1
+	elseif scroll > #self.list then scroll = #self.list
 	end
+	self.scrollTarget = scroll
+	self:calcButtons()
 end
 
 mapList.postUpdate = function(self)
@@ -192,10 +211,10 @@ mapList.itemGetInfo = function(self, item, itemIndex)
 		local value = item.title .. "\n" .. item.artist .. " // " .. (item.creator or item.format) .. "\n" .. item.version
 		local mapList = self
 		local action = function(self)
-			if mapList.selectedButton == self then
+			if mapList.selectedItem == itemIndex then
 				mainCli:run("gameState set game " .. itemIndex)
 			else
-				mapList.selectedButton = self
+				mapList.selectedItem = self.itemIndex
 				mapList:scrollTo(self.itemIndex)
 			end
 		end
@@ -215,6 +234,7 @@ mapList.unload = function(self)
 		end
 	end
 	loveio.input.callbacks.wheelmoved[tostring(self)] = nil
+	loveio.input.callbacks.keypressed[tostring(self)] = nil
 end
 
 return mapList

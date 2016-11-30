@@ -2,44 +2,30 @@ local init = function()
 --------------------------------
 local uiBase = {}
 
-uiBase.fpsDisplay = ui.classes.Button:new({
-	x = 1 - 0.075, y = 0, w = 0.075, h = 0.075,
+uiBase.fpsDisplay = ui.classes.PictureButton:new({
+	x = 1 - 0.1, y = 0, w = 0.1, h = 0.1/2,
 	getValue = function() return love.timer.getFPS() end,
+	imagePath = "res/fpsCounter.png", locate = "out", align = {"center", "center"},
 	action = function(self) print("FPS: " .. self.value) end,
-	backgroundColor = {255, 255, 255, 31},
 	pos = loveio.output.Position:new({ratios = {1}, align = {"right", "top"}})
 })
+uiBase.fpsDisplay.fontBaseResolution = {uiBase.fpsDisplay.pos:x2X(1), uiBase.fpsDisplay.pos:y2Y(1)}
+uiBase.fpsDisplay.font = love.graphics.newFont("res/fonts/OpenSans/OpenSansRegular/OpenSansRegular.ttf", 14)
+
 uiBase.mapList = require("uiBase.mapList")
 uiBase.Background = require("uiBase.Background")
 uiBase.background = uiBase.Background:new()
 uiBase.background.path = "res/bg.jpg"
-uiBase.playButton = ui.classes.Button:new({
-	x = 0.4,
-	y = 0.45,
-	w = 0.2, h = 0.1,
-	value = "play",
+uiBase.backButton = ui.classes.PictureButton:new({
+	x = 0.9,
+	y = 0,
+	w = 0.1, h = 1, value = "",
+	imagePath = "res/backButton.png",
 	action = function() mainCli:run("gameState set mapList") end,
-	backgroundColor = {255, 255, 255, 31},
-	pos = loveio.output.Position:new({ratios = {1}, align = {"center", "center"}})
-})
-uiBase.backButton = ui.classes.Button:new({
-	x = 0.8,
-	y = 0.9,
-	w = 0.2, h = 0.1,
-	value = "back",
-	action = function() mainCli:run("gameState set mapList") end,
-	pos = loveio.output.Position:new({ratios = {1}, align = {"right", "bottom"}})
+	locate = "out",
+	pos = loveio.output.Position:new({ratios = {1}, align = {"right", "center"}})
 })
 uiBase.cursor = require("uiBase.cursor")
--- uiBase.testbutton = ui.classes.PictureButton:new({
-	-- x = 0.1,
-	-- y = 0.1,
-	-- w = 0.2, h = 0.1,
-	-- value = "play",
-	-- action = function() end,
-	-- pos = loveio.output.Position:new({ratios = {1}, align = {"center", "center"}}),
-	-- imagePath = "res/testbutton.png"
--- })
 
 return uiBase
 --------------------------------

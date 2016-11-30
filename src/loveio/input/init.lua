@@ -11,7 +11,8 @@ input.callbackNames = {
 	"mousemoved",
 	"mousereleased",
 	"wheelmoved",
-	"resize"
+	"resize",
+	"quit"
 }
 
 input.callbacks = {}

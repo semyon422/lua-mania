@@ -1,31 +1,21 @@
 keyBind.game.vsrg.4K = {"e", "r", "o", "p"}
 keyBind.game.vsrg.7K = {"w", "e", "r", "space", "o", "p", "["}
-
 game.vsrg.hitSoundSourceType = "static"
 game.vsrg.audioSourceType = "stream"
 skinPath = res/skin/
 position.ratio = 1.333
-
 game.vsrg.audioPitch = 1
 keyBind.game.vsrg.audioPitchUp = "2"
 keyBind.game.vsrg.audioPitchDown = "1"
-
-game.vsrg.speed = 2.1
+game.vsrg.speed = 2.3
 keyBind.game.vsrg.speedUp = "f4"
 keyBind.game.vsrg.speedDown = "f3"
-
 game.vsrg.offset = 0
 keyBind.game.vsrg.offsetUp = "+"
 keyBind.game.vsrg.offsetDown = "-"
-
 game.vsrg.velocityPower = 1
 game.vsrg.velocityMode = 1
 keyBind.game.vsrg.velocityPowerUp = "f6"
 keyBind.game.vsrg.velocityPowerDown = "f5"
-
 game.vsrg.hitSoundVolumePower = 2
-
-keyBind.game.vsrg.play = "f1"
-keyBind.game.vsrg.pause = "f2"
-
 enableBackground = 1
