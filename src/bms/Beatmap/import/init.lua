@@ -50,23 +50,27 @@ local import = function(self, filePath)
 			elseif string.sub(line, 2, 10) == "STAGEFILE" and not self.backgroundPath then
 				self.backgroundPath = self.mapPath .. "/" .. string.sub(line, 12, -1)
 			elseif string.sub(line, 7, 7) == ":" then
-				local measure = string.sub(line, 2, 4)
+				local measureOffset = self.measureOffset or 0
+				local measure = string.sub(line, 2, 4) - measureOffset
+				local offsetTime = self.offsetTime or 0
 				local channel = tonumber(string.sub(line, 5, 6))
-				local message = string.sub(line, 8, -1)
+				local message = trim(string.sub(line, 8, -1))
 				local length = #message / 2
 				for pointIndex = 1, length do
 					local point = string.sub(message, 2 * pointIndex - 1, 2 * pointIndex)
 					if point ~= "00" then
 						local part = (pointIndex - 1) / length
-						local startTime = math.floor((measure + part) * self.measureLength)
+						local startTime = offsetTime + math.ceil((measure + part) * self.measureLength)
 						if channel == 3 then
 							table.insert(timingPointsSection, {
-								startTime = startTime,
+								startTime = startTime + offsetTime,
 								beatLength = 60000 / tonumber(point, 16)
 							})
 							self.measureLength = timingPointsSection[#timingPointsSection].beatLength * 4
+							self.measureOffset = measure + measureOffset
+							measure = 0
+							self.offsetTime = startTime
 						end
-						local startTime = math.floor((measure + part) * self.measureLength)
 						if channel == 1 then
 							if self.wav[point] then
 								table.insert(self.eventSamples, {
