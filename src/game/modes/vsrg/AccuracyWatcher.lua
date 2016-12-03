@@ -26,7 +26,7 @@ Line.postUpdate = function(self)
 	if self.temporary then
 		self.timer = self.timer - love.timer.getDelta()
 		if self.timer <= 0 then
-			self:unload()
+			self:remove()
 		else
 			self.rectangle.color[4] = self.timer / self.time * 255
 		end
@@ -54,7 +54,7 @@ AccuracyWatcher.addLine = function(self, offset)
 	Line:new({x = self.x, y = self.y - pos:Y2y(offset), w = self.w, h = self.h/2, temporary = true}):insert(loveio.objects)
 end
 
-AccuracyWatcher.remove = function(self)
+AccuracyWatcher.unload = function(self)
 	self.centralLine:remove()
 end
 

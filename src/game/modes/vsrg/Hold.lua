@@ -44,7 +44,7 @@ Hold.update = function(self)
 				self.state = "endPassed"
 				--self.column.vsrg.combo = self.column.vsrg.combo + 1
 				self.column.vsrg.score[1] = self.column.vsrg.score[1] + 0.5 * (self.judgement["pass"][2] - math.abs(deltaEndTime)) / self.judgement["pass"][2] * (500000 / #self.column.vsrg.map.hitObjects)
-				self.column.vsrg.accuracyWatcher:addLine(deltaStartTime)
+				self.column.vsrg.accuracyWatcher:addLine(deltaEndTime)
 				self:next()
 			end
 		elseif endJudgement == "miss" and endDelay == "lately" then
