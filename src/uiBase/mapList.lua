@@ -4,6 +4,8 @@ mapList.pos = loveio.output.Position:new({ratios = {1}, align = {"right", "cente
 
 local Button = ui.classes.PictureButton:new()
 mapList.Button = Button
+Button.oldX = 0
+Button.oldY = 0
 Button.xAlign = "left"
 Button.xPadding = 0.05
 Button.w = 0.8
@@ -41,7 +43,7 @@ Button.postUpdate = function(self)
 		self.x = self.x - dt * (self.x - limit) * self.xSpeedMultiplier
 	end
 	
-	if self.oldX ~= self.x or self.oldY ~= self.y then
+	if math.ceil(self.oldX*10000) ~= math.ceil(self.x*10000) or math.ceil(self.oldY*10000) ~= math.ceil(self.y*10000) then
 		self:reload()
 		self.oldX = self.x
 		self.oldY = self.y

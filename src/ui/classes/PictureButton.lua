@@ -65,7 +65,6 @@ PictureButton.valueChanged = function(self)
 			pos = self.pos
 		}):insert(loveio.output.objects)
 	end
-	self.oldValue = value
 end
 
 return PictureButton
