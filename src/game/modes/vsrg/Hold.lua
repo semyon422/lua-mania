@@ -90,7 +90,7 @@ Hold.drawLoad = function(self)
 	local tail = self.column.vsrg.skin.game.vsrg.tail
 	local body = self.column.vsrg.skin.game.vsrg.body
 	self.color = {255, 255, 255, 255}
-	self.h = pos:x2y(skin.game.vsrg.columnWidth)
+	self.h = pos:x2y(head:getHeight() * skin.game.vsrg.columnWidth / head:getWidth())
 	self.gHead = loveio.output.classes.Drawable:new({
 		drawable = head, sx = skin.game.vsrg.columnWidth / pos:X2x(head:getWidth()),
 		x = 0, y = 0, layer = 6, color = self.color
