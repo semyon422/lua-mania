@@ -26,3 +26,4 @@ Supported formats: `osu, bme`
 - f3/f4 - speed down/up
 - f5/f6 - SVs power down/up
 - 1/2 - pitch down/up
+- 9/0 - offset down/up

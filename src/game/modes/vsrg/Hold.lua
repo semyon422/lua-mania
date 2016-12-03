@@ -30,6 +30,8 @@ Hold.update = function(self)
 			elseif startJudgement == "pass" then
 				self.state = "startPassed"
 				self.column.vsrg.combo = self.column.vsrg.combo + 1
+				self.column.vsrg.score[1] = self.column.vsrg.score[1] + 0.5 * (self.judgement["pass"][2] - math.abs(deltaStartTime)) / self.judgement["pass"][2] * (500000 / #self.column.vsrg.map.hitObjects)
+				self.column.vsrg.accuracyWatcher:addLine(deltaStartTime)
 			end
 		end
 	elseif self.state == "startPassed" then
@@ -40,7 +42,9 @@ Hold.update = function(self)
 				self.column.vsrg.combo = 0
 			elseif endJudgement == "pass" then
 				self.state = "endPassed"
-				self.column.vsrg.combo = self.column.vsrg.combo + 1
+				--self.column.vsrg.combo = self.column.vsrg.combo + 1
+				self.column.vsrg.score[1] = self.column.vsrg.score[1] + 0.5 * (self.judgement["pass"][2] - math.abs(deltaEndTime)) / self.judgement["pass"][2] * (500000 / #self.column.vsrg.map.hitObjects)
+				self.column.vsrg.accuracyWatcher:addLine(deltaStartTime)
 				self:next()
 			end
 		elseif endJudgement == "miss" and endDelay == "lately" then
@@ -53,7 +57,9 @@ Hold.update = function(self)
 		if not keyIsDown then
 			if endJudgement == "pass" then
 				self.state = "endMissedPassed"
-				self.column.vsrg.combo = self.column.vsrg.combo + 1
+				--self.column.vsrg.combo = self.column.vsrg.combo + 1
+				self.column.vsrg.score[1] = self.column.vsrg.score[1] + 0.5 * (self.judgement["pass"][2] - math.abs(deltaEndTime)) / self.judgement["pass"][2] * (500000 / #self.column.vsrg.map.hitObjects)
+				self.column.vsrg.accuracyWatcher:addLine(deltaStartTime)
 				self:next()
 			elseif endJudgement == "none" then
 				self.state = "startMissed"

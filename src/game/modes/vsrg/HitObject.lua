@@ -13,8 +13,8 @@ VsrgHitObject.state = "clear"
 VsrgHitObject.objectType = "hitObject"
 
 VsrgHitObject.judgement = {
-	["pass"] = {0, 150},
-	["miss"] = {151, 180}
+	["pass"] = {0, 128},
+	["miss"] = {129, 191}
 }
 
 VsrgHitObject.getJudgement = function(self, deltaTime)

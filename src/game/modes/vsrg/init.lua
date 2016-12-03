@@ -21,21 +21,35 @@ vsrg.Note = require(vsrg.path .. "Note")(vsrg, game)
 vsrg.Hold = require(vsrg.path .. "Hold")(vsrg, game)
 vsrg.Column = require(vsrg.path .. "Column")(vsrg, game)
 
+vsrg.AccuracyWatcher = require(vsrg.path .. "AccuracyWatcher")(vsrg, game)
+
 vsrg.load = function(self)
 	self.columns = {}
 	self.createdObjects = {}
 	self.combo = 0
+	self.maxCombo = self.combo
+	self.score = {0, 0}
 	self.comboCounter = ui.classes.Button:new({
 		x = 0, y = 0.5 - self.skin.game.vsrg.columnStart / 2, w = self.skin.game.vsrg.columnStart, h = self.skin.game.vsrg.columnStart,
 		value = self.combo, backgroundColor = {0, 0, 0, 191},
 		getValue = function() return self.combo end,
 		layer = 20
 	}):insert(loveio.objects)
+	local vsrgSkin = self.skin.game.vsrg
+	self.scoreCounter = ui.classes.Button:new({
+		x = vsrgSkin.columnStart + vsrgSkin.columnWidth*self.map.keymode, y = 0.5 - vsrgSkin.columnStart / 2, w = vsrgSkin.columnStart * 2, h = vsrgSkin.columnStart,
+		value = 0, backgroundColor = {0, 0, 0, 191}, xAlign = "right", xPadding = 0.01,
+		getValue = function() return math.ceil(self.score[1] + self.score[2]) end,
+		layer = 20
+	}):insert(loveio.objects)
 	self.pitchDisplay = ui.classes.Button:new({
-		x = 0, y = 0.25 - self.skin.game.vsrg.columnStart / 2, w = self.skin.game.vsrg.columnStart, h = self.skin.game.vsrg.columnStart,
+		x = 0, y = 0.25 - vsrgSkin.columnStart / 2, w = vsrgSkin.columnStart, h = vsrgSkin.columnStart,
 		value = "x" .. mainConfig:get("game.vsrg.audioPitch", 1), backgroundColor = {0, 0, 0, 191},
 		getValue = function() return "x" .. mainConfig:get("game.vsrg.audioPitch", 1) end,
 		layer = 20
+	}):insert(loveio.objects)
+	self.accuracyWatcher = vsrg.AccuracyWatcher:new({
+		x = vsrgSkin.columnStart, y = 0.5, w = vsrgSkin.columnWidth*self.map.keymode, h = pos:Y2y(2)
 	}):insert(loveio.objects)
 	
 	if mainConfig:get("enableBackground", 1) == 0 then
@@ -111,8 +125,15 @@ vsrg.load = function(self)
 			else
 				if self.map.audioState == "paused" then
 					self.map.audioState = "started"
+					self.map.audio:play()
+					for hitSoundIndex, hitSound in pairs(self.playingHitSounds) do
+						hitSound:play()
+					end
 				elseif self.map.audioState == "started" then
 					self.map.audioState = "paused"
+					for hitSoundIndex, hitSound in pairs(self.playingHitSounds) do
+						hitSound:pause()
+					end
 				end
 			end
 		elseif key == self.keyBindSpeedUp then
@@ -128,9 +149,11 @@ vsrg.load = function(self)
 		elseif key == self.keyBindOffsetUp then
 			local newValue = mainConfig:get("game.vsrg.offset", 0) + 1
 			mainConfig:set("game.vsrg.offset", newValue)
+			print("offset = " .. newValue)
 		elseif key == self.keyBindOffsetDown then
 			local newValue = mainConfig:get("game.vsrg.offset", 0) - 1
 			mainConfig:set("game.vsrg.offset", newValue)
+			print("offset = " .. newValue)
 		elseif key == self.keyBindVelocityPowerUp then
 			local newValue = mainConfig:get("game.vsrg.velocityPower", 1) + 0.1
 			mainConfig:set("game.vsrg.velocityPower", newValue)
@@ -186,7 +209,6 @@ vsrg.postUpdate = function(self)
 			self.map.audio:play()
 		end
 	elseif self.map.audioState == "started" then
-		if not self.map.audio:isPlaying() then self.map.audio:play() end
 		self.map.currentTime = math.floor(self.map.audio:tell() * 1000)
 		if self.map.audio:isStopped() then
 			self.map.audioState = "ended"
@@ -200,6 +222,12 @@ vsrg.postUpdate = function(self)
 	end
 	
 	self.map.currentTime = math.floor(self.map.currentTime + mainConfig:get("game.vsrg.offset", 1))
+	
+	if self.combo > self.maxCombo then
+		self.maxCombo = self.combo
+		self.score[2] = 500000 * self.maxCombo / #self.map.hitObjects
+	end
+	
 	if #self.map.eventSamples > 0 then
 		local audioPitch = mainConfig:get("game.vsrg.audioPitch", 1)
 		while true do
@@ -258,7 +286,9 @@ vsrg.unload = function(self)
 		end
 	end
 	self.comboCounter:remove()
+	self.scoreCounter:remove()
 	self.pitchDisplay:remove()
+	self.accuracyWatcher:remove()
 	self.map.audio:stop()
 	for hitSoundIndex, hitSound in pairs(self.playingHitSounds) do
 		hitSound:stop()

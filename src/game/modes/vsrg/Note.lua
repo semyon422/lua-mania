@@ -20,6 +20,7 @@ Note.update = function(self)
 		self.column.keyInfo.isDown = false
 		self.state = "missed"
 		self.column.vsrg.combo = 0
+		self.column.vsrg.accuracyWatcher:addLine(deltaStartTime)
 		self:next()
 	elseif startJudgement == "miss" and startDelay == "lately" then
 		self.state = "missed"
@@ -29,6 +30,8 @@ Note.update = function(self)
 		self.column.keyInfo.isDown = false
 		self.state = "passed"
 		self.column.vsrg.combo = self.column.vsrg.combo + 1
+		self.column.vsrg.score[1] = self.column.vsrg.score[1] + (self.judgement["pass"][2] - math.abs(deltaStartTime)) / self.judgement["pass"][2] * (500000 / #self.column.vsrg.map.hitObjects)
+		self.column.vsrg.accuracyWatcher:addLine(deltaStartTime)
 		self:next()
 	end
 end
