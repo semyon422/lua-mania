@@ -2,8 +2,6 @@ local init = function(osu)
 --------------------------------
 local Beatmap = {}
 
-Beatmap.format = "osu"
-
 Beatmap.data = {}
 
 Beatmap.metatable = {

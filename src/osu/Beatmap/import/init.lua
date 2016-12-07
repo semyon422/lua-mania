@@ -12,6 +12,7 @@ local import = function(self, filePath, cache)
 		formats = {"wav", "mp3", "ogg"},
 		paths = {self.mapPath}
 	}
+	self.format = "osu"
 	
 	self.eventSamples = {}
     self.timingPoints = {}
