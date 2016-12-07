@@ -16,7 +16,7 @@ cacheCallback = function(filePath)
 		local breaked = explode(".", filePath)
 		local fileType = breaked[#breaked]
 		if fileType == "osu" then
-			return osu.Beatmap.genCache(filePath)
+			return osu.Beatmap:new():import(filePath, true)
 		end
 		if fileType == "bms" or fileType == "bme" then
 			return bms.Beatmap.genCache(filePath)

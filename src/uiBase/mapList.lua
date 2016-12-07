@@ -8,7 +8,7 @@ Button.oldX = 0
 Button.oldY = 0
 Button.xAlign = "left"
 Button.xPadding = 0.05
-Button.w = 0.8
+Button.w = 1
 Button.h = 1/6
 Button.xSpawn = 0.5
 Button.xSpeedMultiplier = 4
@@ -190,6 +190,14 @@ mapList.calcButtons = function(self)
 				--else
 					--y = 1 + self.liveZone
 				--end
+				local drawable, quadX, quadY, quadWidth, quadHeight, quadHeight
+				if item.backgroundPath then
+					drawable = love.graphics.newImage(item.backgroundPath)
+					quadWidth = drawable:getWidth()
+					quadHeight = drawable:getWidth() * Button.h / Button.w
+					quadX = 0
+					quadY = (drawable:getHeight() - quadHeight) / 2
+				end
 				local value, action = self:itemGetInfo(item, itemIndex)
 				local button = Button:new({
 					x = xSpawn, y = y,
@@ -198,7 +206,12 @@ mapList.calcButtons = function(self)
 					mapList = self,
 					pos = self.pos,
 					itemIndex = itemIndex,
-					layer = 1000 - itemIndex
+					drawable = drawable or Button.drawable,
+					quadX = quadX,
+					quadY = quadY,
+					quadWidth = quadWidth,
+					quadHeight = quadHeight,
+					layer = 100 + itemIndex*2
 				}):insert(loveio.objects)
 				self.buttons[tostring(button)] = button
 			end
@@ -210,7 +223,7 @@ end
 
 mapList.itemGetInfo = function(self, item, itemIndex)
 	if item.type == "cacheItem" then
-		local value = item.title .. "\n" .. item.artist .. " // " .. (item.creator or item.format) .. "\n" .. item.version
+		local value = item.title .. "\n" .. item.artist .. " // " .. (item.creator or item.format) .. "\n" .. item.mapName
 		local mapList = self
 		local action = function(self)
 			if mapList.selectedItem == itemIndex then

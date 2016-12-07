@@ -40,7 +40,9 @@ cacheManager.save = function(objects, filePath)
 	for index, object in ipairs(objects) do
 		file:write("cache[#cache + 1] = {")
 		for key, value in pairs(object) do
-			file:write(key .. " = " .. string.format("%q", value) .. ", ")
+			if type(value) == "string" or type(value) == "number" then
+				file:write(key .. " = " .. string.format("%q", value) .. ", ")
+			end
 		end
 		file:write("}\n")
 	end

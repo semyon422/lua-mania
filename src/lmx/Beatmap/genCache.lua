@@ -15,7 +15,7 @@ local function osuCache(filePath)
 	return {
 		title = title,
 		artist = "",
-		version = "",
+		mapName = "",
 		creator = "",
 		source = "",
 		filePath = filePath,

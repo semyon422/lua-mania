@@ -2,6 +2,8 @@ local init = function(osu)
 --------------------------------
 local Beatmap = {}
 
+Beatmap.format = "osu"
+
 Beatmap.data = {}
 
 Beatmap.metatable = {
@@ -12,12 +14,11 @@ Beatmap.new = function(self)
 	local beatmap = {}
 	setmetatable(beatmap, Beatmap.metatable)
 	
-	self.eventSamples = {}
-	self.timingPoints = {}
-	self.hitObjects = {}
 	return beatmap
 end
 
+Beatmap.load = require(osu.path .. "Beatmap/import/load")(Beatmap, osu)
+Beatmap.compute = require(osu.path .. "Beatmap/import/compute")(Beatmap, osu)
 Beatmap.import = require(osu.path .. "Beatmap/import")(Beatmap, osu)
 Beatmap.genCache = require(osu.path .. "Beatmap/genCache")(Beatmap, osu)
 

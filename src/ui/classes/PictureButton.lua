@@ -15,11 +15,16 @@ PictureButton.fontBaseResolution = {pos:x2X(1), pos:y2Y(1)}
 PictureButton.load = function(self)
 	self.pos = self.pos or pos
 	self.drawable = self.drawable or love.graphics.newImage(self.imagePath)
-	self.drawableObject = loveio.output.classes.Drawable:new({
+	self.quadX = self.quadX or 0
+	self.quadY = self.quadY or 0
+	self.quadWidth = self.quadWidth or self.drawable:getWidth()
+	self.quadHeight = self.quadHeight or self.drawable:getHeight()
+	self.quad = self.quad or love.graphics.newQuad(self.quadX, self.quadY, self.quadWidth, self.quadHeight, self.drawable:getWidth(), self.drawable:getHeight())
+	self.quadObject = loveio.output.classes.Quad:new({
 		drawable = self.drawable,
+		quad = self.quad,
 		layer = self.layer,
-		pos = self.pos,
-		layer = self.layer
+		pos = self.pos
 	}):insert(loveio.output.objects)
 	
 	loveio.input.callbacks.mousepressed[tostring(self)] = function(mx, my)
@@ -33,11 +38,11 @@ PictureButton.load = function(self)
 	end
 	loveio.input.callbacks.resize[tostring(self)] = function()
 		self.base = {x = self.pos:x2X(self.x, true), y = self.pos:y2Y(self.y, true), w = self.pos:x2X(self.w), h = self.pos:y2Y(self.h)}
-		self.box = {w = self.drawable:getWidth(), h = self.drawable:getHeight()}
+		self.box = {w = self.quadWidth, h = self.quadHeight}
 		self.dims = loveio.output.Position.getDimensionsSimple(self.base, self.box, self.align, self.locate)
-		self.drawableObject.x = self.pos:X2x(self.dims.x, true)
-		self.drawableObject.y = self.pos:Y2y(self.dims.y, true)
-		self.drawableObject.sx = self.dims.scale
+		self.quadObject.x = self.pos:X2x(self.dims.x, true)
+		self.quadObject.y = self.pos:Y2y(self.dims.y, true)
+		self.quadObject.sx = self.dims.scale
 		self:valueChanged()
 	end
 	loveio.input.callbacks.resize[tostring(self)]()
@@ -45,7 +50,7 @@ PictureButton.load = function(self)
 	self.loaded = true
 end
 PictureButton.unload = function(self)
-	if self.drawableObject then self.drawableObject:remove() end
+	if self.quadObject then self.quadObject:remove() end
 	loveio.input.callbacks.mousepressed[tostring(self)] = nil
 	loveio.input.callbacks.resize[tostring(self)] = nil
 	if self["text-1"] then self["text-1"]:remove() end
@@ -53,10 +58,10 @@ end
 PictureButton.valueChanged = function(self)
 	if self["text-1"] then self["text-1"]:remove() end
 	local sx = self.pos:x2X(1) / self.fontBaseResolution[1] * self.pos.scale[1]
-	if self.drawableObject then
+	if self.quadObject then
 		self["text-1"] = loveio.output.classes.Text:new({
 			x = self.x + self.xPadding, y = self.y + self.h / 2,
-			limit = self.w - 2*self.xPadding,
+			limit = (self.w - 2*self.xPadding) / sx,
 			text = self.value, xAlign = self.xAlign, yAlign = self.yAlign,
 			font = self.font,
 			color = self.textColor,

@@ -4,5 +4,6 @@
 package.path = package.path .. ";./src/?/init.lua;./src/?.lua"
 explode = require("explode")
 trim = require("trim")
+startsWith = require("startsWith")
 
 require "src.main"

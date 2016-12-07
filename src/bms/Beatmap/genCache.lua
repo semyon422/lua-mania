@@ -13,7 +13,7 @@ local function bmsCacher(filePath)
 			artist = trim(string.sub(line, 8, -1))
 		end
 		if string.sub(line, 1, 10) == "#PLAYLEVEL" then
-			version = trim(string.sub(line, 11, -1)) .. " level"
+			mapName = trim(string.sub(line, 11, -1)) .. " level"
 		end
 		if string.sub(line, 1, 4) == "#WAV" then
 			break
@@ -24,7 +24,7 @@ local function bmsCacher(filePath)
 	return {
 		title = title,
 		artist = artist,
-		version = version,
+		mapName = mapName,
 		filePath = filePath,
 		mode = "vsrg",
 		format = "bms"

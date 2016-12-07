@@ -7,7 +7,8 @@ uiBase.fpsDisplay = ui.classes.PictureButton:new({
 	getValue = function() return love.timer.getFPS() end,
 	imagePath = "res/fpsCounter.png", locate = "out", align = {"center", "center"},
 	action = function(self) print("FPS: " .. self.value) end,
-	pos = loveio.output.Position:new({ratios = {1}, align = {"right", "top"}})
+	pos = loveio.output.Position:new({ratios = {1}, align = {"right", "top"}}),
+	layer = 1000
 })
 uiBase.fpsDisplay.fontBaseResolution = {uiBase.fpsDisplay.pos:x2X(1), uiBase.fpsDisplay.pos:y2Y(1)}
 uiBase.fpsDisplay.font = love.graphics.newFont("res/fonts/OpenSans/OpenSansRegular/OpenSansRegular.ttf", 14)

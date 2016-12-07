@@ -14,7 +14,7 @@ cursor.load = function()
 	cursor.object = loveio.output.classes.Circle:new({
 		x = 0, y = 0, r = cursor.circles[1].r,
 		mode = cursor.circles[1].mode,
-		layer = 5,
+		layer = 1001,
 		pos = loveio.output.Position:new({ratios = {0}, resolutions = {{0, 0}}})
 	}):insert(loveio.output.objects)
 	loveio.input.callbacks.mousepressed.cursor = function(mx, my)

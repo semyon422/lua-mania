@@ -9,6 +9,7 @@ output.Position = require("loveio.output.Position")(output, loveio)
 output.classes = {}
 output.classes.OutputObject = require("loveio.output.classes.OutputObject")(output, loveio)
 output.classes.Drawable = require("loveio.output.classes.Drawable")(output, loveio)
+output.classes.Quad = require("loveio.output.classes.Quad")(output, loveio)
 output.classes.Rectangle = require("loveio.output.classes.Rectangle")(output, loveio)
 output.classes.Circle = require("loveio.output.classes.Circle")(output, loveio)
 output.classes.Text = require("loveio.output.classes.Text")(output, loveio)
