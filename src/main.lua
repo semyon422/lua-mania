@@ -1,31 +1,19 @@
-helpers = require("helpers")
-Profiler = require("Profiler")
-log = helpers.logger.log
+require("lmfw")
+require("rglib")
 
-configManager = require("configManager")
 mainConfig = configManager.Config:new():load("config.txt")
 
-cacheManager = require("cacheManager")
-mainCache = cacheManager.load("cache.lua")
+mainCache = cacheManager.Cache:new():load("cache.lua")
 
-windowManager = require("windowManager")
-
-loveio = require("loveio")
 loveio.init()
 
 pos = loveio.output.Position:new({
 	ratios = {0.01, mainConfig:get("position.ratio", 4/3)}, resolutions = {{1, 1}, {1, 1}}
 })
 
-ui = require("ui")
 uiBase = require("uiBase")()
 
-cli = require("cli")
 mainCli = cli.Cli:new({binds = {}})
-
-osu = require("osu")
-bms = require("bms")
-lmx = require("lmx")
 
 game = require("game")()
 

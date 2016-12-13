@@ -10,9 +10,9 @@ PictureButton.yPadding = 0
 PictureButton.textColor = {255, 255, 255, 255}
 PictureButton.align = {"center", "center"}
 PictureButton.locate = "in"
-PictureButton.fontBaseResolution = {pos:x2X(1), pos:y2Y(1)}
 
 PictureButton.load = function(self)
+	self.fontBaseResolution = self.fontBaseResolution or {pos:x2X(1), pos:y2Y(1)}
 	self.pos = self.pos or pos
 	self.drawable = self.drawable or love.graphics.newImage(self.imagePath)
 	self.quadX = self.quadX or 0

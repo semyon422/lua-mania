@@ -6,8 +6,6 @@ game.path = "game/"
 
 game.gameState = require(game.path .. "gameState")(game)
 
-game.cachePosition = 1
-
 game.modes = {}
 game.modes.vsrg = require(game.path .. "/modes/vsrg")(game)
 game.modes.lmx = require(game.path .. "/modes/lmx")(game)
@@ -17,11 +15,11 @@ game.formats = {
 	["lmx"] = lmx
 }
 game.load = function()
-	local cachedObject = mainCache[game.cachePosition]
-	local format = cachedObject.format
-	local mode = cachedObject.mode
+	local object = game.object
+	local format = object.format
+	local mode = object.mode
 	game.newGame = game.modes[mode]:new():insert(loveio.objects)
-	game.newGame.map = game.formats[format].Beatmap:new():import(cachedObject.filePath)
+	game.newGame.map = game.formats[format].Beatmap:new():import(object.filePath)
 	
 	game.loaded = true
 end

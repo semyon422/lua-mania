@@ -28,23 +28,24 @@ cacheCallback = function(filePath)
 end
 cacheRules = {
 	path = "res/Songs/",
-	callback = cacheCallback
+	callback = cacheCallback,
+	sort = function(a, b) return a.filePath < b.filePath end
 }
 keypressed.cacheHandle = function(key)
 	if uiBase.mapList.state == "songs" then
 		if key == "f7" then
-			mainCache = cacheManager.generate(cacheRules)
+			mainCache:update(cacheRules)
 			if loveio.objects[tostring(uiBase.mapList)] then
-				uiBase.mapList.list = mainCache
-				uiBase.mapList:calcButtons()
+				uiBase.mapList:setList(mainCache.objects, uiBase.mapList.sort)
+				uiBase.mapList:reload()
 			end
 		elseif key == "f8" then
-			cacheManager.save(mainCache, "cache.lua")
+			mainCache:save("cache.lua")
 		elseif key == "f9" then
-			mainCache = cacheManager.load("cache.lua")
+			mainCache:load("cache.lua")
 			if loveio.objects[tostring(uiBase.mapList)] then
-				uiBase.mapList.list = mainCache
-				uiBase.mapList:calcButtons()
+				uiBase.mapList:setList(mainCache.objects, uiBase.mapList.sort)
+				uiBase.mapList:reload()
 			end
 		end
 	end
@@ -54,7 +55,7 @@ mainCli:bind("gameState", function(command)
 	local breaked = explode(" ", command)
 	if breaked[2] == "set" then
 		game.gameState.data.state = breaked[3]
-		game.cachePosition = tonumber(breaked[4]) or 1
+		game.object = temp[breaked[4]]
 		game.gameState.data.switched = false
 	end
 end)
@@ -104,3 +105,29 @@ end
 loveio.input.callbacks.quit.saveMainConfig = function()
 	mainConfig:save("config.txt")
 end
+
+
+mainMenuList = {
+    {
+        title = "Play",
+        action = function(self)
+            self.mapList.state = "songs"
+            self.mapList:setList(mainCache.objects, self.mapList.sort)
+            self.mapList:reload()
+        end
+    },
+    {
+        title = "Options",
+        action = function(self)
+            print("options")
+        end
+    },
+    {
+        title = "Exit",
+        action = function(self)
+            love.event.quit()
+        end
+    }
+}
+
+temp = {}

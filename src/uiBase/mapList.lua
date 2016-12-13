@@ -74,6 +74,31 @@ Button.postUpdate = function(self)
 	elseif self.mapList.buttonUnderMouse ~= self then
 		self.xTargetOffset = 0
 	end
+
+	if not self.mapList.list[self.itemIndex] then
+        self:remove()
+        print(buttonIndex)
+    end
+end
+
+mapList.sort = function(a, b)
+	return (a.title or "") < (b.title or "")
+end
+
+mapList.genList = function(self, objects, sort)
+	local list = {}
+	
+	for _, object in pairs(objects) do
+		table.insert(list, object)
+	end
+
+	table.sort(list, sort)
+	
+	return list
+end
+
+mapList.setList = function(self, ...)
+	self.list = self:genList(...)
 end
 
 mapList.load = function(self)
@@ -89,28 +114,7 @@ mapList.load = function(self)
 	
 	self.state = self.state or "mainMenu"
 	
-	self.list = self.list or {
-		{
-			title = "Play",
-			action = function()
-				self.state = "songs"
-				self.list = mainCache
-				self:reload()
-			end
-		},
-		{
-			title = "Options",
-			action = function()
-				print("options")
-			end
-		},
-		{
-			title = "Exit",
-			action = function()
-				love.event.quit()
-			end
-		}
-	}
+	self.list = self.list or (mainMenuList or {{title = "empty mapList"}})
 	
 	self:calcButtons()
 	
@@ -191,7 +195,7 @@ mapList.calcButtons = function(self)
 					--y = 1 + self.liveZone
 				--end
 				local drawable, quadX, quadY, quadWidth, quadHeight, quadHeight
-				if item.backgroundPath then
+				if item.backgroundPath and false then
 					drawable = love.graphics.newImage(item.backgroundPath)
 					quadWidth = drawable:getWidth()
 					quadHeight = drawable:getWidth() * Button.h / Button.w
@@ -204,6 +208,7 @@ mapList.calcButtons = function(self)
 					value = value,
 					action = action,
 					mapList = self,
+					object = item,
 					pos = self.pos,
 					itemIndex = itemIndex,
 					drawable = drawable or Button.drawable,
@@ -223,11 +228,14 @@ end
 
 mapList.itemGetInfo = function(self, item, itemIndex)
 	if item.type == "cacheItem" then
-		local value = item.title .. "\n" .. item.artist .. " // " .. (item.creator or item.format) .. "\n" .. item.mapName
+		local value = (item.title or "<title>") .. "\n" .. (item.artist or "<artist>") .. " // " .. ((item.creator or item.format) or "") .. "\n" .. (item.mapName or "<mapName>")
 		local mapList = self
 		local action = function(self)
 			if mapList.selectedItem == itemIndex then
-				mainCli:run("gameState set game " .. itemIndex)
+				local random = tostring(math.random())
+				temp[random] = self.object
+				mainCli:run("gameState set game " .. random)
+				temp[random] = nil
 			else
 				mapList.selectedItem = self.itemIndex
 				mapList:scrollTo(self.itemIndex)
