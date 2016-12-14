@@ -29,9 +29,13 @@ cacheManager.Cache.update = function(self, rules)
     local sort = rules.sort
     local callback = rules.callback or function(filePath) return {filePath = filePath} end
 	
-	print("start lookup()")
+	print("updating cache:")
+	print("  generating fileList...")
+	self.newList = {}
     self:lookup(path)
-	print("end lookup()")
+	print("    complete!")
+	print("  checking for new maps...")
+	local counterNew = 0
     for filePath, _ in pairs(self.newList) do
 		if not self.list[filePath] then
 	        local object = callback(filePath)
@@ -39,15 +43,26 @@ cacheManager.Cache.update = function(self, rules)
 	            object.type = "cacheItem"
 	            self.objects[tostring(object)] = object
 				self.list[filePath] = object
-				print(object.title)
+				counterNew = counterNew + 1
+				print("      added:", object.title)
 	        end
 		end
     end
+	print("    complete! loaded " .. counterNew .. " objects.")
+	print("  cleaning cache...")
+	local counterOld = 0
 	for filePath, _ in pairs(self.list) do
 		if not love.filesystem.exists(filePath) then
-			self.objects[tostring(self.list[filePath])] = nil
+			local object = self.objects[tostring(self.list[filePath])]
+			if object then
+				self.objects[tostring(self.list[filePath])] = nil
+				self.list[filePath] = nil
+				counterOld = counterOld + 1
+				print("      removed:", object.title)
+			end
 		end
 	end
+	print("    complete! removed " .. counterOld .. " objects.")
 end
 
 --[[ --old
@@ -91,16 +106,23 @@ cacheManager.Cache.save = function(self, filePath)
 end
 
 cacheManager.Cache.load = function(self, filePath)
+	print("loading cache:")
+	print("  reading " .. filePath)
 	local status, cache = pcall(loadfile(filePath))
 
 	self.list = {}
 	self.objects = {}
+	
+	local counter = 0
 	if status then
 		for _, object in pairs(cache) do
 			self.objects[tostring(object)] = object
-			self.list[filePath] = object
+			self.list[object.filePath] = object
+			counter = counter + 1
 		end
 	end
+	print("    complete! loaded " .. counter .. " objects.")
+	
 	return self
 end
 
