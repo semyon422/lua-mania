@@ -11,7 +11,7 @@ end
 
 Note.update = function(self)
 	local currentTime = self.column.map.currentTime
-	local deltaStartTime = self.startTime - currentTime
+	local deltaStartTime = (self.startTime - currentTime) / mainConfig:get("game.vsrg.audioPitch", 1)
 	
 	local startJudgement, startDelay = self:getJudgement(deltaStartTime)
 	local keyIsDown = self.column.keyInfo.isDown
