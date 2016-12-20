@@ -13,45 +13,55 @@ vsrg.defaultKeyBinds = {
 
 vsrg.map = {}
 
-vsrg.skin = require("res/defaultSkin")()
+vsrg.skin = require(mainConfig:get("skinPath", "res/defaultSkin/"))()
 vsrg.path = game.path .. "modes/vsrg/"
 
 vsrg.HitObject = require(vsrg.path .. "HitObject")(vsrg, game)
 vsrg.Note = require(vsrg.path .. "Note")(vsrg, game)
 vsrg.Hold = require(vsrg.path .. "Hold")(vsrg, game)
+vsrg.Barline = require(vsrg.path .. "Barline")(vsrg, game)
 vsrg.Column = require(vsrg.path .. "Column")(vsrg, game)
 
 vsrg.AccuracyWatcher = require(vsrg.path .. "AccuracyWatcher")(vsrg, game)
 
 vsrg.load = function(self)
+	print("  loading game...")
 	self.columns = {}
 	self.createdObjects = {}
 	self.combo = 0
 	self.maxCombo = self.combo
 	self.score = {0, 0}
+	
+	local columnStart = self.skin.get("columnStart", {keymode = self.map.keymode, key = 1})
+	local columnWidth = self.skin.get("columnWidth", {keymode = self.map.keymode, key = 1})
 	self.comboCounter = ui.classes.Button:new({
-		x = 0, y = 0.5 - self.skin.game.vsrg.columnStart / 2, w = self.skin.game.vsrg.columnStart, h = self.skin.game.vsrg.columnStart,
+		x = 0, y = 0.5 - columnStart / 2,
+		w = columnStart, h = columnStart,
 		value = self.combo, backgroundColor = {0, 0, 0, 191},
 		getValue = function() return self.combo end,
 		layer = 20
 	}):insert(loveio.objects)
-	local vsrgSkin = self.skin.game.vsrg
 	self.scoreCounter = ui.classes.Button:new({
-		x = vsrgSkin.columnStart + vsrgSkin.columnWidth*self.map.keymode, y = 0.5 - vsrgSkin.columnStart / 2, w = vsrgSkin.columnStart * 2, h = vsrgSkin.columnStart,
+		x = columnStart + columnWidth * self.map.keymode,
+		y = 0.5 - columnStart / 2,
+		w = columnStart * 2,
+		h = columnStart,
 		value = 0, backgroundColor = {0, 0, 0, 191}, xAlign = "right", xPadding = 0.01,
 		getValue = function() return math.ceil(self.score[1] + self.score[2]) end,
 		layer = 20
 	}):insert(loveio.objects)
 	self.pitchDisplay = ui.classes.Button:new({
-		x = 0, y = 0.25 - vsrgSkin.columnStart / 2, w = vsrgSkin.columnStart, h = vsrgSkin.columnStart,
+		x = 0, y = 0.25 - columnStart / 2,
+		w = columnStart, h = columnStart,
 		value = "x" .. mainConfig:get("game.vsrg.audioPitch", 1), backgroundColor = {0, 0, 0, 191},
 		getValue = function() return "x" .. mainConfig:get("game.vsrg.audioPitch", 1) end,
 		layer = 20
 	}):insert(loveio.objects)
 	self.accuracyWatcher = vsrg.AccuracyWatcher:new({
-		x = vsrgSkin.columnStart, y = 0.5, w = vsrgSkin.columnWidth*self.map.keymode, h = pos:Y2y(2)
+		x = columnStart, y = 0.5,
+		w = columnWidth * self.map.keymode, h = pos:Y2y(2)
 	}):insert(loveio.objects)
-	
+
 	if mainConfig:get("enableBackground", 1) == 0 then
 		uiBase.background:unload()
 	elseif self.map.backgroundPath and love.filesystem.exists(self.map.backgroundPath) and love.filesystem.isFile(self.map.backgroundPath) then
@@ -72,6 +82,7 @@ vsrg.load = function(self)
 		}
 	}
 	
+	print("    loading BGM and hitsounds...")
 	for eventSampleIndex, eventSample in pairs(self.map.eventSamples) do
 		if not self.hitSounds[eventSample.fileName] then
 			local filePath = helpers.getFilePath(eventSample.fileName, self.hitSoundsRules)
@@ -107,7 +118,8 @@ vsrg.load = function(self)
 			end
 		end
 	end
-	
+	print("    complete!")
+
 	self.currentTimingPoint = self.map.timingPoints[1]
 	
 	self.keyBindSpeedUp = mainConfig:get("keyBind.game.vsrg.speedUp", "")
@@ -199,6 +211,7 @@ vsrg.load = function(self)
 	self.map.audioStartTime = love.timer.getTime()*1000 + 1000
 	self.map.audioState = "delayed"
 	self.map.currentTime = -1000
+	print("  complete!")
 end
 
 vsrg.postUpdate = function(self)

@@ -37,20 +37,24 @@ Note.update = function(self)
 end
 
 Note.drawLoad = function(self)
-	local skin = self.column.vsrg.skin
-	local circle = self.column.vsrg.skin.game.vsrg.circle
+    local skin = self.column.vsrg.skin
+    local keymode = self.column.vsrg.map.keymode
+	
+    local note = skin.get("noteImage", {keymode = keymode, key = self.key})
+
+    self.columnStart = skin.get("columnStart", {keymode = keymode, key = self.key})
+    self.columnWidth = skin.get("columnWidth", {keymode = keymode, key = self.key})
+
 	self.color = {255, 255, 255, 255}
-	self.h = pos:x2y(circle:getHeight() * skin.game.vsrg.columnWidth / circle:getWidth())
+	self.h = pos:x2y(note:getHeight() * self.columnWidth / note:getWidth())
 	self.gNote = loveio.output.classes.Drawable:new({
-		drawable = circle,
-		x = 0, y = 0, sx = skin.game.vsrg.columnWidth / pos:X2x(circle:getWidth()),
+		drawable = note,
+		x = 0, y = 0, sx = self.columnWidth / pos:X2x(note:getWidth()),
 		layer = 7
 	}):insert(loveio.output.objects)
 end
 Note.drawUpdate = function(self)
-	local columnStart = self.column.vsrg.skin.game.vsrg.columnStart
-	local columnWidth = self.column.vsrg.skin.game.vsrg.columnWidth
-	local ox = columnStart + columnWidth * (self.key - 1)
+	local ox = self.columnStart
 	local oy = self.column:getCoord(self, "startTime")
 	self.gNote.x = ox
 	self.gNote.y = oy - self.h

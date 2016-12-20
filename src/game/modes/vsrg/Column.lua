@@ -20,25 +20,33 @@ Column.load = function(self)
 			end
 		end
 	end
-	self.firstHitObjectIndex = 1
-	
+	self.firstHitObjectIndex = 1	
 	self.currentHitObject = self.hitObjects[1]
 	
-	local columnStart = self.vsrg.skin.game.vsrg.columnStart
-	local columnWidth = self.vsrg.skin.game.vsrg.columnWidth
-	local columnColor = self.vsrg.skin.game.vsrg.columnColor
+	self.barlines = {}
+    self.firstBarlineIndex = 1
+    for barlineIndex, barline in ipairs(self.map.barlines) do
+        local barlineObject = vsrg.Barline:new({startTime = barline.startTime, startTimingPoint = barline.startTimingPoint})
+        barlineObject.index = barlineIndex
+        barlineObject.column = self
+        table.insert(self.barlines, barlineObject)
+    end
+
+	local columnStart = self.vsrg.skin.get("columnStart", {keymode = self.vsrg.map.keymode, key = self.key})
+	local columnWidth = self.vsrg.skin.get("columnWidth", {keymode = self.vsrg.map.keymode, key = self.key})
+	local columnColor = self.vsrg.skin.get("columnColor", {keymode = self.vsrg.map.keymode})
 	table.insert(self.vsrg.createdObjects, loveio.output.classes.Rectangle:new({
 		color = columnColor,
-		x = columnStart + columnWidth * (self.key - 1),
+		x = columnStart,
 		y = 0,
 		w = columnWidth,
 		h = 1,
 		layer = 2
 	}):insert(loveio.output.objects))
-	local hitPosition = self.vsrg.skin.game.vsrg.hitPosition
+	local hitPosition = self.vsrg.skin.get("hitPosition", {keymode = self.vsrg.map.keymode})
 	table.insert(self.vsrg.createdObjects, loveio.output.classes.Rectangle:new({
 		color = {15, 15, 15, 191},
-		x = columnStart + columnWidth * (self.key - 1),
+		x = columnStart,
 		y = 1 - hitPosition,
 		w = columnWidth,
 		H = 2,
@@ -129,7 +137,7 @@ Column.getCoord = function(self, hitObject, key)
 		coord = (time - currentTime) * velocity
 	end
 	
-	local hitPosition = self.vsrg.skin.game.vsrg.hitPosition
+	local hitPosition = self.vsrg.skin.get("hitPosition", {keymode = self.vsrg.map.keymode})
 	if currentTime >= 0 then
 		return 1 - speed*coord/1000 - hitPosition
 	else
@@ -148,6 +156,19 @@ Column.draw = function(self)
 				self.firstHitObjectIndex = hitObject.columnIndex
 			else
 				hitObject:draw()
+			end
+		end
+	end
+	for barlineIndex = self.firstBarlineIndex, #self.barlines do
+		local barline = self.barlines[barlineIndex]
+		if barline then
+			if self:getCoord(barline, "startTime") < 0 then
+				break
+			elseif self:getCoord(barline, "startTime") > 1 and not barline.endTime or barline.endTime and self:getCoord(barline, "endTime") > 1 then
+				barline:remove()
+				self.firstBarlineIndex = barline.index
+			else
+				barline:draw()
 			end
 		end
 	end

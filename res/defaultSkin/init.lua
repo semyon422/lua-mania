@@ -3,17 +3,36 @@ local init = function(...)
 local skin = {}
 skin.path = "res/defaultSkin/"
 
-skin.game = {}
-skin.game.vsrg = {}
-skin.game.vsrg.circle = love.graphics.newImage(skin.path .. "vsrg/circle/3fff9f.png")
-skin.game.vsrg.head = love.graphics.newImage(skin.path .. "vsrg/arrow/ffffff.png")
-skin.game.vsrg.tail = skin.game.vsrg.head
-skin.game.vsrg.body = love.graphics.newImage(skin.path .. "vsrg/hold/ffffff.png")
+local note = love.graphics.newImage(skin.path .. "vsrg/circle/3fff9f.png")
+local headAndTail = love.graphics.newImage(skin.path .. "vsrg/arrow/ffffff.png")
+local body = love.graphics.newImage(skin.path .. "vsrg/hold/ffffff.png")
 
-skin.game.vsrg.columnWidth = 0.09
-skin.game.vsrg.columnStart = 0.075
-skin.game.vsrg.columnColor = {31, 31, 31, 127}
-skin.game.vsrg.hitPosition = 0
+local columnWidth = 0.09
+local columnStart = 0.075
+local columnColor = {31, 31, 31, 127}
+local hitPosition = 0
+
+skin.get = function(key, data)
+	if key == "noteImage" then
+		return note
+	elseif key == "holdBodyImage" then
+		return body
+	elseif key == "holdHeadImage" or key == "holdTailImage" then
+		return headAndTail
+	elseif key == "columnStart" then
+		return skin.getColumnStart(data.key)
+	elseif key == "columnWidth" then
+		return columnWidth
+	elseif key == "columnColor" then
+		return columnColor
+	elseif key == "hitPosition" then
+		return hitPosition
+	end
+end
+
+skin.getColumnStart = function(key)
+	return columnStart + columnWidth * (key - 1)
+end
 
 return skin
 --------------------------------

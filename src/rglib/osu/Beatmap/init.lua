@@ -23,6 +23,7 @@ Beatmap.genCache = require(osu.path .. "Beatmap/genCache")(Beatmap, osu)
 Beatmap.EventSample = require(osu.path .. "Beatmap/EventSample")(Beatmap, osu)
 Beatmap.TimingPoint = require(osu.path .. "Beatmap/TimingPoint")(Beatmap, osu)
 Beatmap.HitObject = require(osu.path .. "Beatmap/HitObject")(Beatmap, osu)
+Beatmap.Barline = require(osu.path .. "Beatmap/Barline")(Beatmap, osu)
 
 return Beatmap
 --------------------------------

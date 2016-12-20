@@ -86,28 +86,31 @@ end
 
 Hold.drawLoad = function(self)
 	local skin = self.column.vsrg.skin
-	local head = self.column.vsrg.skin.game.vsrg.head
-	local tail = self.column.vsrg.skin.game.vsrg.tail
-	local body = self.column.vsrg.skin.game.vsrg.body
+	local keymode = self.column.vsrg.map.keymode
+	local head = skin.get("holdHeadImage", {keymode = keymode, key = self.key})
+	local tail = skin.get("holdTailImage", {keymode = keymode, key = self.key})
+	local body = skin.get("holdBodyImage", {keymode = keymode, key = self.key})
+
+	self.columnStart = skin.get("columnStart", {keymode = keymode, key = self.key})
+	self.columnWidth = skin.get("columnWidth", {keymode = keymode, key = self.key})
+
 	self.color = {255, 255, 255, 255}
-	self.h = pos:x2y(head:getHeight() * skin.game.vsrg.columnWidth / head:getWidth())
+	self.h = pos:x2y(head:getHeight() * self.columnWidth / head:getWidth())
 	self.gHead = loveio.output.classes.Drawable:new({
-		drawable = head, sx = skin.game.vsrg.columnWidth / pos:X2x(head:getWidth()),
+		drawable = head, sx = self.columnWidth / pos:X2x(head:getWidth()),
 		x = 0, y = 0, layer = 6, color = self.color
 	}):insert(loveio.output.objects)
 	self.gTail = loveio.output.classes.Drawable:new({
-		drawable = tail, sx = skin.game.vsrg.columnWidth / pos:X2x(tail:getWidth()),
+		drawable = tail, sx = self.columnWidth / pos:X2x(tail:getWidth()),
 		x = 0, y = 0, layer = 5, color = self.color
 	}):insert(loveio.output.objects)
 	self.gBody = loveio.output.classes.Drawable:new({
-		drawable = body, sx = skin.game.vsrg.columnWidth / pos:X2x(body:getWidth()),
+		drawable = body, sx = self.columnWidth / pos:X2x(body:getWidth()),
 		x = 0, y = 0, layer = 4, color = self.color
 	}):insert(loveio.output.objects)
 end
 Hold.drawUpdate = function(self)
-	local columnStart = self.column.vsrg.skin.game.vsrg.columnStart
-	local columnWidth = self.column.vsrg.skin.game.vsrg.columnWidth
-	local ox = columnStart + columnWidth * (self.key - 1)
+	local ox = self.columnStart
 	local oyStart = self.column:getCoord(self, "pseudoStartTime") or self.column:getCoord(self, "startTime")
 	local oyEnd = self.column:getCoord(self, "endTime")
 	self.gHead.x = ox

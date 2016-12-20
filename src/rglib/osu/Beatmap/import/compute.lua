@@ -1,6 +1,8 @@
 local init = function(Beatmap, osu)
 --------------------------------
 local compute = function(self)
+	print("  computing beatmap...")
+	print("    loading audio...")
 	if self.audioFilename ~= "virtual" then
 		local sourceType = mainConfig:get("game.vsrg.audioSourceType", "stream")
 		self.audio = love.audio.newSource(self.mapPath .. "/" .. self.audioFilename, sourceType)
@@ -11,7 +13,9 @@ local compute = function(self)
 		self.audio = love.audio.newSource(soundData)
 	end
 	self.audioDuration = self.audio:getDuration("seconds") * 1000
+	print("    complete!")
 	
+	print("    computing timing points...")
 	for timingPointIndex = 1, #self.sections.timingPoints do
 		local line = self.sections.timingPoints[timingPointIndex]
 		
@@ -63,11 +67,31 @@ local compute = function(self)
 		end
 	end
 	self.timingPoints[#self.timingPoints].endTime = math.huge
-	
+	print("    complete!")	
+
+	print("    computing hitobjects...")
 	for hitObjectIndex = 1, #self.sections.hitObjects do
 		local line = self.sections.hitObjects[hitObjectIndex]
 		table.insert(self.hitObjects, self.HitObject:new({beatmap = self}):import(line))
 	end
+	print("    complete!")
+
+	print("    computing barlines...")
+	self.barlines = {}
+	print("      skipping, not optimised")
+	--[[for _, timingPoint in ipairs(self.timingPoints) do
+		local step = math.max(1, timingPoint.beatLength * timingPoint.timingSignature)
+		for startTime = timingPoint.startTime, timingPoint.endTime, step do
+			if startTime < timingPoint.endTime then
+				table.insert(self.barlines, self.Barline:new({startTime = startTime, beatmap = self}))
+			end
+			if startTime >= self.audioDuration then
+				break
+			end
+		end
+	end]]
+	print("    complete!")
+	print("  complete!")
 end
 
 return compute

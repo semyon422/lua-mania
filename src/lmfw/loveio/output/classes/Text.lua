@@ -14,9 +14,11 @@ Text.draw = function(self)
 	local sx = self.sx or 1
 	local sy = self.sy or sx
 	if self.yAlign == "center" then
-		y = math.floor(self:getAbs("y", true) - (self.font:getHeight()*sy / 2) * lineCount)
+		--y = math.floor(self:getAbs("y", true) - (self.font:getHeight()*sy / 2) * lineCount)
+		y = (self:getAbs("y", true) - (self.font:getHeight()*sy / 2) * lineCount)
 	elseif self.yAlign == "top" then
-		y = math.floor(self:getAbs("y", true) - self.font:getHeight()*sy * lineCount)
+		--y = math.floor(self:getAbs("y", true) - self.font:getHeight()*sy * lineCount)
+		y = (self:getAbs("y", true) - self.font:getHeight()*sy * lineCount)
 	end
 	
 	local oldColor = {love.graphics.getColor()}
@@ -24,8 +26,10 @@ Text.draw = function(self)
 	love.graphics.setFont(self.font)
 	if not multipleColors then love.graphics.setColor(255, 255, 255, 255) end
 	love.graphics.printf({self.color, tostring(self.text)},
-						 math.floor(self:getAbs("x", true)),
-						 math.floor(y),
+						 self:getAbs("x", true),
+						-- math.floor(self:getAbs("x", true)),
+						 y,
+						-- math.floor(y),
 						 self:getAbs("limit"),
 						 self.xAlign,
 						 self.r,

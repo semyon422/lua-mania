@@ -21,6 +21,10 @@ local import = function(self, filePath, cache)
 	self.sections = {}
 	self.sections.timingPoints = {}
 	self.sections.hitObjects = {}
+
+	if not cache then
+		print("loading beatmap:")
+	end
 	
 	self:load(self.cache)
 	

@@ -9,6 +9,9 @@ local getValue = function(line, key, tonum)
 end
 
 local load = function(self, cache)
+	if not cache then
+		print("  reading file...")
+	end
     local file = io.open(self.filePath, "r")
     local fileLines = {}
 
@@ -52,6 +55,9 @@ local load = function(self, cache)
         end
     end
 	file:close()
+	if not cache then
+		print("  complete!")
+	end
 end
 
 return load
