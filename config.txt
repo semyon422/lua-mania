@@ -1,5 +1,6 @@
 keyBind.game.vsrg.4K = {"e", "r", "o", "p"}
 keyBind.game.vsrg.7K = {"w", "e", "r", "space", "o", "p", "["}
+keyBind.game.vsrg.8K = {"a", "s", "d", "f", "space", "o", "p", "["}
 game.vsrg.hitSoundSourceType = "static"
 game.vsrg.audioSourceType = "stream"
 skinPath = "res/defaultSkin/"

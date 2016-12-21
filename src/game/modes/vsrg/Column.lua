@@ -25,6 +25,7 @@ Column.load = function(self)
 	
 	self.barlines = {}
     self.firstBarlineIndex = 1
+	self.map.barlines = self.map.barlines or {}
     for barlineIndex, barline in ipairs(self.map.barlines) do
         local barlineObject = vsrg.Barline:new({startTime = barline.startTime, startTimingPoint = barline.startTimingPoint})
         barlineObject.index = barlineIndex
@@ -34,7 +35,7 @@ Column.load = function(self)
 
 	local columnStart = self.vsrg.skin.get("columnStart", {keymode = self.vsrg.map.keymode, key = self.key})
 	local columnWidth = self.vsrg.skin.get("columnWidth", {keymode = self.vsrg.map.keymode, key = self.key})
-	local columnColor = self.vsrg.skin.get("columnColor", {keymode = self.vsrg.map.keymode})
+	local columnColor = self.vsrg.skin.get("columnColor", {keymode = self.vsrg.map.keymode, key = self.key})
 	table.insert(self.vsrg.createdObjects, loveio.output.classes.Rectangle:new({
 		color = columnColor,
 		x = columnStart,
