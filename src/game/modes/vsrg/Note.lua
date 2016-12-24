@@ -50,6 +50,7 @@ Note.drawLoad = function(self)
 	self.gNote = loveio.output.classes.Drawable:new({
 		drawable = note,
 		x = 0, y = 0, sx = self.columnWidth / pos:X2x(note:getWidth()),
+		color = self.color,
 		layer = 7
 	}):insert(loveio.output.objects)
 end

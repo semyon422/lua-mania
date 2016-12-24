@@ -28,8 +28,8 @@ local presets = {
 		holdHeadImage = newImage(skin.path .. "vsrg/head/ffffff.png"),
 		holdTailImage = newImage(skin.path .. "vsrg/tail/ffffff.png"),
 		holdBodyImage = newImage(skin.path .. "vsrg/body/white/body-0.png"),
-		keyImage = newImage(skin.path .. "vsrg/key/keyD.png"),
-		keyPressedImage = newImage(skin.path .. "vsrg/key/key.png")
+		keyImage = newImage(skin.path .. "vsrg/key/key.png"),
+		keyPressedImage = newImage(skin.path .. "vsrg/key/keyD.png")
 	},
 	[2] = { --4k 2 3
 		columnColor = {15,15,15,223},
@@ -38,8 +38,8 @@ local presets = {
 		holdHeadImage = newImage(skin.path .. "vsrg/head/ffffff.png"),
 		holdTailImage = newImage(skin.path .. "vsrg/tail/ffffff.png"),
 		holdBodyImage = newImage(skin.path .. "vsrg/body/white/body-0.png"),
-		keyImage = newImage(skin.path .. "vsrg/key/keyD.png"),
-		keyPressedImage = newImage(skin.path .. "vsrg/key/key.png")
+		keyImage = newImage(skin.path .. "vsrg/key/key.png"),
+		keyPressedImage = newImage(skin.path .. "vsrg/key/keyD.png")
 	},
 	[5] = { --7k 1 3 5 7
 		columnColor = {15,15,15,223},
@@ -48,8 +48,8 @@ local presets = {
 		holdHeadImage = newImage(skin.path .. "vsrg/head/ffffff.png"),
 		holdTailImage = newImage(skin.path .. "vsrg/tail/ffffff.png"),
 		holdBodyImage = newImage(skin.path .. "vsrg/body/white/body-0.png"),
-		keyImage = newImage(skin.path .. "vsrg/key/keyD.png"),
-		keyPressedImage = newImage(skin.path .. "vsrg/key/key.png")
+		keyImage = newImage(skin.path .. "vsrg/key/key.png"),
+		keyPressedImage = newImage(skin.path .. "vsrg/key/keyD.png")
 	},
 	[6] = { --7k 2 6
 		columnColor = {0,0,0,223},
@@ -58,8 +58,8 @@ local presets = {
 		holdHeadImage = newImage(skin.path .. "vsrg/head/3f7fff.png"),
 		holdTailImage = newImage(skin.path .. "vsrg/tail/3f7fff.png"),
 		holdBodyImage = newImage(skin.path .. "vsrg/body/blue/body-0.png"),
-		keyImage = newImage(skin.path .. "vsrg/key/keyD.png"),
-		keyPressedImage = newImage(skin.path .. "vsrg/key/key.png")
+		keyImage = newImage(skin.path .. "vsrg/key/key.png"),
+		keyPressedImage = newImage(skin.path .. "vsrg/key/keyD.png")
 	},
 	[7] = { --7k 4
 		columnColor = {31,31,31,223},
@@ -103,6 +103,12 @@ skin.get = function(key, data)
 	elseif key == "holdTailImage" then
 		local preset = presets[config[data.keymode][data.key]]
 		return preset.holdTailImage
+	elseif key == "keyImage" then
+		local preset = presets[config[data.keymode][data.key]]
+		return preset.keyImage
+	elseif key == "keyPressedImage" then
+		local preset = presets[config[data.keymode][data.key]]
+		return preset.keyPressedImage
 	elseif key == "columnStart" then
 		return skin.getColumnStart(data.key)
 	elseif key == "columnWidth" then

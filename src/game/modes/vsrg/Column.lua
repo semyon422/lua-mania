@@ -45,15 +45,21 @@ Column.load = function(self)
 		layer = 2
 	}):insert(loveio.output.objects))
 	local hitPosition = self.vsrg.skin.get("hitPosition", {keymode = self.vsrg.map.keymode})
-	table.insert(self.vsrg.createdObjects, loveio.output.classes.Rectangle:new({
-		color = {15, 15, 15, 191},
+
+	local keyImage = self.vsrg.skin.get("keyImage", {keymode = self.vsrg.map.keymode, key = self.key})
+	local keyPressedImage = self.vsrg.skin.get("keyPressedImage", {keymode = self.vsrg.map.keymode, key = self.key})
+	local keyImageSX = columnWidth / pos:X2x(keyImage:getWidth())
+	local keyImageSY = pos:y2Y(1) / 768
+	local keyDrawable = loveio.output.classes.Drawable:new({
+		drawable = keyImage,
 		x = columnStart,
-		y = 1 - hitPosition,
-		w = columnWidth,
-		H = 2,
-		layer = 20
-	}):insert(loveio.output.objects))
-	
+		y = 1 - keyImage:getHeight() / 768,
+		sx = keyImageSX,
+		sy = keyImageSY,
+		layer = 21
+	}):insert(loveio.output.objects)
+	table.insert(self.vsrg.createdObjects, keyDrawable)
+
 	self.keyInfo = {
 		key = self.key,
 		bind = mainConfig:get("keyBind.game.vsrg." .. self.map.keymode .. "K", self.vsrg.defaultKeyBinds[self.map.keymode])[self.key],
@@ -65,11 +71,13 @@ Column.load = function(self)
 			if self.currentHitObject then
 				self.currentHitObject:playHitSound()
 			end
+			keyDrawable.drawable = keyPressedImage
 		end
 	end
 	loveio.input.callbacks.keyreleased[tostring(self)] = function(key)
 		if key == self.keyInfo.bind then
 			self.keyInfo.isDown = false
+			keyDrawable.drawable = keyImage
 		end
 	end
 end
