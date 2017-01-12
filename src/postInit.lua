@@ -29,7 +29,10 @@ end
 cacheRules = {
 	path = "res/Songs/",
 	callback = cacheCallback,
-	sort = function(a, b) return a.filePath < b.filePath end
+	sort = function(a, b) return a.filePath < b.filePath end,
+	formats = {
+		["osu"] = true, ["bms"] = true, ["bme"] = true, ["lmx"] = true
+	}
 }
 keypressed.cacheHandle = function(key)
 	if uiBase.mapList.state == "songs" then

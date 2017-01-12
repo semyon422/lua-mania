@@ -4,16 +4,17 @@ local function bmsCacher(filePath)
 	local title, artist, version
 	
 	local file = io.open(filePath, "r")
+	if not file then return end
 	local fileLines = {}
 	for line in file:lines() do
 		if string.sub(line, 1, 6) == "#TITLE" then
-			title = trim(string.sub(line, 7, -1))
+			title = utf8validate(trim(string.sub(line, 7, -1)))
 		end
 		if string.sub(line, 1, 7) == "#ARTIST" then
-			artist = trim(string.sub(line, 8, -1))
+			artist = utf8validate(trim(string.sub(line, 8, -1)))
 		end
 		if string.sub(line, 1, 10) == "#PLAYLEVEL" then
-			mapName = trim(string.sub(line, 11, -1)) .. " level"
+			mapName = utf8validate(trim(string.sub(line, 11, -1)) .. " level")
 		end
 		if string.sub(line, 1, 4) == "#WAV" then
 			break

@@ -18,16 +18,19 @@ cacheManager.Cache.lookup = function(self, path)
 		if love.filesystem.isDirectory(path .. fileName) then
 			self:lookup(path .. fileName .. "/", self.newList)
 		elseif love.filesystem.isFile(path .. fileName) then
-			self.newList[path .. fileName] = true
+			local fileType = string.sub(fileName, -3, -1)
+			if self.rules.formats[fileType] then
+				self.newList[path .. fileName] = true
+			end
 		end
 	end
 end
 
 cacheManager.Cache.update = function(self, rules)
-	local rules = rules or {}
-    local path = rules.path or "."
-    local sort = rules.sort
-    local callback = rules.callback or function(filePath) return {filePath = filePath} end
+	self.rules = rules or {}
+    local path = self.rules.path or "."
+    local sort = self.rules.sort
+    local callback = self.rules.callback or function(filePath) return {filePath = filePath} end
 	
 	print("updating cache:")
 	print("  generating fileList...")

@@ -1,6 +1,7 @@
 explode = require("explode")
 trim = require("trim")
 startsWith = require("startsWith")
+utf8validate = require("utf8validate")
 
 helpers = require("helpers")
 Profiler = require("Profiler")
