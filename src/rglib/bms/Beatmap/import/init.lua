@@ -61,6 +61,8 @@ local import = function(self, filePath)
 				local measure = tonumber(string.sub(line, 2, 4))
 				local channel = tonumber(string.sub(line, 5, 6))
 				local message = trim(string.sub(line, 8, -1))
+				self.channels[channel] = self.channels[channel] or {}
+				self.channels[channel][measure] = self.channels[channel][measure] or {}
 				if channel ~= 2 then
 					local length = #message / 2
 					local points = {}
@@ -68,12 +70,8 @@ local import = function(self, filePath)
 						local point = string.sub(message, 2 * pointIndex - 1, 2 * pointIndex)
 						points[pointIndex] = point
 					end
-					self.channels[channel] = self.channels[channel] or {}
-					self.channels[channel][measure] = self.channels[channel][measure] or {}
 					table.insert(self.channels[channel][measure], points)
 				else
-					self.channels[channel] = self.channels[channel] or {}
-					self.channels[channel][measure] = self.channels[channel][measure] or {}
 					table.insert(self.channels[channel][measure], tonumber(message))
 				end
 			end
@@ -102,33 +100,25 @@ local import = function(self, filePath)
 		part = 0,
 		bpm = self.baseBpm
 	})
-	if self.channels[3] then
-		for measure, data in pairs(self.channels[3]) do
-			for pointsIndex, points in ipairs(data) do
-				for pointIndex, point in ipairs(points) do
-					if point ~= "00" then
-						local part = (pointIndex - 1) / #points
-						table.insert(self.timingData, {
-							measure = measure,
-							part = part,
-							bpm = tonumber(point, 16)
-						})
-					end
-				end
-			end
-		end
-	end
-	if self.channels[8] then
-		for measure, data in pairs(self.channels[3]) do
-			for pointsIndex, points in ipairs(data) do
-				for pointIndex, point in ipairs(points) do
-					if point ~= "00" then
-						local part = (pointIndex - 1) / #points
-						table.insert(self.timingData, {
-							measure = measure,
-							part = part,
-							bpm = tonumber(self.bpm[point])
-						})
+	for i, channel in pairs({3, 8}) do
+		if self.channels[channel] then
+			for measure, data in pairs(self.channels[3]) do
+				for pointsIndex, points in ipairs(data) do
+					for pointIndex, point in ipairs(points) do
+						if point ~= "00" then
+							local part = (pointIndex - 1) / #points
+							local bpm
+							if channel == 3 then
+								bpm = tonumber(point, 16)
+							elseif channel == 8 then
+								bpm = tonumber(self.bpm[point])
+							end
+							table.insert(self.timingData, {
+								measure = measure,
+								part = part,
+								bpm = bpm
+							})
+						end
 					end
 				end
 			end
@@ -146,84 +136,85 @@ local import = function(self, filePath)
 	-- end
 	-- error()
 	
-	for channel, channelData in pairs(self.channels) do
-		local getSignature = function(measure)
-			for index, signatureData in ipairs(self.timeSignature) do
-				if measure == signatureData.measure then
-					return signatureData.signature
-				end
+	
+	local getSignature = function(measure)
+		for index, signatureData in ipairs(self.timeSignature) do
+			if measure == signatureData.measure then
+				return signatureData.signature
 			end
-			return 4/4
 		end
-		local getMeasureTiming = function(measure)
-			local timing = {}
-			local prevTiming = self.timingData[1]
-			local currentTimings = {}
-			for timingIndex, timingData in ipairs(self.timingData) do
-				if timingData.measure < measure then
-					prevTiming = timingData
-				elseif timingData.measure == measure then
-					table.insert(currentTimings, timingData)
-				end
+		return 4/4
+	end
+	local getMeasureTiming = function(measure)
+		local timing = {}
+		local prevTiming = self.timingData[1]
+		local currentTimings = {}
+		for timingIndex, timingData in ipairs(self.timingData) do
+			if timingData.measure < measure then
+				prevTiming = timingData
+			elseif timingData.measure == measure then
+				table.insert(currentTimings, timingData)
 			end
-			if (#currentTimings > 0) and (currentTimings[1].part == 0) then
-				prevTiming = nil
-			else
-				table.insert(currentTimings, 1, {
-					measure = measure,
-					part = 0,
-					bpm = prevTiming.bpm,
-				})
-			end
-			local out = {}
-			for index = 1, #currentTimings do
-				local timingData = currentTimings[index]
-				local timingDataPart = currentTimings[index].part
-				local nextTimingDataPart = 1
-				if index ~= #currentTimings then
-					nextTimingDataPart = currentTimings[index + 1].part
-				end
-				local signature = getSignature(measure)
-				table.insert(out, {
-					length = (60000 / timingData.bpm) * signature * 4 * (nextTimingDataPart - timingDataPart),
-					part = timingDataPart
-				})
-			end
-			return out
 		end
-		local getFullLengthOfMeasure = function(measure)
-			measureTiming = getMeasureTiming(measure)
-			local length = 0
-			for timingIndex, timingData in ipairs(measureTiming) do
-				length = length + timingData.length
-			end
-			return length
+		if (#currentTimings > 0) and (currentTimings[1].part == 0) then
+			prevTiming = nil
+		else
+			table.insert(currentTimings, 1, {
+				measure = measure,
+				part = 0,
+				bpm = prevTiming.bpm,
+			})
 		end
-		local getPointOffset = function(pointIndex, pointCount, measure)
-			measureTiming = getMeasureTiming(measure)
-			local part = (pointIndex - 1) / pointCount
-			
-			local offset = 0
-			for timingDataIndex = 1, #measureTiming do
-				local timingData = measureTiming[timingDataIndex]
-				local nextTimingData = measureTiming[timingDataIndex + 1]
-				if timingDataIndex ~= #measureTiming then
-					if nextTimingData.part < part then
-						offset = offset + timingData.length
-					elseif nextTimingData.part == part then
-						offset = offset + timingData.length
-						break
-					else
-						offset = offset + timingData.length * (part - timingData.part)
-						break
-					end
+		local out = {}
+		for index = 1, #currentTimings do
+			local timingData = currentTimings[index]
+			local timingDataPart = currentTimings[index].part
+			local nextTimingDataPart = 1
+			if index ~= #currentTimings then
+				nextTimingDataPart = currentTimings[index + 1].part
+			end
+			local signature = getSignature(measure)
+			table.insert(out, {
+				length = (60000 / timingData.bpm) * signature * 4 * (nextTimingDataPart - timingDataPart),
+				part = timingDataPart
+			})
+		end
+		return out
+	end
+	local getFullLengthOfMeasure = function(measure)
+		measureTiming = getMeasureTiming(measure)
+		local length = 0
+		for timingIndex, timingData in ipairs(measureTiming) do
+			length = length + timingData.length
+		end
+		return length
+	end
+	local getPointOffset = function(pointIndex, pointCount, measure)
+		measureTiming = getMeasureTiming(measure)
+		local part = (pointIndex - 1) / pointCount
+		
+		local offset = 0
+		for timingDataIndex = 1, #measureTiming do
+			local timingData = measureTiming[timingDataIndex]
+			local nextTimingData = measureTiming[timingDataIndex + 1]
+			if timingDataIndex ~= #measureTiming then
+				if nextTimingData.part < part then
+					offset = offset + timingData.length
+				elseif nextTimingData.part == part then
+					offset = offset + timingData.length
+					break
 				else
 					offset = offset + timingData.length * (part - timingData.part)
+					break
 				end
+			else
+				offset = offset + timingData.length * (part - timingData.part)
 			end
-			return offset
 		end
+		return offset
+	end
 	
+	for channel, channelData in pairs(self.channels) do
 		for measure, data in pairs(channelData) do
 			local globalOffset = 0
 			for i = 0, measure - 1 do
@@ -282,14 +273,6 @@ local import = function(self, filePath)
 	-- error()
 	-----------------
 	
-	self.audioDuration = 600000
-	local soundData = love.sound.newSoundData(44100 * self.audioDuration / 1000)
-	self.audio = love.audio.newSource(soundData)
-	
-	-- timingPointsSection[1] = {
-		-- startTime = 0,
-		-- beatLength = 60000 / self.baseBpm
-	-- }
 	for timingPointIndex = 1, #self.timingData do
 		local timingData = self.timingData[timingPointIndex]
 		timingData.beatLength = 60000 / timingData.bpm
@@ -311,26 +294,26 @@ local import = function(self, filePath)
 		
 		if prev and not prev.endTime then prev.endTime = current.startTime end
 	end
-	self.timingPoints[#self.timingPoints].endTime = self.audioDuration
+	-- self.timingPoints[#self.timingPoints].endTime = self.audioDuration
 	
-	local beatLength2beatLengths = {}
-	local beatLengths = {}
-	for timingPointIndex = 1, #self.timingPoints do
-		local current = self.timingPoints[timingPointIndex]
+	-- local beatLength2beatLengths = {}
+	-- local beatLengths = {}
+	-- for timingPointIndex = 1, #self.timingPoints do
+		-- local current = self.timingPoints[timingPointIndex]
 		
-		current.lengthTime = current.endTime - current.startTime
-		beatLength2beatLengths[current.beatLength] = beatLength2beatLengths[current.beatLength] or {current.beatLength, 0, #beatLengths + 1}
-		beatLength2beatLengths[current.beatLength][2] = beatLength2beatLengths[current.beatLength][2] + current.lengthTime
-		beatLengths[beatLength2beatLengths[current.beatLength][3]] = beatLength2beatLengths[current.beatLength]
-	end
-	table.sort(beatLengths, function(a, b)
-		return a[2] > b[2]
-	end)
-	self.baseBeatLenght = beatLengths[1][1]
+		-- current.lengthTime = current.endTime - current.startTime
+		-- beatLength2beatLengths[current.beatLength] = beatLength2beatLengths[current.beatLength] or {current.beatLength, 0, #beatLengths + 1}
+		-- beatLength2beatLengths[current.beatLength][2] = beatLength2beatLengths[current.beatLength][2] + current.lengthTime
+		-- beatLengths[beatLength2beatLengths[current.beatLength][3]] = beatLength2beatLengths[current.beatLength]
+	-- end
+	-- table.sort(beatLengths, function(a, b)
+		-- return a[2] > b[2]
+	-- end)
+	-- self.baseBeatLenght = beatLengths[1][1]
 	
 	for timingPointIndex = 1, #self.timingPoints do
 		local current = self.timingPoints[timingPointIndex]
-		local prev = self.timingPoints[timingPointIndex - 1]
+		-- local prev = self.timingPoints[timingPointIndex - 1]
 		
 		-- current.velocity = self.baseBeatLenght / current.beatLength
 		current.velocity = 1
@@ -354,6 +337,10 @@ local import = function(self, filePath)
 		local line = hitObjectsSection[hitObjectIndex]
 		table.insert(self.hitObjects, self.HitObject:new({beatmap = self}):import(line))
 	end
+	
+	self.audioDuration = self.hitObjects[#self.hitObjects].startTime
+	local soundData = love.sound.newSoundData(44100 * self.audioDuration / 1000)
+	self.audio = love.audio.newSource(soundData)
 	
 	if self.timedChannels[1] then
 		for index, eventSample in ipairs(self.timedChannels[1]) do
