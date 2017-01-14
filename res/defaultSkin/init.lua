@@ -68,8 +68,8 @@ local presets = {
 		holdHeadImage = newImage(skin.path .. "vsrg/head/ffff3f.png"),
 		holdTailImage = newImage(skin.path .. "vsrg/tail/ffff3f.png"),
 		holdBodyImage = newImage(skin.path .. "vsrg/body/yellow/body-0.png"),
-		keyImage = newImage(skin.path .. "vsrg/key/keyD.png"),
-		keyPressedImage = newImage(skin.path .. "vsrg/key/key.png")
+		keyImage = newImage(skin.path .. "vsrg/key/key.png"),
+		keyPressedImage = newImage(skin.path .. "vsrg/key/keyD.png")
 	},
 }
 
