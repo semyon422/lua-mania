@@ -8,6 +8,8 @@ local import = function(self, filePath, cache)
 	self.mapFileName = breakedPath[#breakedPath]
 	self.mapPath = string.sub(filePath, 1, #filePath - #self.mapFileName - 1)
 	
+	if not love.filesystem.isFile(filePath) then return end
+	
 	self.hitSoundsRules = {
 		formats = {"wav", "mp3", "ogg"},
 		paths = {self.mapPath}

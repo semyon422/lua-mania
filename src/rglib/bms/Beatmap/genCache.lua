@@ -3,6 +3,10 @@ local init = function(Beatmap, bms)
 local function bmsCacher(filePath)
 	local title, artist, version
 	
+	local breakedPath = explode("/", filePath)
+	local mapFileName = breakedPath[#breakedPath]
+	local mapPath = string.sub(filePath, 1, #filePath - #mapFileName - 1)
+	
 	local file = io.open(filePath, "r")
 	if not file then return end
 	local fileLines = {}
@@ -27,6 +31,8 @@ local function bmsCacher(filePath)
 		artist = artist,
 		mapName = mapName,
 		filePath = filePath,
+		mapFileName = mapFileName,
+		mapPath = mapPath,
 		mode = "vsrg",
 		format = "bms"
 	}

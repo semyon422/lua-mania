@@ -85,15 +85,52 @@ mapList.sort = function(a, b)
 	return (a.title or "") < (b.title or "")
 end
 
+
+local createTree
+createTree = function(path, tree)
+	if #path ~= 0 then
+		local path1 = path[1]
+		table.remove(path, 1)
+		tree[path1] = tree[path1] or {}
+		return createTree(path, tree[path1])
+	end
+	
+	return tree
+end
+local createList
+createList = function(tree, list)
+	for index, subTree in pairs(tree) do
+		if subTree.type == "cacheItem" then
+			table.insert(list, subTree)
+		else
+			local listChanger = {}
+			local nextList = createList(subTree, {})
+			listChanger.title = index
+			listChanger.action = function(self)
+				table.insert(self.mapList.backWay, self.mapList.list)
+				self.mapList.list = nextList
+				self.mapList.scroll = 1
+				self.mapList:reload()
+			end
+			table.insert(list, listChanger)
+		end
+		table.sort(list, mapList.sort)
+	end
+	return list
+end
 mapList.genList = function(self, objects, sort)
 	local list = {}
 	
-	for _, object in pairs(objects) do
-		table.insert(list, object)
-	end
-
-	table.sort(list, sort)
+	local objectsTree = {}
 	
+	for _, object in pairs(objects) do
+		local path = explode("/", object.mapPath)
+		local treeEnd = createTree(path, objectsTree)
+		table.insert(treeEnd, object)
+	end
+	
+	createList(objectsTree, list)
+
 	return list
 end
 
@@ -111,6 +148,7 @@ mapList.load = function(self)
 	self.circle.x = 1.25
 	self.circle.y = 0.5
 	self.liveZone = 0.25
+	self.backWay = self.backWay or {}
 	
 	self.state = self.state or "mainMenu"
 	
@@ -150,6 +188,13 @@ mapList.load = function(self)
 						button:action()
 					end
 				end
+			end
+		elseif key == "escape" then
+			if #self.backWay >= 1 then
+				self.list = self.backWay[#self.backWay]
+				self.backWay[#self.backWay] = nil
+				self.scroll = 1
+				self:reload()
 			end
 		end
 	end
