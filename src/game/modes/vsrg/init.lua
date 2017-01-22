@@ -109,7 +109,7 @@ vsrg.load = function(self)
 					local status, value = pcall(love.audio.newSource, filePath, sourceType)
 					if status then
 						self.hitSounds[hitSoundName] = value
-					elseif not self.vsrg.wrongHitSounds[hitSoundName] then
+					elseif not self.wrongHitSounds[hitSoundName] then
 						self.hitSounds[hitSoundName] = love.audio.newSource(love.sound.newSoundData(1))
 						self.wrongHitSounds[hitSoundName] = true
 						print("Can't load hitsound: " .. filePath .. "(" .. value .. ")")

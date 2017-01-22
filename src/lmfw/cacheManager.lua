@@ -18,8 +18,7 @@ cacheManager.Cache.lookup = function(self, path)
 		if love.filesystem.isDirectory(path .. fileName) then
 			self:lookup(path .. fileName .. "/", self.newList)
 		elseif love.filesystem.isFile(path .. fileName) then
-			local fileType = string.sub(fileName, -3, -1)
-			if self.rules.formats[fileType] then
+			if self.rules.formats[string.sub(fileName, -3, -1)] then
 				self.newList[path .. fileName] = true
 			end
 		end

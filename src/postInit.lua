@@ -59,7 +59,6 @@ mainCli:bind("gameState", function(command)
 	if breaked[2] == "set" then
 		game.gameState.data.state = breaked[3]
 		game.object = temp[breaked[4]]
-		game.gameState.data.switched = false
 	end
 end)
 

@@ -27,12 +27,15 @@ output.draw = function()
 			layers[object.layer] = true
 		end
 	end
-	for layer = minLayer, maxLayer do
-		if layers[layer] then
-			for objectIndex, object in pairs(objects) do
-				if object.layer == layer then
-					object:draw()
-				end
+	local layers2 = {}
+	for layer in pairs(layers) do
+		table.insert(layers2, layer)
+	end
+	table.sort(layers2)
+	for layerIndex, layer in ipairs(layers2) do
+		for objectIndex, object in pairs(objects) do
+			if object.layer == layer then
+				object:draw()
 			end
 		end
 	end

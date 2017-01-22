@@ -27,6 +27,7 @@ uiBase.backButton = ui.classes.PictureButton:new({
 	pos = loveio.output.Position:new({ratios = {1}, align = {"right", "center"}})
 })
 uiBase.cursor = require("uiBase.cursor")
+uiBase.mainMenu = require("uiBase.mainMenu")()
 
 return uiBase
 --------------------------------
