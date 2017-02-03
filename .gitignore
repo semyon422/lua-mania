@@ -1,4 +1,5 @@
 res/Songs
 love/
 log.txt
-cache.lua
+fileTreeCache.lua
+mapCache.lua

@@ -17,9 +17,8 @@ end
 --------------------------------
 -- Cache
 --------------------------------
-local mapCacheCallback = function(filePath)
-	local breaked = explode(".", filePath)
-	local fileType = breaked[#breaked]
+mapCacheCallback = function(filePath)
+	local fileType = string.sub(filePath, -3, -1)
 	if fileType == "osu" then
 		return osu.Beatmap:new():import(filePath, true)
 	elseif fileType == "bms" or fileType == "bme" then
@@ -32,8 +31,10 @@ local fileTreeCallback = function(filePath)
 	local object = {}
 	
 	local breakedPath = explode("/", filePath)
-	self.mapFileName = breakedPath[#breakedPath]
-	self.mapPath = string.sub(filePath, 1, #filePath - #self.mapFileName - 1)
+	object.fileName = breakedPath[#breakedPath]
+	object.folderPath = string.sub(filePath, 1, #filePath - #object.fileName - 1)
+	object.title = object.fileName
+	object.type = love.filesystem.isDirectory(filePath) and "directory" or "file"
 	
 	return object
 end
@@ -42,6 +43,7 @@ fileTreeCacheRules = {
 	callback = fileTreeCallback,
 	formats = {osu = true, bms = true, bme = true, lmx = true}
 }
+uiBase.fileTree.items = uiBase.fileTree.genItems(fileTreeCacheRules.path)
 
 --------------------------------
 -- Cli binds
@@ -106,7 +108,7 @@ loveio.input.callbacks.quit.saveMainConfig = function()
 end
 loveio.input.callbacks.quit.saveCaches = function()
 	fileTreeCache:save("fileTreeCache.lua")
-	mapCache:save("mainCache.lua")
+	mapCache:save("mapCache.lua")
 end
 
 --------------------------------
@@ -117,7 +119,7 @@ mainMenuList = {
         title = "Play",
         action = function(self)
             self.mapList.state = "songs"
-			uiBase.mapList.list = uiBase.mapList:genList(mainCache.objects, uiBase.mapList.sort)
+			uiBase.mapList.list = uiBase.mapList:genList(mapCache.list, uiBase.mapList.sort)
             self.mapList:reload()
         end
     },

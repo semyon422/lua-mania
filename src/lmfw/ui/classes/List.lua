@@ -33,12 +33,8 @@ List.load = function(self)
 		}):insert(loveio.objects))
 	end
 	loveio.input.callbacks.wheelmoved[tostring(self)] = function(_, direction)
-		local x = self:get("X", true)
-		local y = self:get("Y", true)
-		local w = self:get("W")
-		local h = self:get("H")
-		local mx = loveio.input.mouse.X
-		local my = loveio.input.mouse.Y
+		local x, y, w, h = self.x, self.y, self.w, self.h
+		local mx, my = pos:X2x(loveio.input.mouse.x, true), pos:Y2y(loveio.input.mouse.y, true)
 		if mx >= x and mx <= x + w and my >= y and my <= y + h then
 			if direction == -1 * self.scrollDirection then
 				self.startItem = self.startItem - 1

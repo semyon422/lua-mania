@@ -16,6 +16,5 @@ windowManager = require("windowManager")
 loveio = require("loveio")
 
 ui = require("ui")
-uiBase = require("uiBase")()
 
 cli = require("cli")
