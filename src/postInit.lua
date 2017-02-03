@@ -1,5 +1,8 @@
 local keypressed = loveio.input.callbacks.keypressed
 
+--------------------------------
+-- Profiler
+--------------------------------
 keypressed.printProfilersInfo = function(key)
 	if key == "f10" then
 		local updateDelta = string.format("%0.2f", loveio.updateProfiler:getDelta())
@@ -11,49 +14,38 @@ keypressed.printProfilersInfo = function(key)
 	end
 end
 
-cacheCallback = function(filePath)
-	if love.filesystem.isFile(filePath) then
-		local breaked = explode(".", filePath)
-		local fileType = breaked[#breaked]
-		if fileType == "osu" then
-			return osu.Beatmap:new():import(filePath, true)
-		end
-		if fileType == "bms" or fileType == "bme" then
-			return bms.Beatmap.genCache(filePath)
-		end
-		if fileType == "lmx" then
-			return lmx.Beatmap.genCache(filePath)
-		end
+--------------------------------
+-- Cache
+--------------------------------
+local mapCacheCallback = function(filePath)
+	local breaked = explode(".", filePath)
+	local fileType = breaked[#breaked]
+	if fileType == "osu" then
+		return osu.Beatmap:new():import(filePath, true)
+	elseif fileType == "bms" or fileType == "bme" then
+		return bms.Beatmap.genCache(filePath)
+	elseif fileType == "lmx" then
+		return lmx.Beatmap.genCache(filePath)
 	end
 end
-cacheRules = {
+local fileTreeCallback = function(filePath)
+	local object = {}
+	
+	local breakedPath = explode("/", filePath)
+	self.mapFileName = breakedPath[#breakedPath]
+	self.mapPath = string.sub(filePath, 1, #filePath - #self.mapFileName - 1)
+	
+	return object
+end
+fileTreeCacheRules = {
 	path = "res/Songs/",
-	callback = cacheCallback,
-	sort = function(a, b) return a.filePath < b.filePath end,
-	formats = {
-		["osu"] = true, ["bms"] = true, ["bme"] = true, ["lmx"] = true
-	}
+	callback = fileTreeCallback,
+	formats = {osu = true, bms = true, bme = true, lmx = true}
 }
-keypressed.cacheHandle = function(key)
-	if uiBase.mapList.state == "songs" then
-		if key == "f7" then
-			mainCache:update(cacheRules)
-			if loveio.objects[tostring(uiBase.mapList)] then
-				uiBase.mapList:setList(mainCache.objects, uiBase.mapList.sort)
-				uiBase.mapList:reload()
-			end
-		elseif key == "f8" then
-			mainCache:save("cache.lua")
-		elseif key == "f9" then
-			mainCache:load("cache.lua")
-			if loveio.objects[tostring(uiBase.mapList)] then
-				uiBase.mapList:setList(mainCache.objects, uiBase.mapList.sort)
-				uiBase.mapList:reload()
-			end
-		end
-	end
-end
 
+--------------------------------
+-- Cli binds
+--------------------------------
 mainCli:bind("gameState", function(command)
 	local breaked = explode(" ", command)
 	if breaked[2] == "set" then
@@ -62,7 +54,9 @@ mainCli:bind("gameState", function(command)
 	end
 end)
 
-
+--------------------------------
+-- Window manager settings
+--------------------------------
 local windowMode = windowManager.Mode:new(800, 600, {
 	fullscreen = false, fullscreentype = "desktop",
 	vsync = false, msaa = 0,
@@ -104,17 +98,26 @@ keypressed.switchWindowMode = function(key)
 	end
 end
 
+--------------------------------
+-- Callbacks
+--------------------------------
 loveio.input.callbacks.quit.saveMainConfig = function()
 	mainConfig:save("config.txt")
 end
+loveio.input.callbacks.quit.saveCaches = function()
+	fileTreeCache:save("fileTreeCache.lua")
+	mapCache:save("mainCache.lua")
+end
 
-
+--------------------------------
+-- Menu list
+--------------------------------
 mainMenuList = {
     {
         title = "Play",
         action = function(self)
             self.mapList.state = "songs"
-            self.mapList:setList(mainCache.objects, self.mapList.sort)
+			uiBase.mapList.list = uiBase.mapList:genList(mainCache.objects, uiBase.mapList.sort)
             self.mapList:reload()
         end
     },

@@ -125,6 +125,8 @@ mapList.genList = function(self, objects, sort)
 	
 	for _, object in pairs(objects) do
 		local path = explode("/", object.mapPath)
+		table.remove(path, 1)
+		table.remove(path, 1)
 		local treeEnd = createTree(path, objectsTree)
 		table.insert(treeEnd, object)
 	end
@@ -132,10 +134,6 @@ mapList.genList = function(self, objects, sort)
 	createList(objectsTree, list)
 
 	return list
-end
-
-mapList.setList = function(self, ...)
-	self.list = self:genList(...)
 end
 
 mapList.load = function(self)

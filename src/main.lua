@@ -3,7 +3,8 @@ require("rglib")
 
 mainConfig = configManager.Config:new():load("config.txt")
 
-mainCache = cacheManager.Cache:new():load("cache.lua")
+fileTreeCache = cacheManager.Cache:new():load("fileTreeCache.lua")
+mapCache = cacheManager.Cache:new():load("mapCache.lua")
 
 loveio.init()
 
