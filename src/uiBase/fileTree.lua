@@ -1,11 +1,11 @@
 local init = function(...)
 --------------------------------
 local fileTree = ui.classes.List:new({
-	x = 0, y = 0, w = 0.3, h = 0.5, layer = 2,
+	x = 0, y = 0.2, w = 0.3, h = 0.6, layer = 2,
 	showingItemsCount = 6,
 	items = {}
 })
-
+fileTree.backWay = {}
 fileTree.genItems = function(path)
 	local items = {}
 	
@@ -17,6 +17,7 @@ fileTree.genItems = function(path)
 			table.insert(items, {
 				title = object.title,
 				action = function()
+					table.insert(fileTree.backWay, fileTreeCacheRules.path)
 					fileTreeCacheRules.path = filePath .. "/"
 					fileTree.items = fileTree.genItems(filePath .. "/")
 					fileTree:reload()
@@ -36,19 +37,20 @@ fileTree.genItems = function(path)
 			})
 		end
 	end
+	table.insert(items, {
+		title = "..",
+		action = function()
+			fileTreeCacheRules.path = fileTree.backWay[#fileTree.backWay] or fileTreeCacheRules.path
+			fileTree.backWay[#fileTree.backWay] = nil
+			fileTree.items = fileTree.genItems(fileTreeCacheRules.path)
+			fileTree:reload()
+		end
+	})
 	table.sort(items, function(a, b)
 		return a.title < b.title
 	end)
 	
 	return items
-end
-
-loveio.input.callbacks.keypressed[tostring(fileTree)] = function(key)
-	if key == "escape" then
-		fileTreeCacheRules.path = "res/Songs/"
-		fileTree.items = fileTree.genItems("res/Songs/")
-		fileTree:reload()
-	end
 end
 
 return fileTree

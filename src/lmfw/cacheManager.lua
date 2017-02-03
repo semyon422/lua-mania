@@ -34,7 +34,6 @@ cacheManager.Cache.lookup = function(self, path)
 			end
 		end
 	end
-	print(path)
 end
 
 cacheManager.Cache.update = function(self, rules)
@@ -43,11 +42,12 @@ cacheManager.Cache.update = function(self, rules)
 	self.rules.formats = self.rules.formats or {any = true}
 	self.rules.callback = self.rules.callback or function(filePath) return {title = filePath} end
 	
+	print(string.rep("-", 64))
 	print("updating cache:")
-	print("  generating fileList...")
+	-- print("  generating fileList...")
 	self.newList = {}
     self:lookup(self.rules.path)
-	print("    complete!")
+	-- print("    complete!")
 	print("  checking for new maps...")
 	local counterNew = 0
     for filePath, _ in pairs(self.newList) do
@@ -73,6 +73,7 @@ cacheManager.Cache.update = function(self, rules)
 		end
 	end
 	print("    complete! removed " .. counterOld .. " objects.")
+	print(string.rep("-", 64))
 end
 
 cacheManager.Cache.addObject = function(self, filePath, object)
@@ -103,8 +104,9 @@ cacheManager.Cache.save = function(self, filePath)
 end
 
 cacheManager.Cache.load = function(self, filePath)
-	print("loading cache:")
-	print("  reading " .. filePath)
+	print(string.rep("-", 64))
+	io.write("loading cache: " .. filePath .. " ... ")
+	-- print("  reading " .. filePath)
 	local status, cache = pcall(loadfile(filePath))
 
 	self.list = {}
@@ -115,10 +117,11 @@ cacheManager.Cache.load = function(self, filePath)
 			self.list[filePath] = object
 			counter = counter + 1
 		end
-		print("    complete! loaded " .. counter .. " objects.")
+		print("complete, " .. counter .. " loaded")
 	else
-		print("    loading error. created new cache.")
+		print("error, created new cache")
 	end
+	print(string.rep("-", 64))
 	
 	return self
 end

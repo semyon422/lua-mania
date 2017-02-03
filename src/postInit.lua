@@ -119,7 +119,7 @@ mainMenuList = {
         title = "Play",
         action = function(self)
             self.mapList.state = "songs"
-			uiBase.mapList.list = uiBase.mapList:genList(mapCache.list, uiBase.mapList.sort)
+			uiBase.mapList.list = uiBase.mapList:genList(mapCache.list)
             self.mapList:reload()
         end
     },
