@@ -13,13 +13,22 @@ VsrgHitObject.state = "clear"
 VsrgHitObject.objectType = "hitObject"
 
 VsrgHitObject.judgement = {
-	["pass"] = {0, 128},
-	["miss"] = {129, 191}
+	pass = {0, 120},
+	miss = {121, 160}
+}
+
+VsrgHitObject.passJudgement = {
+	{0, 16, 1},
+	{17, 40, 1},
+	{41, 80, 0.75},
+	{81, 100, 0.5},
+	{101, 120, 0.25},
+	{121, 160, 0},
 }
 
 VsrgHitObject.getJudgement = function(self, deltaTime)
 	local audioPitch = mainConfig:get("game.vsrg.audioPitch", 1)
-	local deltaTime = deltaTime / audioPitch
+	local deltaTime = deltaTime-- / audioPitch
 	
 	local outJudgement, outDelay
 	for judgementIndex, judgement in pairs(self.judgement) do
@@ -37,7 +46,19 @@ VsrgHitObject.getJudgement = function(self, deltaTime)
 	if not outJudgement and not outDelay then
 		outJudgement, outDelay = "none", "none"
 	end
-	return outJudgement, outDelay
+	
+	local scoreMultiplier = 1
+	local isMax = false
+	local absDeltaTime = math.abs(math.ceil(deltaTime))
+	for index, judgement in ipairs(self.passJudgement) do
+		if absDeltaTime >= judgement[1] and absDeltaTime <= judgement[2] then
+			scoreMultiplier = judgement[3]
+			if index == 1 then isMax = true end
+			break
+		end
+	end
+	
+	return outJudgement, outDelay, scoreMultiplier, isMax
 end
 
 VsrgHitObject.next = function(self)

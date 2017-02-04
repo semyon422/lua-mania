@@ -14,8 +14,8 @@ Hold.update = function(self)
 	local deltaStartTime = (self.startTime - currentTime) / mainConfig:get("game.vsrg.audioPitch", 1)
 	local deltaEndTime = (self.endTime - currentTime) / mainConfig:get("game.vsrg.audioPitch", 1)
 	
-	local startJudgement, startDelay = self:getJudgement(deltaStartTime)
-	local endJudgement, endDelay = self:getJudgement(deltaEndTime)
+	local startJudgement, startDelay, startScoreMultiplier, startIsMax = self:getJudgement(deltaStartTime)
+	local endJudgement, endDelay, endScoreMultiplier, endIsMax = self:getJudgement(deltaEndTime)
 	
 	local keyIsDown = self.column.keyInfo.isDown
 	
@@ -30,8 +30,9 @@ Hold.update = function(self)
 			elseif startJudgement == "pass" then
 				self.state = "startPassed"
 				self.column.vsrg.combo = self.column.vsrg.combo + 1
-				self.column.vsrg.score[1] = self.column.vsrg.score[1] + 0.5 * (self.judgement["pass"][2] - math.abs(deltaStartTime)) / self.judgement["pass"][2] * (500000 / #self.column.vsrg.map.hitObjects)
-				self.column.vsrg.accuracyWatcher:addLine(deltaStartTime)
+				-- self.column.vsrg.score[1] = self.column.vsrg.score[1] + 0.5 * (self.judgement["pass"][2] - math.abs(deltaStartTime)) / self.judgement["pass"][2] * (500000 / #self.column.vsrg.map.hitObjects)
+				self.column.vsrg.score[1] = self.column.vsrg.score[1] + 0.5 * startScoreMultiplier * (500000 / #self.column.vsrg.map.hitObjects)
+				self.column.vsrg.accuracyWatcher:addLine(deltaStartTime, startScoreMultiplier, startIsMax)
 			end
 		end
 	elseif self.state == "startPassed" then
@@ -43,14 +44,16 @@ Hold.update = function(self)
 			elseif endJudgement == "pass" then
 				self.state = "endPassed"
 				--self.column.vsrg.combo = self.column.vsrg.combo + 1
-				self.column.vsrg.score[1] = self.column.vsrg.score[1] + 0.5 * (self.judgement["pass"][2] - math.abs(deltaEndTime)) / self.judgement["pass"][2] * (500000 / #self.column.vsrg.map.hitObjects)
-				self.column.vsrg.accuracyWatcher:addLine(deltaEndTime)
+				-- self.column.vsrg.score[1] = self.column.vsrg.score[1] + 0.5 * (self.judgement["pass"][2] - math.abs(deltaEndTime)) / self.judgement["pass"][2] * (500000 / #self.column.vsrg.map.hitObjects)
+				self.column.vsrg.score[1] = self.column.vsrg.score[1] + 0.5 * endScoreMultiplier * (500000 / #self.column.vsrg.map.hitObjects)
+				self.column.vsrg.accuracyWatcher:addLine(deltaEndTime, endScoreMultiplier, endIsMax)
 				self:next()
 			end
 		elseif endJudgement == "miss" and endDelay == "lately" then
 			self.column.keyInfo.isDown = false
 			self.state = "endMissed"
 			self.column.vsrg.combo = 0
+			self.column.vsrg.accuracyWatcher:addLine(deltaEndTime, endScoreMultiplier, endIsMax)
 			self:next()
 		end
 	elseif self.state == "startMissedPressed" then
@@ -58,8 +61,9 @@ Hold.update = function(self)
 			if endJudgement == "pass" then
 				self.state = "endMissedPassed"
 				--self.column.vsrg.combo = self.column.vsrg.combo + 1
-				self.column.vsrg.score[1] = self.column.vsrg.score[1] + 0.5 * (self.judgement["pass"][2] - math.abs(deltaEndTime)) / self.judgement["pass"][2] * (500000 / #self.column.vsrg.map.hitObjects)
-				self.column.vsrg.accuracyWatcher:addLine(deltaStartTime)
+				-- self.column.vsrg.score[1] = self.column.vsrg.score[1] + 0.5 * (self.judgement["pass"][2] - math.abs(deltaEndTime)) / self.judgement["pass"][2] * (500000 / #self.column.vsrg.map.hitObjects)
+				self.column.vsrg.score[1] = self.column.vsrg.score[1] + 0.5 * endScoreMultiplier * (500000 / #self.column.vsrg.map.hitObjects)
+				self.column.vsrg.accuracyWatcher:addLine(deltaEndTime, endScoreMultiplier, endIsMax)
 				self:next()
 			elseif endJudgement == "none" then
 				self.state = "startMissed"
@@ -70,6 +74,7 @@ Hold.update = function(self)
 			self.column.keyInfo.isDown = false
 			self.state = "endMissed"
 			self.column.vsrg.combo = 0
+			self.column.vsrg.accuracyWatcher:addLine(deltaEndTime, endScoreMultiplier, endIsMax)
 			self:next()
 		end
 	elseif self.state == "startMissed" then
@@ -79,6 +84,7 @@ Hold.update = function(self)
 			self.column.keyInfo.isDown = false
 			self.state = "endMissed"
 			self.column.vsrg.combo = 0
+			self.column.vsrg.accuracyWatcher:addLine(deltaEndTime, endScoreMultiplier, endIsMax)
 			self:next()
 		end
 	end

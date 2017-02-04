@@ -13,25 +13,26 @@ Note.update = function(self)
 	local currentTime = self.column.map.currentTime
 	local deltaStartTime = (self.startTime - currentTime) / mainConfig:get("game.vsrg.audioPitch", 1)
 	
-	local startJudgement, startDelay = self:getJudgement(deltaStartTime)
+	local startJudgement, startDelay, startScoreMultiplier, startIsMax = self:getJudgement(deltaStartTime)
 	local keyIsDown = self.column.keyInfo.isDown
 	
 	if startJudgement == "miss" and startDelay == "early" and keyIsDown then
 		self.column.keyInfo.isDown = false
 		self.state = "missed"
 		self.column.vsrg.combo = 0
-		self.column.vsrg.accuracyWatcher:addLine(deltaStartTime)
+		self.column.vsrg.accuracyWatcher:addLine(deltaStartTime, startScoreMultiplier, startIsMax)
 		self:next()
 	elseif startJudgement == "miss" and startDelay == "lately" then
 		self.state = "missed"
 		self.column.vsrg.combo = 0
+		self.column.vsrg.accuracyWatcher:addLine(deltaStartTime, startScoreMultiplier, startIsMax)
 		self:next()
 	elseif startJudgement == "pass" and keyIsDown then
 		self.column.keyInfo.isDown = false
 		self.state = "passed"
 		self.column.vsrg.combo = self.column.vsrg.combo + 1
-		self.column.vsrg.score[1] = self.column.vsrg.score[1] + (self.judgement["pass"][2] - math.abs(deltaStartTime)) / self.judgement["pass"][2] * (500000 / #self.column.vsrg.map.hitObjects)
-		self.column.vsrg.accuracyWatcher:addLine(deltaStartTime)
+		self.column.vsrg.score[1] = self.column.vsrg.score[1] + startScoreMultiplier * (500000 / #self.column.vsrg.map.hitObjects)
+		self.column.vsrg.accuracyWatcher:addLine(deltaStartTime, startScoreMultiplier, startIsMax)
 		self:next()
 	end
 end

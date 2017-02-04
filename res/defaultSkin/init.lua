@@ -15,6 +15,15 @@ local note = love.graphics.newImage(skin.path .. "vsrg/circle/3fff7f.png")
 local headAndTail = love.graphics.newImage(skin.path .. "vsrg/tail/ffffff.png")
 local body = love.graphics.newImage(skin.path .. "vsrg/body/white/body-0.png")
 
+local hitScores = {
+	["max"] = newImage(skin.path .. "vsrg/hitScore/5.png"),
+	[1] = newImage(skin.path .. "vsrg/hitScore/4.png"),
+	[0.75] = newImage(skin.path .. "vsrg/hitScore/3.png"),
+	[0.5] = newImage(skin.path .. "vsrg/hitScore/2.png"),
+	[0.25] = newImage(skin.path .. "vsrg/hitScore/1.png"),
+	[0] = newImage(skin.path .. "vsrg/hitScore/0.png")
+}
+
 local columnWidth = 50/640
 local columnStart = 0.075
 local columnColor = {31, 31, 31, 127}
@@ -118,6 +127,8 @@ skin.get = function(key, data)
 		return preset.columnColor
 	elseif key == "hitPosition" then
 		return hitPosition
+	elseif key == "hitScore" then
+		return hitScores[data]
 	end
 end
 
