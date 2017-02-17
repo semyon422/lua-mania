@@ -33,6 +33,10 @@ Line.postUpdate = function(self)
 	end
 end
 
+Line.unload = function(self)
+	self.rectangle:remove()
+end
+
 local HitScore = loveio.LoveioObject:new()
 
 HitScore.new = function(self, hitScore)

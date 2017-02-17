@@ -216,7 +216,7 @@ end
 
 vsrg.postUpdate = function(self)
 	if self.map.audioState == "delayed" then
-		self.map.currentTime = math.floor(love.timer.getTime()*1000 - self.map.audioStartTime)
+		self.map.currentTime = math.floor(love.timer.getTime()*1000 - self.map.audioStartTime + mainConfig:get("game.vsrg.offset", 1))
 		if self.map.currentTime > 0 then
 			self.map.audioState = "started"
 			self.map.audio:play()
@@ -234,7 +234,9 @@ vsrg.postUpdate = function(self)
 		if not self.map.audio:isPaused() then self.map.audio:pause() end
 	end
 	
-	self.map.currentTime = math.floor(self.map.currentTime + mainConfig:get("game.vsrg.offset", 1))
+	if self.map.audioState ~= "delayed" then
+		self.map.currentTime = math.floor(self.map.audio:tell() * 1000 + mainConfig:get("game.vsrg.offset", 1))
+	end
 	
 	if self.combo > self.maxCombo then
 		self.maxCombo = self.combo

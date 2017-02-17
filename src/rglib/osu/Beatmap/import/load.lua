@@ -12,7 +12,10 @@ local load = function(self, cache)
 	if not cache then
 		print("  reading file...")
 	end
-    local file = io.open(self.filePath, "r")
+    -- local file = io.open(self.filePath, "r")
+    local file = love.filesystem.newFile(self.filePath)
+	file:open("r")
+	if not file then error(self.filePath) end
     local fileLines = {}
 
     local blockName = ""

@@ -27,23 +27,29 @@ mapCacheCallback = function(filePath)
 		return lmx.Beatmap.genCache(filePath)
 	end
 end
-local fileTreeCallback = function(filePath)
-	local object = {}
+-- local fileTreeCallback = function(filePath)
+	-- local object = {}
 	
-	local breakedPath = explode("/", filePath)
-	object.fileName = breakedPath[#breakedPath]
-	object.folderPath = string.sub(filePath, 1, #filePath - #object.fileName - 1)
-	object.title = object.fileName
-	object.type = love.filesystem.isDirectory(filePath) and "directory" or "file"
+	-- local breakedPath = explode("/", filePath)
+	-- object.fileName = breakedPath[#breakedPath]
+	-- object.folderPath = string.sub(filePath, 1, #filePath - #object.fileName - 1)
+	-- object.title = object.fileName
+	-- object.type = love.filesystem.isDirectory(filePath) and "directory" or "file"
 	
-	return object
-end
+	-- return object
+-- end
 fileTreeCacheRules = {
 	path = "res/Songs/",
 	callback = fileTreeCallback,
 	formats = {osu = true, bms = true, bme = true, lmx = true}
 }
-uiBase.fileTree.items = uiBase.fileTree.genItems(fileTreeCacheRules.path)
+--uiBase.fileTree.items = uiBase.fileTree.genItems(fileTreeCacheRules.path)
+mapCache.addCallback = function(self, filePath)
+	print("a", filePath)
+end
+mapCache.removeCallback = function(self, filePath)
+	print("r", filePath)
+end
 
 --------------------------------
 -- Cli binds
@@ -107,7 +113,6 @@ loveio.input.callbacks.quit.saveMainConfig = function()
 	mainConfig:save("config.txt")
 end
 loveio.input.callbacks.quit.saveCaches = function()
-	fileTreeCache:save("fileTreeCache.lua")
 	mapCache:save("mapCache.lua")
 end
 

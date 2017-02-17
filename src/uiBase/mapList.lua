@@ -199,6 +199,8 @@ mapList.load = function(self)
 					end
 				end
 			end
+		elseif key == "f5" then
+			self.list = uiBase.mapList:genList(mapCache.list)
 		-- elseif key == "escape" then
 			-- if #self.backWay >= 1 then
 				-- self.list = self.backWay[#self.backWay]

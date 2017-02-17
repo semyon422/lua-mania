@@ -21,11 +21,11 @@ gameState.data = {
 		["mapList"] = {
 			close = {
 				uiBase["mapList"],
-				uiBase["fileTree"]
+				uiBase["cacheUpdater"]
 			},
 			open = {
 				uiBase["mapList"],
-				uiBase["fileTree"]
+				uiBase["cacheUpdater"]
 			}
 		},
 		["game"] = {
