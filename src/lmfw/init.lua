@@ -2,6 +2,7 @@ explode = require("explode")
 trim = require("trim")
 startsWith = require("startsWith")
 utf8validate = require("utf8validate")
+table2string = require("table2string")
 
 helpers = require("helpers")
 Profiler = require("Profiler")

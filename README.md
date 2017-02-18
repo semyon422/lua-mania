@@ -12,7 +12,6 @@ Supported formats: `osu, bme`
 - f12 - toggle high performance fullscreen (low resolution + without BG)
 
 ##### mapList:
-- f7/f8/f9 - generate/save/load cache
 - shift + 1/2/.../9/0 - scroll maplist to 0%/10%/.../100%/110%
 - wheel - scroll
 - up/down - scroll

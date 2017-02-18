@@ -90,19 +90,8 @@ cacheManager.Cache.save = function(self, filePath)
 	
 	file:write("local cache = {}\n\n")
 	for filePath, object in pairs(self.list) do
-		file:write("cache[\"" .. filePath .. "\"]\t= {")
-		for key, value in pairs(object) do
-			local key = key
-			if type(key) == "number" then
-				key = "[" .. key .. "]"
-			end
-			if type(value) == "string" then
-				file:write(key .. " = " .. string.format("%q", value) .. ", ")
-			elseif type(value) == "number" then
-				file:write(key .. " = " .. value .. ", ")
-			end
-		end
-		file:write("}\n")
+		file:write("cache[\"" .. filePath .. "\"]\t= ")
+		file:write(table2string(object))
 	end
 	file:write("\n")
 	file:write("return cache")

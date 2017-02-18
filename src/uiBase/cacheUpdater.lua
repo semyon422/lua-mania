@@ -2,6 +2,15 @@ local init = function(...)
 --------------------------------
 local cacheUpdater = loveio.LoveioObject:new()
 cacheUpdater.threadSource = [[
+	require("packagePath")
+	explode = require("explode")
+	trim = require("trim")
+	startsWith = require("startsWith")
+	utf8validate = require("utf8validate")
+	table2string = require("table2string")
+	cacheManager = require("cacheManager")
+	require("rglib")
+	
 	local inChannel = love.thread.getChannel("inChannel")
 	local outChannel = love.thread.getChannel("outChannel")
 	
@@ -34,11 +43,21 @@ cacheUpdater.threadSource = [[
 	if stop then return end
 	print("checked")
 	
-	local cacheManager = require("src.lmfw.cacheManager")
+	local mapCacheCallback = function(filePath)
+		local fileType = string.sub(filePath, -3, -1)
+		if fileType == "osu" then
+			return osu.Beatmap:new():import(filePath, true)
+		elseif fileType == "bms" or fileType == "bme" then
+			return bms.Beatmap.genCache(filePath)
+		elseif fileType == "lmx" then
+			return lmx.Beatmap.genCache(filePath)
+		end
+	end
+	
 	local cache = cacheManager.Cache:new():load("mapCache.lua")
 	for filePath, _ in pairs(newList) do
 		if not cache.list[filePath] then
-	        outChannel:push("a" .. filePath)
+	        outChannel:push("a" .. table2string(mapCacheCallback(filePath)))
 		end
     end
 	for filePath, _ in pairs(cache.list) do
@@ -72,8 +91,8 @@ cacheUpdater.postUpdate = function(self)
 		loveio.input.callbacks.quit.saveCaches()
 		self:remove()
 	elseif message:sub(1, 1) == "a" then
-		local object = mapCacheCallback(message:sub(2, -1))
-		self.cache:addObject(message:sub(2, -1), object)
+		local status, object = pcall(loadstring("return " .. message:sub(2, -1)))
+		self.cache:addObject(object.filePath, object)
 	elseif message:sub(1, 1) == "r" then
 		self.cache:removeObject(message:sub(2, -1))
 	end
