@@ -60,7 +60,7 @@ PictureButton.valueChanged = function(self)
 	local sx = self.pos:x2X(1) / self.fontBaseResolution[1] * self.pos.scale[1]
 	if self.quadObject then
 		self["text-1"] = loveio.output.classes.Text:new({
-			x = self.x + self.xPadding, y = self.y + self.h / 2,
+			x = self.x + self.xPadding, y = self.y + ((self.yNotCentered and self.yPadding) or self.h / 2),
 			limit = (self.w - 2*self.xPadding) / sx,
 			text = self.value, xAlign = self.xAlign, yAlign = self.yAlign,
 			font = self.font,

@@ -31,11 +31,11 @@ gameState.data = {
 		["game"] = {
 			close = {
 				game,
-				uiBase["backButton"]
+				--uiBase["backButton"]
 			},
 			open = {
 				game,
-				uiBase["backButton"]
+				--uiBase["backButton"]
 			}
 		}
 	}

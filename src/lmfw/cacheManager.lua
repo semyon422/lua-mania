@@ -105,7 +105,7 @@ cacheManager.Cache.load = function(self, filePath)
 
 	self.list = {}
 	
-	if status then
+	if status and cache then
 		local counter = 0
 		for filePath, object in pairs(cache) do
 			self.list[filePath] = object

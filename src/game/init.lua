@@ -9,10 +9,12 @@ game.gameState = require(game.path .. "gameState")(game)
 game.modes = {}
 game.modes.vsrg = require(game.path .. "/modes/vsrg")(game)
 game.modes.lmx = require(game.path .. "/modes/lmx")(game)
+game.modes.lmp = require(game.path .. "/modes/lmp")(game)
 game.formats = {
 	["bms"] = bms,
 	["osu"] = osu,
-	["lmx"] = lmx
+	["lmx"] = lmx,
+	["lmp"] = lmp
 }
 game.load = function()
 	local object = game.object

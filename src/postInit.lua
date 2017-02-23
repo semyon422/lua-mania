@@ -17,33 +17,6 @@ end
 --------------------------------
 -- Cache
 --------------------------------
-mapCacheCallback = function(filePath)
-	local fileType = string.sub(filePath, -3, -1)
-	if fileType == "osu" then
-		return osu.Beatmap:new():import(filePath, true)
-	elseif fileType == "bms" or fileType == "bme" then
-		return bms.Beatmap.genCache(filePath)
-	elseif fileType == "lmx" then
-		return lmx.Beatmap.genCache(filePath)
-	end
-end
--- local fileTreeCallback = function(filePath)
-	-- local object = {}
-	
-	-- local breakedPath = explode("/", filePath)
-	-- object.fileName = breakedPath[#breakedPath]
-	-- object.folderPath = string.sub(filePath, 1, #filePath - #object.fileName - 1)
-	-- object.title = object.fileName
-	-- object.type = love.filesystem.isDirectory(filePath) and "directory" or "file"
-	
-	-- return object
--- end
-fileTreeCacheRules = {
-	path = "res/Songs/",
-	callback = fileTreeCallback,
-	formats = {osu = true, bms = true, bme = true, lmx = true}
-}
---uiBase.fileTree.items = uiBase.fileTree.genItems(fileTreeCacheRules.path)
 mapCache.addCallback = function(self, filePath)
 	print("a", filePath)
 end

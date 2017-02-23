@@ -51,6 +51,8 @@ cacheUpdater.threadSource = [[
 			return bms.Beatmap.genCache(filePath)
 		elseif fileType == "lmx" then
 			return lmx.Beatmap.genCache(filePath)
+		elseif fileType == "lmp" then
+			return lmp.Beatmap.genCache(filePath)
 		end
 	end
 	
@@ -77,7 +79,7 @@ cacheUpdater.load = function(self)
 	
 	self.inChannel:push([[
 		path = "res/Songs/"
-		formats = {osu = true, bms = true, bme = true, lmx = true}
+		formats = {osu = true, bms = true, bme = true, lmx = true, lmp = true}
 	]])
 	
 	self.thread:start()
@@ -92,7 +94,9 @@ cacheUpdater.postUpdate = function(self)
 		self:remove()
 	elseif message:sub(1, 1) == "a" then
 		local status, object = pcall(loadstring("return " .. message:sub(2, -1)))
-		self.cache:addObject(object.filePath, object)
+		if status and object and object.filePath then
+			self.cache:addObject(object.filePath, object)
+		end
 	elseif message:sub(1, 1) == "r" then
 		self.cache:removeObject(message:sub(2, -1))
 	end
