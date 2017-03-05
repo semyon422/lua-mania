@@ -18,7 +18,7 @@ DrawableTextButton.drawableColor = {255, 255, 255, 255}
 DrawableTextButton.locate = "in"
 
 DrawableTextButton.load = function(self)
-	self.fontBaseResolution = {self.pos:x2X(1), self.pos:y2Y(1)}
+	self.fontBaseResolution = self.fontBaseResolution or {self.pos:x2X(1), self.pos:y2Y(1)}
 	self.drawable = self.drawable or love.graphics.newImage(self.imagePath)
 	self.drawableObject = loveio.output.classes.DrawableBox:new({
 		x = self.x + self.drawableXPadding, y = self.y + self.drawableYPadding,

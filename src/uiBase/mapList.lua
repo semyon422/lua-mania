@@ -24,6 +24,7 @@ Button.pos = mapList.pos
 Button.imagePath = "res/mapListButton.png"
 Button.drawable = love.graphics.newImage(Button.imagePath)
 Button.font = love.graphics.newFont("res/fonts/OpenSans/OpenSansRegular/OpenSansRegular.ttf", 16)
+Button.fontBaseResolution = {Button.pos:x2X(1), Button.pos:y2Y(1)}
 
 Button.oldX = 0
 Button.oldY = 0
