@@ -19,11 +19,13 @@ Barline.draw = function(self)
 end
 
 Barline.drawLoad = function(self)
+	local pos = self.column.vsrg.pos
 	local skin = self.column.vsrg.skin
 	self.color = {255, 255, 255, 255}
 	self.gLine = loveio.output.classes.Rectangle:new({
 		x = 0, y = 0, w = skin.game.vsrg.columnWidth, h = pos:Y2y(3),
-		layer = 21
+		layer = 21,
+		pos = vsrg.pos
 	}):insert(loveio.output.objects)
 end
 

@@ -18,7 +18,8 @@ Line.load = function(self)
 		y = self.y,
 		w = self.w,
 		h = self.h,
-		layer = 20
+		layer = 20,
+		pos = vsrg.pos
 	}):insert(loveio.output.objects)
 end
 
@@ -55,7 +56,8 @@ HitScore.load = function(self)
 		x = self.x,
 		y = self.y,
 		sx = self.sx,
-		layer = 21
+		layer = 21,
+		pos = vsrg.pos
 	}):insert(loveio.output.objects)
 end
 
@@ -88,6 +90,7 @@ AccuracyWatcher.load = function(self)
 end
 
 AccuracyWatcher.addLine = function(self, offset, scoreMultiplier, isMax)
+	local pos = vsrg.pos
 	local color
 	if scoreMultiplier == 1 then
 		color = {255, 255, 255, 255}

@@ -10,7 +10,7 @@ OutputObject.draw = function(self)
 end
 
 OutputObject.getAbs = function(self, key, g)
-	local pos = self.pos or pos
+	local pos = self.pos
 	if key:find("x") or key:find("w") or key:find("r") or key:find("limit") then
 		return pos:x2X(self[key], g)
 	elseif key:find("y") or key:find("h") then

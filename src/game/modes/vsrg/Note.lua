@@ -38,6 +38,7 @@ Note.update = function(self)
 end
 
 Note.drawLoad = function(self)
+	local pos = self.column.vsrg.pos
     local skin = self.column.vsrg.skin
     local keymode = self.column.vsrg.map.keymode
 	
@@ -52,7 +53,8 @@ Note.drawLoad = function(self)
 		drawable = note,
 		x = 0, y = 0, sx = self.columnWidth / pos:X2x(note:getWidth()),
 		color = self.color,
-		layer = 7
+		layer = 7,
+		pos = pos
 	}):insert(loveio.output.objects)
 end
 Note.drawUpdate = function(self)

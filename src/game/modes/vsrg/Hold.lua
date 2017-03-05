@@ -91,6 +91,7 @@ Hold.update = function(self)
 end
 
 Hold.drawLoad = function(self)
+	local pos = self.column.vsrg.pos
 	local skin = self.column.vsrg.skin
 	local keymode = self.column.vsrg.map.keymode
 	local head = skin.get("holdHeadImage", {keymode = keymode, key = self.key})
@@ -104,18 +105,22 @@ Hold.drawLoad = function(self)
 	self.h = pos:x2y(head:getHeight() * self.columnWidth / head:getWidth())
 	self.gHead = loveio.output.classes.Drawable:new({
 		drawable = head, sx = self.columnWidth / pos:X2x(head:getWidth()),
-		x = 0, y = 0, layer = 6, color = self.color
+		x = 0, y = 0, layer = 6, color = self.color,
+		pos = pos
 	}):insert(loveio.output.objects)
 	self.gTail = loveio.output.classes.Drawable:new({
 		drawable = tail, sx = self.columnWidth / pos:X2x(tail:getWidth()),
-		x = 0, y = 0, layer = 5, color = self.color
+		x = 0, y = 0, layer = 5, color = self.color,
+		pos = pos
 	}):insert(loveio.output.objects)
 	self.gBody = loveio.output.classes.Drawable:new({
 		drawable = body, sx = self.columnWidth / pos:X2x(body:getWidth()),
-		x = 0, y = 0, layer = 4, color = self.color
+		x = 0, y = 0, layer = 4, color = self.color,
+		pos = pos
 	}):insert(loveio.output.objects)
 end
 Hold.drawUpdate = function(self)
+	local pos = self.column.vsrg.pos
 	local ox = self.columnStart
 	local oyStart = self.column:getCoord(self, "pseudoStartTime") or self.column:getCoord(self, "startTime")
 	local oyEnd = self.column:getCoord(self, "endTime")

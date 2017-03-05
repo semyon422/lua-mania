@@ -42,21 +42,23 @@ Column.load = function(self)
 		y = 0,
 		w = columnWidth,
 		h = 1,
-		layer = 2
+		layer = 2,
+		pos = self.vsrg.pos
 	}):insert(loveio.output.objects))
 	local hitPosition = self.vsrg.skin.get("hitPosition", {keymode = self.vsrg.map.keymode})
 
 	local keyImage = self.vsrg.skin.get("keyImage", {keymode = self.vsrg.map.keymode, key = self.key})
 	local keyPressedImage = self.vsrg.skin.get("keyPressedImage", {keymode = self.vsrg.map.keymode, key = self.key})
-	local keyImageSX = columnWidth / pos:X2x(keyImage:getWidth())
-	local keyImageSY = pos:y2Y(1) / 768
+	local keyImageSX = columnWidth / self.vsrg.pos:X2x(keyImage:getWidth())
+	local keyImageSY = self.vsrg.pos:y2Y(1) / 768
 	local keyDrawable = loveio.output.classes.Drawable:new({
 		drawable = keyImage,
 		x = columnStart,
 		y = 1 - keyImage:getHeight() / 768,
 		sx = keyImageSX,
 		sy = keyImageSY,
-		layer = 21
+		layer = 21,
+		pos = self.vsrg.pos
 	}):insert(loveio.output.objects)
 	table.insert(self.vsrg.createdObjects, keyDrawable)
 

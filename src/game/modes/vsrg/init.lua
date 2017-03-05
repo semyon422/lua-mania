@@ -2,6 +2,8 @@ local init = function(game)
 --------------------------------
 local vsrg = loveio.LoveioObject:new()
 
+vsrg.pos = loveio.output.Position:new({ratios = {4/3}, align = {"center", "center"}})
+
 vsrg.defaultKeyBinds = {
 	[4] = {"d", "f", "j", "k"},
 	[5] = {"d", "f", "space", "j", "k"},
@@ -39,7 +41,8 @@ vsrg.load = function(self)
 		w = columnStart, h = columnStart,
 		value = self.combo, backgroundColor = {0, 0, 0, 191},
 		getValue = function() return self.combo end,
-		layer = 20
+		layer = 20,
+		pos = self.pos
 	}):insert(loveio.objects)
 	self.scoreCounter = ui.classes.Button:new({
 		x = columnStart + columnWidth * self.map.keymode,
@@ -48,18 +51,20 @@ vsrg.load = function(self)
 		h = columnStart,
 		value = 0, backgroundColor = {0, 0, 0, 191}, xAlign = "right", xPadding = 0.01,
 		getValue = function() return math.ceil(self.score[1] + self.score[2]) end,
-		layer = 20
+		layer = 20,
+		pos = self.pos
 	}):insert(loveio.objects)
 	self.pitchDisplay = ui.classes.Button:new({
 		x = 0, y = 0.25 - columnStart / 2,
 		w = columnStart, h = columnStart,
 		value = "x" .. mainConfig:get("game.vsrg.audioPitch", 1), backgroundColor = {0, 0, 0, 191},
 		getValue = function() return "x" .. mainConfig:get("game.vsrg.audioPitch", 1) end,
-		layer = 20
+		layer = 20,
+		pos = self.pos
 	}):insert(loveio.objects)
 	self.accuracyWatcher = vsrg.AccuracyWatcher:new({
 		x = columnStart, y = 0.5,
-		w = columnWidth * self.map.keymode, h = pos:Y2y(2)
+		w = columnWidth * self.map.keymode, h = self.pos:Y2y(2)
 	}):insert(loveio.objects)
 
 	if mainConfig:get("enableBackground", 1) == 0 then
@@ -159,11 +164,11 @@ vsrg.load = function(self)
 				print("speed = " .. newValue)
 			end
 		elseif key == self.keyBindOffsetUp then
-			local newValue = mainConfig:get("game.vsrg.offset", 0) + 1
+			local newValue = mainConfig:get("game.vsrg.offset", 0) + 5
 			mainConfig:set("game.vsrg.offset", newValue)
 			print("offset = " .. newValue)
 		elseif key == self.keyBindOffsetDown then
-			local newValue = mainConfig:get("game.vsrg.offset", 0) - 1
+			local newValue = mainConfig:get("game.vsrg.offset", 0) - 5
 			mainConfig:set("game.vsrg.offset", newValue)
 			print("offset = " .. newValue)
 		elseif key == self.keyBindVelocityPowerUp then
