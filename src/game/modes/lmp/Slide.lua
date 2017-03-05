@@ -6,22 +6,25 @@ Slide.pos = loveio.output.Position:new({
 })
 
 local Block = ui.classes.DrawableTextButton:new()
-Block.xTextAlign = "left"
-Block.yTextAlign = "center"
-Block.xTextPadding = 0
-Block.yTextPadding = 0
+
+Block.textXAlign = "left"
+Block.textYAlign = "center"
+Block.textXPadding = 0
+Block.textYPadding = 0
 Block.textColor = {0, 0, 0, 255}
 
-Block.xDrawableAlign = "center"
-Block.yDrawableAlign = "center"
-Block.xDrawablePadding = 0
-Block.yDrawablePadding = 0
+Block.drawableXAlign = "center"
+Block.drawableYAlign = "center"
+Block.drawableXPadding = 0
+Block.drawableYPadding = 0
+Block.drawableColor = {255, 255, 255, 255}
+Block.locate = "in"
 
 Block.imagePath = "res/clearPixel.png"
 Block.drawable = love.graphics.newImage(Block.imagePath)
-Block.locate = "in"
 Block.font = love.graphics.newFont("res/fonts/OpenSans/OpenSansRegular/OpenSansRegular.ttf", 16)
 Block.pos = Slide.pos
+Block.fontBaseResolution = {800, 600}
 
 Slide.load = function(self)
 	self.fontBaseResolution = {self.pos:x2X(1), self.pos:y2Y(1)}
@@ -32,12 +35,15 @@ Slide.load = function(self)
 		if block.type == "text" then
 			local object = Block:new({
 				x = x, y = y, w = w, h = h, value = block.value, font = block.font,
-				xAlign = block.xAlign
+				textXAlign = block.xAlign, textYAlign = block.yAlign,
+				textXPadding = block.xPadding, textYPadding = block.yPadding
 			}):insert(loveio.objects)
 			table.insert(self.objects, object)
 		elseif block.type == "image" then
 			local object = Block:new({
-				x = x, y = y, w = w, h = h, drawable = block.value
+				x = x, y = y, w = w, h = h, drawable = block.value,
+				drawableXAlign = block.xAlign, drawableYAlign = block.yAlign,
+				drawableXPadding = block.xPadding, drawableYPadding = block.yPadding
 			}):insert(loveio.objects)
 			table.insert(self.objects, object)
 		end
