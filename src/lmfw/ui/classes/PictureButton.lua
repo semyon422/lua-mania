@@ -20,11 +20,17 @@ PictureButton.load = function(self)
 	self.quadWidth = self.quadWidth or self.drawable:getWidth()
 	self.quadHeight = self.quadHeight or self.drawable:getHeight()
 	self.quad = self.quad or love.graphics.newQuad(self.quadX, self.quadY, self.quadWidth, self.quadHeight, self.drawable:getWidth(), self.drawable:getHeight())
-	self.quadObject = loveio.output.classes.Quad:new({
+	self.quadObject = loveio.output.classes.QuadBox:new({
+		x = self.x, y = self.y, w = self.w, h = self.h,
 		drawable = self.drawable,
 		quad = self.quad,
 		layer = self.layer,
-		pos = self.pos
+		locate = self.locate,
+		xAlign = self.align[1],
+		yAlign = self.align[2],
+		pos = self.pos,
+		quadWidth = self.quadWidth or self.drawable:getWidth(),
+		quadHeight = self.quadHeight or self.drawable:getHeight()
 	}):insert(loveio.output.objects)
 	
 	loveio.input.callbacks.mousepressed[tostring(self)] = function(mx, my)
@@ -37,16 +43,9 @@ PictureButton.load = function(self)
 		end
 	end
 	loveio.input.callbacks.resize[tostring(self)] = function()
-		self.base = {x = self.pos:x2X(self.x, true), y = self.pos:y2Y(self.y, true), w = self.pos:x2X(self.w), h = self.pos:y2Y(self.h)}
-		self.box = {w = self.quadWidth, h = self.quadHeight}
-		self.dims = loveio.output.Position.getDimensionsSimple(self.base, self.box, self.align, self.locate)
-		self.quadObject.x = self.pos:X2x(self.dims.x, true)
-		self.quadObject.y = self.pos:Y2y(self.dims.y, true)
-		self.quadObject.sx = self.dims.scale
 		self:valueChanged()
 	end
 	loveio.input.callbacks.resize[tostring(self)]()
-	self:valueChanged()
 	self.loaded = true
 end
 PictureButton.unload = function(self)

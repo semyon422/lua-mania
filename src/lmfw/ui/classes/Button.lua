@@ -39,9 +39,10 @@ Button.unload = function(self)
 end
 Button.valueChanged = function(self)
 	if self["text-1"] then self["text-1"]:remove() end
-	self["text-1"] = loveio.output.classes.Text:new({
-		x = self.x + self.xPadding, y = self.y + self.h / 2,
-		limit = self.w - 2*self.xPadding,
+	self["text-1"] = loveio.output.classes.TextBox:new({
+		x = self.x + self.xPadding, y = self.y + self.yPadding,
+		w = self.w - 2*self.xPadding,
+		h = self.h - 2*self.yPadding,
 		text = self.value, xAlign = self.xAlign, yAlign = self.yAlign,
 		font = self.font,
 		color = self.textColor,

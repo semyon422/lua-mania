@@ -1,35 +1,36 @@
 local init = function(output, loveio)
 --------------------------------
-local Text = output.classes.OutputObject:new()
+local TextBox = output.classes.OutputObject:new()
 
-Text.limit = 0
-Text.xAlign = "left"
-Text.yAlign = "bottom"
-Text.text = ""
-Text.font = love.graphics.getFont()
+TextBox.w = 1
+TextBox.h = 1
+TextBox.xAlign = "left"
+TextBox.yAlign = "top"
+TextBox.text = ""
+TextBox.font = love.graphics.getFont()
 
-Text.draw = function(self)
+TextBox.draw = function(self)
 	local y = self:getAbs("y", true)
-	local limit = self:getAbs("limit")
+	local w = self:getAbs("w")
 	local h = self:getAbs("h")
-	local width, wrappedText = self.font:getWrap(self.text, limit)
+	local width, wrappedText = self.font:getWrap(self.text, w)
 	local lineCount = #wrappedText
 	local sx = self.sx or 1
 	local sy = self.sy or sx
 	if self.yAlign == "center" then
-		y = y - (self.font:getHeight()*sy / 2) * lineCount
-	elseif self.yAlign == "top" then
-		y = y - self.font:getHeight()*sy * lineCount
+		y = y + h/2 - (self.font:getHeight()*sy / 2) * lineCount
+	elseif self.yAlign == "bottom" then
+		y = y + h - self.font:getHeight()*sy * lineCount
 	end
 	
 	local oldColor = {love.graphics.getColor()}
 	local oldFont = love.graphics.getFont()
 	love.graphics.setFont(self.font)
-	if not multipleColors then love.graphics.setColor(255, 255, 255, 255) end
+	if not self.multipleColors then love.graphics.setColor(255, 255, 255, 255) end
 	love.graphics.printf({self.color, tostring(self.text)},
 						 self:getAbs("x", true),
 						 y,
-						 limit,
+						 self:getAbs("w"),
 						 self.xAlign,
 						 self.r,
 						 self.sx,
@@ -42,7 +43,7 @@ Text.draw = function(self)
 	love.graphics.setFont(oldFont)
 end
 
-return Text
+return TextBox
 --------------------------------
 end
 
