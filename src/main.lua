@@ -7,7 +7,7 @@ mapCache = cacheManager.Cache:new():load("mapCache.lua")
 
 loveio.init()
 
-pos = loveio.output.Position:new({
+defaultPos = loveio.output.Position:new({
 	ratios = {0.01, mainConfig:get("position.ratio", 4/3)}, resolutions = {{1, 1}, {1, 1}}
 })
 

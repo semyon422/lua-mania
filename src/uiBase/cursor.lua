@@ -9,7 +9,7 @@ cursor.circles = {
 		mode = "line"
 	}
 }
-cursor.load = function()
+cursor.load = function(self)
 	love.mouse.setVisible(false)
 	cursor.object = loveio.output.classes.Circle:new({
 		x = 0, y = 0, r = cursor.circles[1].r,

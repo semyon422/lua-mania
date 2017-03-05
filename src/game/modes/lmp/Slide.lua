@@ -1,25 +1,30 @@
 init = function(lmp)
 ----------------
 local Slide = loveio.LoveioObject:new()
-
-local Block = ui.classes.PictureButton:new()
-Block.xAlign = "left"
-Block.xPadding = 0.05
-Block.yPadding = 0.05
-Block.yNotCentered = true
-Block.xSpawn = 0.5
-Block.imagePath = "res/clearPixel.png"
-Block.drawable = love.graphics.newImage(Block.imagePath)
-Block.align = {"left", "center"}
-Block.locate = "in"
-Block.font = love.graphics.newFont("res/fonts/OpenSans/OpenSansRegular/OpenSansRegular.ttf", 16)
-Block.fontBaseResolution = {pos:x2X(1), pos:y2Y(1)}
-Block.textColor = {0, 0, 0, 255}
-Block.pos = loveio.output.Position:new({
+Slide.pos = loveio.output.Position:new({
 	ratios = {4/3}, resolutions = {{1, 1}}
 })
 
+local Block = ui.classes.DrawableTextButton:new()
+Block.xTextAlign = "left"
+Block.yTextAlign = "center"
+Block.xTextPadding = 0
+Block.yTextPadding = 0
+Block.textColor = {0, 0, 0, 255}
+
+Block.xDrawableAlign = "center"
+Block.yDrawableAlign = "center"
+Block.xDrawablePadding = 0
+Block.yDrawablePadding = 0
+
+Block.imagePath = "res/clearPixel.png"
+Block.drawable = love.graphics.newImage(Block.imagePath)
+Block.locate = "in"
+Block.font = love.graphics.newFont("res/fonts/OpenSans/OpenSansRegular/OpenSansRegular.ttf", 16)
+Block.pos = Slide.pos
+
 Slide.load = function(self)
+	self.fontBaseResolution = {self.pos:x2X(1), self.pos:y2Y(1)}
 	self.objects = self.objects or {}
 	for _, block in pairs(self.blocks) do
 		local template = lmp.blockTemplates[block.template]

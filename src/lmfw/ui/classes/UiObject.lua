@@ -15,14 +15,15 @@ UiObject.update = function(self)
 	if self.hidden then return end
 	if self.getValue then self.value = self.getValue() end
 	
-	if self.value ~= nil and (self.oldValue ~= self.value or not self.loaded) then
-		self:valueChanged()
-		self.oldValue = self.value
-	end
 	if not self.loaded then
 		self:load()
 		self.loaded = true
 	end
+	if self.value ~= nil and (self.oldValue ~= self.value or not self.loaded) then
+		self:valueChanged()
+		self.oldValue = self.value
+	end
+	
 	self:postUpdate()
 end
 

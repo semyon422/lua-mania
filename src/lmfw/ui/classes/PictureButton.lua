@@ -12,8 +12,8 @@ PictureButton.align = {"center", "center"}
 PictureButton.locate = "in"
 
 PictureButton.load = function(self)
-	self.fontBaseResolution = self.fontBaseResolution or {pos:x2X(1), pos:y2Y(1)}
-	self.pos = self.pos or pos
+	self.pos = self.pos or defaultPos
+	self.fontBaseResolution = self.fontBaseResolution or {self.pos:x2X(1), self.pos:y2Y(1)}
 	self.drawable = self.drawable or love.graphics.newImage(self.imagePath)
 	self.quadX = self.quadX or 0
 	self.quadY = self.quadY or 0

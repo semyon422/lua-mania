@@ -2,24 +2,34 @@ local mapList = ui.classes.UiObject:new()
 
 mapList.pos = loveio.output.Position:new({ratios = {1}, align = {"right", "center"}})
 
-local Button = ui.classes.PictureButton:new()
+local Button = ui.classes.QuadTextButton:new()
 mapList.Button = Button
-Button.oldX = 0
-Button.oldY = 0
-Button.xAlign = "left"
-Button.xPadding = 0.05
+
+Button.textXAlign = "left"
+Button.textYAlign = "center"
+Button.textXPadding = 0.075
+Button.textYPadding = 0
+Button.textColor = {255, 255, 255, 255}
+
+Button.quadXAlign = "left"
+Button.quadYAlign = "center"
+Button.quadXPadding = 0
+Button.quadYPadding = 0
+Button.quadColor = {255, 255, 255, 255}
+Button.locate = "out"
+
 Button.w = 1
 Button.h = 1/6
-Button.xSpawn = 0.5
-Button.xSpeedMultiplier = 4
-Button.ySpeedMultiplier = 4
 Button.pos = mapList.pos
 Button.imagePath = "res/mapListButton.png"
 Button.drawable = love.graphics.newImage(Button.imagePath)
-Button.align = {"left", "center"}
-Button.locate = "out"
 Button.font = love.graphics.newFont("res/fonts/OpenSans/OpenSansRegular/OpenSansRegular.ttf", 16)
-Button.fontBaseResolution = {mapList.pos:x2X(1), mapList.pos:y2Y(1)}
+
+Button.oldX = 0
+Button.oldY = 0
+Button.xSpawn = 0.5
+Button.xSpeedMultiplier = 4
+Button.ySpeedMultiplier = 4
 Button.xTargetOffsetSelected = 0
 
 Button.postUpdate = function(self)
@@ -245,29 +255,31 @@ mapList.calcButtons = function(self)
 				if y >= 0 and y <= 1 then
 					xSpawn = self.circle.x
 				end
-				local drawable, quadX, quadY, quadWidth, quadHeight, quadHeight
+				local drawable, quad, quadX, quadY, quadWidth, quadHeight
 				if item.backgroundPath and false then
 					drawable = love.graphics.newImage(item.backgroundPath)
 					quadWidth = drawable:getWidth()
 					quadHeight = drawable:getWidth() * Button.h / Button.w
 					quadX = 0
 					quadY = (drawable:getHeight() - quadHeight) / 2
+					quad = love.graphics.newQuad(quadX, quadY, quadWidth, quadHeight, drawable:getWidth(), drawable:getHeight())
+				else
+					drawable = Button.drawable
+					quadX = 0
+					quadY = 0
+					quadWidth = drawable:getWidth()
+					quadHeight = drawable:getHeight()
+					quad = love.graphics.newQuad(quadX, quadY, quadWidth, quadHeight, drawable:getWidth(), drawable:getHeight())
 				end
 				local value, action = self:itemGetInfo(item, itemIndex)
 				local button = Button:new({
-					x = xSpawn, y = y,
-					value = value,
-					action = action,
-					mapList = self,
-					object = item,
-					pos = self.pos,
-					itemIndex = itemIndex,
-					drawable = drawable or Button.drawable,
-					quadX = quadX,
-					quadY = quadY,
-					quadWidth = quadWidth,
-					quadHeight = quadHeight,
-					layer = 100 + itemIndex*2
+					drawable = drawable, quad = quad,
+					x = xSpawn, y = y, quadX = quadX, quadY = quadY,
+					quadWidth = quadWidth, quadHeight = quadHeight,
+					value = value, action = action,
+					itemIndex = itemIndex, object = item, mapList = self,
+					layer = 100 + itemIndex*2,
+					pos = self.pos
 				}):insert(loveio.objects)
 				self.buttons[tostring(button)] = button
 			end

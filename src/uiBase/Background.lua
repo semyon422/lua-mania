@@ -13,7 +13,7 @@ Background.layer = 0
 Background.cParallax = 0.025
 
 Background.load = function(self)
-	self.pos = self.pos or loveio.output.Position:new({ratios = {0}, resolutions = {{1, 1}}, scale = {1, 1}, locate = "out"})
+	self.pos = loveio.output.Position:new({ratios = {0}, resolutions = {{1, 1}}, scale = {1, 1}, locate = "out"})
 	if love.filesystem.isFile(self.path) then
 		self.drawable = love.graphics.newImage(self.path)
 		self.drawableObject = loveio.output.classes.Drawable:new({
