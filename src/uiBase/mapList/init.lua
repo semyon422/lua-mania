@@ -23,14 +23,14 @@ end
 
 mapList.load = function(self)
 	self.buttons = {}
-	self.dy = 1/8
+	self.dy = 1/9
 	self.scrollOffset = 1 / self.dy / 2
 	self.scroll = self.scroll or 1
 	self.scrollTarget = self.scroll
 	self.circle = {}
 	self.circle.x = 1.25
 	self.circle.y = 0.5
-	self.liveZone = 0.25
+	self.liveZone = self.dy*3
 	
 	self.state = self.state or "mainMenu"
 	
@@ -78,7 +78,6 @@ mapList.load = function(self)
 end
 
 mapList.scrollTo = function(self, scroll)
-	local scroll = scroll
 	if scroll < 1 then scroll = 1
 	elseif scroll > #self.list then scroll = #self.list
 	end
@@ -87,13 +86,8 @@ mapList.scrollTo = function(self, scroll)
 end
 
 mapList.postUpdate = function(self)
-	if self.scroll < self.scrollTarget then
-		self.scroll = self.scroll + 1
-		self:calcButtons()
-	elseif self.scroll > self.scrollTarget then
-		self.scroll = self.scroll - 1
-		self:calcButtons()
-	end
+	self.scroll = math.ceil(self.scrollTarget)
+	self:calcButtons()
 end
 
 mapList.calcButtons = function(self)
@@ -159,7 +153,7 @@ mapList.itemGetInfo = function(self, item, itemIndex)
 				temp[random] = nil
 			else
 				mapList.selectedItem = self.itemIndex
-				mapList:scrollTo(self.itemIndex)
+				mapList:scrollTo(self.itemIndex - 1)
 			end
 		end
 		return value, action

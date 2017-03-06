@@ -38,13 +38,23 @@ Button.postUpdate = function(self)
 	else
 		self.xTargetOffsetSelected = 0
 	end
+	local dy = self.mapList.dy
 	local yTarget, xTarget
-	yTarget = (self.yTargetOffset or 0) + self.mapList.dy * (self.itemIndex - 1 - self.mapList.scroll + self.mapList.scrollOffset)
+	yTarget = (self.yTargetOffset or 0) + dy * (self.itemIndex - 1 - self.mapList.scroll + self.mapList.scrollOffset) - self.h/2
 	self.y = self.y + dt * (yTarget - self.y) * self.ySpeedMultiplier
 	
-	if self.y >= 0 - self.h and self.y <= 1 then
-		local circle = self.mapList.circle
-		xTarget = (self.xTargetOffset or 0) + self.xTargetOffsetSelected + circle.x - math.sqrt(circle.y^2 + (circle.x - self.xSpawn)^2 - (self.y + self.h/2 - circle.y)^2)
+	-- if self.y >= 0 - self.h and self.y <= 1 then
+		-- local circle = self.mapList.circle
+		-- xTarget = (self.xTargetOffset or 0) + self.xTargetOffsetSelected + circle.x - math.sqrt(circle.y^2 + (circle.x - self.xSpawn)^2 - (self.y + self.h/2 - circle.y)^2)
+		-- self.x = self.x + dt * (xTarget - self.x) * self.xSpeedMultiplier
+	if self.y + 3*dy >= 0 and self.y + dy < 0.5 then
+		xTarget = (self.xTargetOffset or 0) + self.xTargetOffsetSelected - (1/4)*(self.y + self.h/2) + 1/4 + 1/4
+		self.x = self.x + dt * (xTarget - self.x) * self.xSpeedMultiplier
+	elseif self.y + dy > 0.5 and self.y - 2*dy <= 1 then
+		xTarget = (self.xTargetOffset or 0) + self.xTargetOffsetSelected + (1/4)*(self.y + self.h/2) + 1/4
+		self.x = self.x + dt * (xTarget - self.x) * self.xSpeedMultiplier
+	elseif self.y + dy == 0.5 then
+		xTarget = (self.xTargetOffset or 0) + self.xTargetOffsetSelected + 1/4
 		self.x = self.x + dt * (xTarget - self.x) * self.xSpeedMultiplier
 	else
 		local limit = (self.xTargetOffset or 0) + self.xSpawn
@@ -56,14 +66,14 @@ Button.postUpdate = function(self)
 		self.oldX = self.x
 		self.oldY = self.y
 	end
-	if (yTarget < 0 - self.mapList.liveZone - Button.h or yTarget > 1 + self.mapList.liveZone) and
-	   (self.y < 0 - self.mapList.liveZone - Button.h or self.y > 1 + self.mapList.liveZone) then
+	if (yTarget + self.mapList.liveZone + self.h <= 0 or yTarget - self.mapList.liveZone >= 1) and
+	   (self.y + self.mapList.liveZone + self.h <= 0 or self.y - self.mapList.liveZone >= 1) then
 		self:remove()
 		self.mapList.buttons[tostring(self)] = nil
 	end
 	
 	local mx, my = self.pos:X2x(loveio.input.mouse.x, true), self.pos:Y2y(loveio.input.mouse.y, true)
-	if mx >= self.x and mx <= self.x + self.w and my >= self.y and my <= self.y + self.h then
+	if isInBox(mx, my, self.x, self.y, self.w, self.h) then
 		self.xTargetOffset = -0.1
 		self.yTargetOffset = 0
 		for _, button in pairs(self.mapList.buttons) do

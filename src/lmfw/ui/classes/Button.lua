@@ -25,7 +25,7 @@ Button.load = function(self)
 		local y = self:getAbs("y", true)
 		local w = self:getAbs("w")
 		local h = self:getAbs("h")
-		if mx >= x and mx <= x + w and my >= y and my <= y + h then
+		if isInBox(mx, my, x, y, w, h) then
 			self:activate()
 		end
 	end

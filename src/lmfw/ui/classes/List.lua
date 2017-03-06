@@ -35,7 +35,7 @@ List.load = function(self)
 	loveio.input.callbacks.wheelmoved[tostring(self)] = function(_, direction)
 		local x, y, w, h = self.x, self.y, self.w, self.h
 		local mx, my = pos:X2x(loveio.input.mouse.x, true), pos:Y2y(loveio.input.mouse.y, true)
-		if mx >= x and mx <= x + w and my >= y and my <= y + h then
+		if isInBox(mx, my, x, y, w, h) then
 			if direction == -1 * self.scrollDirection then
 				self.startItem = self.startItem - 1
 			elseif direction == 1 * self.scrollDirection then
