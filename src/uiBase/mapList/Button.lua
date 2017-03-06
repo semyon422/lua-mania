@@ -40,20 +40,16 @@ Button.postUpdate = function(self)
 	end
 	local dy = self.mapList.dy
 	local yTarget, xTarget
-	yTarget = (self.yTargetOffset or 0) + dy * (self.itemIndex - 1 - self.mapList.scroll + self.mapList.scrollOffset) - self.h/2
+	yTarget = (self.yTargetOffset or 0) + dy * (self.itemIndex - 1 - self.mapList.scroll + self.mapList.scrollOffset) - self.h/2 + dy
 	self.y = self.y + dt * (yTarget - self.y) * self.ySpeedMultiplier
 	
-	-- if self.y >= 0 - self.h and self.y <= 1 then
-		-- local circle = self.mapList.circle
-		-- xTarget = (self.xTargetOffset or 0) + self.xTargetOffsetSelected + circle.x - math.sqrt(circle.y^2 + (circle.x - self.xSpawn)^2 - (self.y + self.h/2 - circle.y)^2)
-		-- self.x = self.x + dt * (xTarget - self.x) * self.xSpeedMultiplier
-	if self.y + 3*dy >= 0 and self.y + dy < 0.5 then
+	if self.y + 3*self.h/2 >= 0 and self.y + self.h/2 < 0.5 then
 		xTarget = (self.xTargetOffset or 0) + self.xTargetOffsetSelected - (1/4)*(self.y + self.h/2) + 1/4 + 1/4
 		self.x = self.x + dt * (xTarget - self.x) * self.xSpeedMultiplier
-	elseif self.y + dy > 0.5 and self.y - 2*dy <= 1 then
+	elseif self.y + self.h/2 > 0.5 and self.y - 2*self.h/2 <= 1 then
 		xTarget = (self.xTargetOffset or 0) + self.xTargetOffsetSelected + (1/4)*(self.y + self.h/2) + 1/4
 		self.x = self.x + dt * (xTarget - self.x) * self.xSpeedMultiplier
-	elseif self.y + dy == 0.5 then
+	elseif self.y + self.h/2 == 0.5 then
 		xTarget = (self.xTargetOffset or 0) + self.xTargetOffsetSelected + 1/4
 		self.x = self.x + dt * (xTarget - self.x) * self.xSpeedMultiplier
 	else
