@@ -2,150 +2,12 @@ local mapList = ui.classes.UiObject:new()
 
 mapList.pos = loveio.output.Position:new({ratios = {1}, align = {"right", "center"}})
 
-local Button = ui.classes.QuadTextButton:new()
-mapList.Button = Button
-
-Button.textXAlign = "left"
-Button.textYAlign = "center"
-Button.textXPadding = 0.075
-Button.textYPadding = 0
-Button.textColor = {255, 255, 255, 255}
-
-Button.quadXAlign = "left"
-Button.quadYAlign = "center"
-Button.quadXPadding = 0
-Button.quadYPadding = 0
-Button.quadColor = {255, 255, 255, 255}
-Button.locate = "out"
-
-Button.w = 1
-Button.h = 1/6
-Button.pos = mapList.pos
-Button.imagePath = "res/mapListButton.png"
-Button.drawable = love.graphics.newImage(Button.imagePath)
-Button.font = love.graphics.newFont("res/fonts/OpenSans/OpenSansRegular/OpenSansRegular.ttf", 16)
-Button.fontBaseResolution = {600, 600}
-
-Button.oldX = 0
-Button.oldY = 0
-Button.xSpawn = 0.5
-Button.xSpeedMultiplier = 4
-Button.ySpeedMultiplier = 4
-Button.xTargetOffsetSelected = 0
-
-Button.postUpdate = function(self)
-	local dt =  math.min(1/60, love.timer.getDelta())
-	
-	if self.mapList.selectedItem == self.itemIndex then
-		self.xTargetOffsetSelected = -0.2
-	else
-		self.xTargetOffsetSelected = 0
-	end
-	local yTarget, xTarget
-	yTarget = (self.yTargetOffset or 0) + self.mapList.dy * (self.itemIndex - 1 - self.mapList.scroll + self.mapList.scrollOffset)
-	self.y = self.y + dt * (yTarget - self.y) * self.ySpeedMultiplier
-	
-	if self.y >= 0 - self.h and self.y <= 1 then
-		local circle = self.mapList.circle
-		xTarget = (self.xTargetOffset or 0) + self.xTargetOffsetSelected + circle.x - math.sqrt(circle.y^2 + (circle.x - self.xSpawn)^2 - (self.y + self.h/2 - circle.y)^2)
-		self.x = self.x + dt * (xTarget - self.x) * self.xSpeedMultiplier
-	else
-		local limit = (self.xTargetOffset or 0) + self.xSpawn
-		self.x = self.x - dt * (self.x - limit) * self.xSpeedMultiplier
-	end
-	
-	if math.ceil(self.oldX*10000) ~= math.ceil(self.x*10000) or math.ceil(self.oldY*10000) ~= math.ceil(self.y*10000) then
-		self:reload()
-		self.oldX = self.x
-		self.oldY = self.y
-	end
-	if (yTarget < 0 - self.mapList.liveZone - Button.h or yTarget > 1 + self.mapList.liveZone) and
-	   (self.y < 0 - self.mapList.liveZone - Button.h or self.y > 1 + self.mapList.liveZone) then
-		self:remove()
-		self.mapList.buttons[tostring(self)] = nil
-	end
-	
-	local mx, my = self.pos:X2x(loveio.input.mouse.x, true), self.pos:Y2y(loveio.input.mouse.y, true)
-	if mx >= self.x and mx <= self.x + self.w and my >= self.y and my <= self.y + self.h then
-		self.xTargetOffset = -0.1
-		self.yTargetOffset = 0
-		for _, button in pairs(self.mapList.buttons) do
-			if button.itemIndex < self.itemIndex then
-				button.yTargetOffset = -0.05
-			elseif button.itemIndex > self.itemIndex then
-				button.yTargetOffset = 0.05
-			end
-		end
-		self.mapList.buttonUnderMouse = self
-	elseif self.mapList.buttonUnderMouse == self then
-		for _, button in pairs(self.mapList.buttons) do
-			button.yTargetOffset = 0
-		end
-		self.mapList.buttonUnderMouse = nil
-	elseif self.mapList.buttonUnderMouse ~= self then
-		self.xTargetOffset = 0
-	end
-
-	if not self.mapList.list[self.itemIndex] then
-        self:remove()
-        print(buttonIndex)
-    end
-end
+local Button = require("uiBase.mapList.Button")(mapList)
 
 mapList.sort = function(a, b)
 	return (a.title or "") < (b.title or "")
 end
 
-
--- local createTree
--- createTree = function(path, tree)
-	-- if #path ~= 0 then
-		-- local path1 = path[1]
-		-- table.remove(path, 1)
-		-- tree[path1] = tree[path1] or {}
-		-- return createTree(path, tree[path1])
-	-- end
-	
-	-- return tree
--- end
--- local createList
--- createList = function(tree, list)
-	-- for index, subTree in pairs(tree) do
-		-- if subTree.type == "cacheItem" then
-			-- table.insert(list, subTree)
-		-- else
-			-- local listChanger = {}
-			-- local nextList = createList(subTree, {})
-			-- listChanger.title = index
-			-- listChanger.action = function(self)
-				-- table.insert(self.mapList.backWay, self.mapList.list)
-				-- self.mapList.list = nextList
-				-- self.mapList.scroll = 1
-				-- self.mapList:reload()
-			-- end
-			-- table.insert(list, listChanger)
-		-- end
-		-- table.sort(list, mapList.sort)
-	-- end
-	-- return list
--- end
--- mapList.genList = function(self, objects, sort)
-	-- local list = {}
-	
-	-- local objectsTree = {}
-	
-	-- for _, object in pairs(objects) do
-		-- local path = explode("/", object.mapPath)
-		-- table.remove(path, 1)
-		-- table.remove(path, 1)
-		-- local treeEnd = createTree(path, objectsTree)
-		-- table.insert(treeEnd, object)
-	-- end
-	
-	-- createList(objectsTree, list)
-
-	-- return list
--- end
 mapList.genList = function(self, cacheList)
 	local list = {}
 	
@@ -169,7 +31,6 @@ mapList.load = function(self)
 	self.circle.x = 1.25
 	self.circle.y = 0.5
 	self.liveZone = 0.25
-	-- self.backWay = self.backWay or {}
 	
 	self.state = self.state or "mainMenu"
 	
@@ -212,13 +73,6 @@ mapList.load = function(self)
 			end
 		elseif key == "f5" then
 			self.list = uiBase.mapList:genList(mapCache.list)
-		-- elseif key == "escape" then
-			-- if #self.backWay >= 1 then
-				-- self.list = self.backWay[#self.backWay]
-				-- self.backWay[#self.backWay] = nil
-				-- self.scroll = 1
-				-- self:reload()
-			-- end
 		end
 	end
 end
@@ -248,9 +102,14 @@ mapList.calcButtons = function(self)
 		button.buttonIndex = buttonIndex
 		itemIndexKeys[button.itemIndex] = button
 	end
-	for itemIndex, item in ipairs(self.list) do
-		local y = self.dy * (itemIndex - 1 - self.scroll + self.scrollOffset)
-		if y >= 0 - self.liveZone - Button.h and y <= 1 + self.liveZone then
+	local yMin = 0 - self.liveZone - Button.h
+	local yMax = 1 + self.liveZone
+	local itemIndexMin = math.ceil(yMin / self.dy + 1 + self.scroll - self.scrollOffset)
+	local itemIndexMax = math.floor(yMax / self.dy + 1 + self.scroll - self.scrollOffset)
+	for itemIndex = itemIndexMin, itemIndexMax do
+		local item = self.list[itemIndex]
+		if item then
+			local y = self.dy * (itemIndex - 1 - self.scroll + self.scrollOffset)
 			if not itemIndexKeys[itemIndex] then
 				local xSpawn = Button.xSpawn
 				if y >= 0 and y <= 1 then
@@ -284,8 +143,6 @@ mapList.calcButtons = function(self)
 				}):insert(loveio.objects)
 				self.buttons[tostring(button)] = button
 			end
-		elseif y > 1.2 then
-			break
 		end
 	end
 end

@@ -1,0 +1,96 @@
+local init = function(mapList)
+--------------------------------
+local Button = ui.classes.QuadTextButton:new()
+
+Button.textXAlign = "left"
+Button.textYAlign = "center"
+Button.textXPadding = 0.075
+Button.textYPadding = 0
+Button.textColor = {255, 255, 255, 255}
+
+Button.quadXAlign = "left"
+Button.quadYAlign = "center"
+Button.quadXPadding = 0
+Button.quadYPadding = 0
+Button.quadColor = {255, 255, 255, 255}
+Button.locate = "out"
+
+Button.w = 1
+Button.h = 1/6
+Button.pos = mapList.pos
+Button.imagePath = "res/mapListButton.png"
+Button.drawable = love.graphics.newImage(Button.imagePath)
+Button.font = love.graphics.newFont("res/fonts/OpenSans/OpenSansRegular/OpenSansRegular.ttf", 16)
+Button.fontBaseResolution = {600, 600}
+
+Button.oldX = 0
+Button.oldY = 0
+Button.xSpawn = 0.5
+Button.xSpeedMultiplier = 4
+Button.ySpeedMultiplier = 4
+Button.xTargetOffsetSelected = 0
+
+Button.postUpdate = function(self)
+	local dt =  math.min(1/60, love.timer.getDelta())
+	
+	if self.mapList.selectedItem == self.itemIndex then
+		self.xTargetOffsetSelected = -0.2
+	else
+		self.xTargetOffsetSelected = 0
+	end
+	local yTarget, xTarget
+	yTarget = (self.yTargetOffset or 0) + self.mapList.dy * (self.itemIndex - 1 - self.mapList.scroll + self.mapList.scrollOffset)
+	self.y = self.y + dt * (yTarget - self.y) * self.ySpeedMultiplier
+	
+	if self.y >= 0 - self.h and self.y <= 1 then
+		local circle = self.mapList.circle
+		xTarget = (self.xTargetOffset or 0) + self.xTargetOffsetSelected + circle.x - math.sqrt(circle.y^2 + (circle.x - self.xSpawn)^2 - (self.y + self.h/2 - circle.y)^2)
+		self.x = self.x + dt * (xTarget - self.x) * self.xSpeedMultiplier
+	else
+		local limit = (self.xTargetOffset or 0) + self.xSpawn
+		self.x = self.x - dt * (self.x - limit) * self.xSpeedMultiplier
+	end
+	
+	if math.ceil(self.oldX*10000) ~= math.ceil(self.x*10000) or math.ceil(self.oldY*10000) ~= math.ceil(self.y*10000) then
+		self:reload()
+		self.oldX = self.x
+		self.oldY = self.y
+	end
+	if (yTarget < 0 - self.mapList.liveZone - Button.h or yTarget > 1 + self.mapList.liveZone) and
+	   (self.y < 0 - self.mapList.liveZone - Button.h or self.y > 1 + self.mapList.liveZone) then
+		self:remove()
+		self.mapList.buttons[tostring(self)] = nil
+	end
+	
+	local mx, my = self.pos:X2x(loveio.input.mouse.x, true), self.pos:Y2y(loveio.input.mouse.y, true)
+	if mx >= self.x and mx <= self.x + self.w and my >= self.y and my <= self.y + self.h then
+		self.xTargetOffset = -0.1
+		self.yTargetOffset = 0
+		for _, button in pairs(self.mapList.buttons) do
+			if button.itemIndex < self.itemIndex then
+				button.yTargetOffset = -0.05
+			elseif button.itemIndex > self.itemIndex then
+				button.yTargetOffset = 0.05
+			end
+		end
+		self.mapList.buttonUnderMouse = self
+	elseif self.mapList.buttonUnderMouse == self then
+		for _, button in pairs(self.mapList.buttons) do
+			button.yTargetOffset = 0
+		end
+		self.mapList.buttonUnderMouse = nil
+	elseif self.mapList.buttonUnderMouse ~= self then
+		self.xTargetOffset = 0
+	end
+
+	if not self.mapList.list[self.itemIndex] then
+        self:remove()
+        print(buttonIndex)
+    end
+end
+
+return Button
+--------------------------------
+end
+
+return init
