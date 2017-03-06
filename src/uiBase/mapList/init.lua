@@ -23,7 +23,7 @@ end
 
 mapList.load = function(self)
 	self.buttons = {}
-	self.dy = 1/9
+	self.dy = 1/8
 	self.scrollOffset = 1 / self.dy / 2
 	self.scroll = self.scroll or 1
 	self.scrollTarget = self.scroll
@@ -153,7 +153,7 @@ mapList.itemGetInfo = function(self, item, itemIndex)
 				temp[random] = nil
 			else
 				mapList.selectedItem = self.itemIndex
-				mapList:scrollTo(self.itemIndex - 1)
+				mapList:scrollTo(self.itemIndex)
 			end
 		end
 		return value, action
