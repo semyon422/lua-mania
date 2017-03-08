@@ -26,8 +26,8 @@ Button.fontBaseResolution = {600, 600}
 Button.oldX = 0
 Button.oldY = 0
 Button.xSpawn = 0.5
-Button.xSpeedMultiplier = 4
-Button.ySpeedMultiplier = 4
+Button.xSpeedMultiplier = 8
+Button.ySpeedMultiplier = 12
 Button.xTargetOffsetSelected = 0
 
 Button.postUpdate = function(self)
@@ -74,9 +74,9 @@ Button.postUpdate = function(self)
 		self.yTargetOffset = 0
 		for _, button in pairs(self.mapList.buttons) do
 			if button.itemIndex < self.itemIndex then
-				button.yTargetOffset = -0.05
+				button.yTargetOffset = -(self.h - dy)
 			elseif button.itemIndex > self.itemIndex then
-				button.yTargetOffset = 0.05
+				button.yTargetOffset = self.h - dy
 			end
 		end
 		self.mapList.buttonUnderMouse = self

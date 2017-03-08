@@ -57,9 +57,9 @@ DrawableTextButton.valueChanged = function(self)
 	local sx = self.pos:x2X(1) / self.fontBaseResolution[1] * self.pos.scale[1]
 	local sy = self.pos:y2Y(1) / self.fontBaseResolution[2] * self.pos.scale[2]
 	self["text-1"] = loveio.output.classes.TextBox:new({
-		x = self.x + self.textXPadding*sx, y = self.y + self.textYPadding*sy,
-		w = self.w/sx - 2*self.textXPadding*sx,
-		h = self.h - 2*self.textYPadding*sx,
+		x = self.x + self.textXPadding, y = self.y + self.textYPadding,
+		w = self.w/sx - 2*self.textXPadding,
+		h = self.h - 2*self.textYPadding*sy,
 		text = self.value, xAlign = self.textXAlign, yAlign = self.textYAlign,
 		font = self.font,
 		color = self.textColor,

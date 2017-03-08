@@ -9,7 +9,7 @@ uiBase.fpsDisplay = ui.classes.DrawableTextButton:new({
 	action = function(self) print("FPS: " .. self.value) end,
 	pos = loveio.output.Position:new({ratios = {1}, align = {"right", "top"}}),
 	layer = 1000,
-	font = love.graphics.newFont("res/fonts/OpenSans/OpenSansRegular/OpenSansRegular.ttf", 14)
+	font = love.graphics.newFont("res/fonts/OpenSans/OpenSansBold/OpenSansBold.ttf", 16)
 })
 
 uiBase.mapList = require("uiBase.mapList")
