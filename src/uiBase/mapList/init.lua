@@ -4,19 +4,101 @@ mapList.pos = loveio.output.Position:new({ratios = {1}, align = {"right", "cente
 
 local Button = require("uiBase.mapList.Button")(mapList)
 
-mapList.sort = function(a, b)
-	return (a.title or "") < (b.title or "")
-end
 
-mapList.genList = function(self, cacheList)
-	local list = {}
+local sortStage1 = function(a, b)
+	return (a.mapName or "") < (b.mapName or "")
+end
+local sortStageN = function(a, b)
+	return (a.filePath or "") < (b.filePath or "")
+end
+local sortStages = {
+	[1] = sortStage1,
+	n = sortStageN
+}
+
+local groupStage1 = function(object, n)
+	local outTable = {
+		artist = object.artist,
+		title = object.title,
+		filePath = object.filePath
+	}
+	local outTitle = object.artist .. " - " .. object.title
+	local outId = object.artist .. object.title
+	return outTable, outTitle, outId
+end
+local groupStageN = function(object, n)
+	local breakedPath = explode("/", object.filePath)
 	
-	for filePath, object in pairs(cacheList) do
-		object.type = "cacheItem"
-		table.insert(list, object)
+	local outTable = {
+		filePath = object.filePath
+	}
+	local outTitle = breakedPath[#breakedPath - n] or "all"
+	local outId = outTitle
+	return outTable, outTitle, outId
+end
+local groupStages = {
+	[1] = groupStage1,
+	n = groupStageN
+}
+
+mapList.group = function(self, list)
+	local stage = 1
+	local list = list
+	local nextList = {}
+	
+	while true do
+		local id2index = {}
+		for _, object in ipairs(list) do
+			local data, title, id = (groupStages[stage] or groupStages.n)(object, stage)
+			if not id2index[id] then
+				local index = #nextList + 1
+				id2index[id] = index
+				nextList[index] = {
+					title = title,
+					data = data,
+					filePath = data.filePath,
+					stage = stage,
+					collapsed = true
+				}
+			end
+			local groupTable = nextList[id2index[id]]
+			table.insert(groupTable, object)
+		end
+		for _, groupTable in ipairs(nextList) do
+			table.sort(groupTable, (sortStages[stage] or sortStages.n))
+		end
+		if #nextList == 1 then break end
+		list = nextList
+		nextList = {}
+		stage = stage + 1
 	end
 	
-	table.sort(list, mapList.sort)
+	return list
+end
+
+local gl
+gl = function(gslist, list)
+	for _, groupTable in ipairs(gslist) do
+		table.insert(list, groupTable)
+		if not groupTable.collapsed then
+			gl(groupTable, list)
+		end
+	end
+end
+mapList.genList = function(self, cacheList)
+	if not self.sourceList then
+		self.sourceList = {}
+		for filePath, object in pairs(cacheList) do
+			table.insert(self.sourceList, object)
+		end
+	end
+	
+	if not self.groupedSortedList then
+		self.groupedSortedList = self:group(self.sourceList)
+	end
+	local list = {}
+	gl(self.groupedSortedList, list)
+	vardump(list)
 
 	return list
 end
@@ -72,7 +154,7 @@ mapList.load = function(self)
 				end
 			end
 		elseif key == "f5" then
-			self.list = uiBase.mapList:genList(mapCache.list)
+			self:reload()
 		end
 	end
 end
@@ -142,19 +224,50 @@ mapList.calcButtons = function(self)
 end
 
 mapList.itemGetInfo = function(self, item, itemIndex)
-	if item.type == "cacheItem" then
+	-- if item.type == "cacheItem" then
+		-- local value = (item.title or "<title>") .. "\n" .. (item.artist or "<artist>") .. " // " .. ((item.creator or item.format) or "") .. "\n" .. (item.mapName or "<mapName>")
+		-- local mapList = self
+		-- local action = function(self)
+			-- if mapList.selectedItem == itemIndex then
+				-- local random = tostring(math.random())
+				-- temp[random] = self.object
+				-- mainCli:run("gameState set game " .. random)
+				-- temp[random] = nil
+			-- else
+				-- mapList.selectedItem = self.itemIndex
+				-- mapList:scrollTo(self.itemIndex)
+			-- end
+		-- end
+		-- return value, action
+	-- else
+		-- local value = item.title
+		-- local action = item.action
+		-- return value, action
+	-- end
+	if item.collapsed ~= nil then
+		local value = item.title
+		local mapList = self
+		local action = function(self)
+			item.collapsed = not item.collapsed
+			local list = {}
+			gl(mapList.groupedSortedList, list)
+			mapList.list = list
+			mapList:reload()
+		end
+		return value, action
+	elseif item.mapName then
 		local value = (item.title or "<title>") .. "\n" .. (item.artist or "<artist>") .. " // " .. ((item.creator or item.format) or "") .. "\n" .. (item.mapName or "<mapName>")
 		local mapList = self
 		local action = function(self)
-			if mapList.selectedItem == itemIndex then
+			-- if mapList.selectedItem == itemIndex then
 				local random = tostring(math.random())
 				temp[random] = self.object
 				mainCli:run("gameState set game " .. random)
 				temp[random] = nil
-			else
-				mapList.selectedItem = self.itemIndex
-				mapList:scrollTo(self.itemIndex)
-			end
+			-- else
+				-- mapList.selectedItem = self.itemIndex
+				-- mapList:scrollTo(self.itemIndex)
+			-- end
 		end
 		return value, action
 	else

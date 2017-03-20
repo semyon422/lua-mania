@@ -4,6 +4,7 @@ startsWith = require("startsWith")
 utf8validate = require("utf8validate")
 table2string = require("table2string")
 isInBox = require("isInBox")
+vardump = require("vardump")
 
 helpers = require("helpers")
 Profiler = require("Profiler")

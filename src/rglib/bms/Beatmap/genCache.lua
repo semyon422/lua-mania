@@ -7,8 +7,9 @@ local function bmsCacher(filePath)
 	local mapFileName = breakedPath[#breakedPath]
 	local mapPath = string.sub(filePath, 1, #filePath - #mapFileName - 1)
 	
-	local file = io.open(filePath, "r")
-	if not file then return end
+	local file = love.filesystem.newFile(filePath)
+	file:open("r")
+	if not file then error(filePath) end
 	local fileLines = {}
 	for line in file:lines() do
 		if string.sub(line, 1, 6) == "#TITLE" then
@@ -31,8 +32,8 @@ local function bmsCacher(filePath)
 		artist = artist,
 		mapName = mapName,
 		filePath = filePath,
-		mapFileName = mapFileName,
-		mapPath = mapPath,
+		--mapFileName = mapFileName,
+		--mapPath = mapPath,
 		mode = "vsrg",
 		format = "bms"
 	}

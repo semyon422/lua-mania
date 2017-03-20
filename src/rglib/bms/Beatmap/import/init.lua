@@ -10,7 +10,9 @@ local import = function(self, filePath)
 		paths = {self.mapPath}
 	}
 	
-	local file = io.open(filePath, "r")
+	local file = love.filesystem.newFile(filePath)
+	file:open("r")
+	if not file then error(filePath) end
 	local fileLines = {}
 	
 	self.keymode = 8

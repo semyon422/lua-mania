@@ -1,7 +1,7 @@
 local init = function(Beatmap, osu)
 --------------------------------
 local function osuCache(filePath)
-	local title, artist, version, creator, source
+	local title, artist, mapName, creator, source
 	
 	local file = io.open(filePath, "r")
 	local fileLines = {}
@@ -13,7 +13,7 @@ local function osuCache(filePath)
 			artist = trim(string.sub(line, 8, -1))
 		end
 		if string.sub(line, 1, 7) == "Version" then
-			version = trim(string.sub(line, 9, -1))
+			mapName = trim(string.sub(line, 9, -1))
 		end
 		if string.sub(line, 1, 7) == "Creator" then
 			creator = trim(string.sub(line, 9, -1))
@@ -31,10 +31,10 @@ local function osuCache(filePath)
 	return {
 		title = title,
 		artist = artist,
-		version = version,
-		creator = creator,
-		source = source,
+		mapName = mapName,
 		filePath = filePath,
+		--creator = creator,
+		--source = source,
 		mode = "vsrg",
 		format = "osu"
 	}

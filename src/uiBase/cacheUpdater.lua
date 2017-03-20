@@ -14,12 +14,12 @@ cacheUpdater.threadSource = [[
 	local inChannel = love.thread.getChannel("inChannel")
 	local outChannel = love.thread.getChannel("outChannel")
 	
-	local message = inChannel:pop()
-	local status, value = pcall(loadstring(message))
+	-- local message = inChannel:pop()
+	-- local status, value = pcall(loadstring(message))
 	
 	local newList = {}
-	local formats = formats or {}
-	local path = path or {}
+	local formats = {osu = true, bms = true, bme = true, lmx = true, lmp = true}
+	local path = "res/Songs/"
 	local counter = 0
 	local stop = false
 	local lookup
@@ -46,7 +46,7 @@ cacheUpdater.threadSource = [[
 	local mapCacheCallback = function(filePath)
 		local fileType = string.sub(filePath, -3, -1)
 		if fileType == "osu" then
-			return osu.Beatmap:new():import(filePath, true)
+			return osu.Beatmap.genCache(filePath)
 		elseif fileType == "bms" or fileType == "bme" then
 			return bms.Beatmap.genCache(filePath)
 		elseif fileType == "lmx" then
@@ -77,10 +77,10 @@ cacheUpdater.load = function(self)
 	self.inChannel = love.thread.getChannel("inChannel")
 	self.outChannel = love.thread.getChannel("outChannel")
 	
-	self.inChannel:push([[
-		path = "res/Songs/"
-		formats = {osu = true, bms = true, bme = true, lmx = true, lmp = true}
-	]])
+	-- self.inChannel:push([[
+		-- path = "res/Songs/"
+		-- formats = {osu = true, bms = true, bme = true, lmx = true, lmp = true}
+	-- ]])
 	
 	self.thread:start()
 	

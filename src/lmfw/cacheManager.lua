@@ -92,6 +92,7 @@ cacheManager.Cache.save = function(self, filePath)
 	for filePath, object in pairs(self.list) do
 		file:write("cache[\"" .. filePath .. "\"]\t= ")
 		file:write(table2string(object))
+		file:write("\n")
 	end
 	file:write("\n")
 	file:write("return cache")
