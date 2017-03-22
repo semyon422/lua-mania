@@ -98,14 +98,14 @@ mapList.genList = function(self, cacheList)
 	end
 	local list = {}
 	gl(self.groupedSortedList, list)
-	vardump(list)
+	-- vardump(list)
 
 	return list
 end
 
 mapList.load = function(self)
 	self.buttons = {}
-	self.dy = 1/8
+	self.dy = 1/16
 	self.scrollOffset = 1 / self.dy / 2
 	self.scroll = self.scroll or 1
 	self.scrollTarget = self.scroll
@@ -256,7 +256,7 @@ mapList.itemGetInfo = function(self, item, itemIndex)
 		end
 		return value, action
 	elseif item.mapName then
-		local value = (item.title or "<title>") .. "\n" .. (item.artist or "<artist>") .. " // " .. ((item.creator or item.format) or "") .. "\n" .. (item.mapName or "<mapName>")
+		local value = (item.mapName or "<mapName>")
 		local mapList = self
 		local action = function(self)
 			-- if mapList.selectedItem == itemIndex then

@@ -13,10 +13,10 @@ Button.quadYAlign = "center"
 Button.quadXPadding = 0
 Button.quadYPadding = 0
 Button.quadColor = {255, 255, 255, 255}
-Button.locate = "out"
+Button.locate = "in"
 
 Button.w = 1
-Button.h = 1/6
+Button.h = 1/12
 Button.pos = mapList.pos
 Button.imagePath = "res/mapListButton.png"
 Button.drawable = love.graphics.newImage(Button.imagePath)
