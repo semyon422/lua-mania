@@ -37,13 +37,6 @@ callbacks.keypressed = function(key)
 		end
 	elseif key == "f5" then
 		self:reload()
-	elseif key == "escape" then
-		if #self.backWay >= 1 then
-			self.list = self.backWay[#self.backWay]
-			self.backWay[#self.backWay] = nil
-			self.scroll = 1
-			self:reload()
-		end
 	end
 end
 

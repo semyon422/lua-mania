@@ -21,7 +21,8 @@ local group = function(list)
 					title = title,
 					data = data,
 					filePath = data.filePath,
-					stage = stage
+					stage = stage,
+					collapsed = true
 				}
 			end
 			local groupTable = nextList[id2index[id]]
@@ -43,11 +44,8 @@ local compileList
 compileList = function(groupedSortedList, list)
 	for _, groupTable in ipairs(groupedSortedList) do
 		table.insert(list, groupTable)
-		groupTable.action = function(self)
-			table.insert(mapList.backWay, mapList.list)
-			mapList.list = self
-			mapList.scroll = 1
-			mapList:reload()
+		if not groupTable.collapsed then
+			compileList(groupTable, list)
 		end
 	end
 end
@@ -62,10 +60,9 @@ mapList.genList = function(self, cacheList)
 	if not self.groupedSortedList then
 		self.groupedSortedList = group(self.sourceList)
 	end
-	vardump(self.groupedSortedList)
-	-- local list = compileList(self.groupedSortedList, list)
-	local list = self.groupedSortedList
-	
+	local list = {}
+	compileList(self.groupedSortedList, list)
+
 	return list
 end
 
@@ -76,8 +73,6 @@ mapList.load = function(self)
 	self.scroll = self.scroll or 1
 	self.scrollTarget = self.scroll
 	self.liveZone = self.dy*3
-	
-	self.backWay = self.backWay or {}
 	
 	self.list = self.list or (mainMenuList or {{title = "empty mapList"}})
 	
@@ -142,28 +137,33 @@ mapList.calcButtons = function(self)
 end
 
 mapList.itemGetInfo = function(self, item, itemIndex)
-	if item.stage then
+	if item.collapsed ~= nil then
 		local value = item.title
 		local mapList = self
 		local action = function(self)
-			table.insert(mapList.backWay, mapList.list)
-			mapList.list = item
-			mapList.scroll = 1
+			item.collapsed = not item.collapsed
+			local list = {}
+			compileList(mapList.groupedSortedList, list)
+			mapList.list = list
 			mapList:reload()
 		end
 		return value, action
 	elseif item.mapName then
-		local value = item.mapName
+		local value = (item.mapName or "<mapName>")
 		local mapList = self
 		local action = function(self)
-			local random = tostring(math.random())
-			temp[random] = self.object
-			mainCli:run("gameState set game " .. random)
-			temp[random] = nil
+			-- if mapList.selectedItem == itemIndex then
+				local random = tostring(math.random())
+				temp[random] = self.object
+				mainCli:run("gameState set game " .. random)
+				temp[random] = nil
+			-- else
+				-- mapList.selectedItem = self.itemIndex
+				-- mapList:scrollTo(self.itemIndex)
+			-- end
 		end
 		return value, action
 	else
-		local mapList = self
 		local value = item.title
 		local action = item.action
 		return value, action

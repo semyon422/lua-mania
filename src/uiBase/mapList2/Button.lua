@@ -28,23 +28,30 @@ Button.oldY = 0
 Button.xSpawn = 0.5
 Button.xSpeedMultiplier = 8
 Button.ySpeedMultiplier = 12
+Button.xTargetOffsetSelected = 0
+Button.xTargetOffsetStageMultiplier = 0.1
 
 Button.postUpdate = function(self)
 	local dt =  math.min(1/60, love.timer.getDelta())
 	
+	if self.mapList.selectedItem == self.itemIndex then
+		self.xTargetOffsetSelected = -0.2
+	else
+		self.xTargetOffsetSelected = 0
+	end
 	local dy = self.mapList.dy
 	local yTarget, xTarget
 	yTarget = (self.yTargetOffset or 0) + dy * (self.itemIndex - 1 - self.mapList.scroll + self.mapList.scrollOffset) - self.h/2 + dy
 	self.y = self.y + dt * (yTarget - self.y) * self.ySpeedMultiplier
 	
 	if self.y + 3*self.h/2 >= 0 and self.y + self.h/2 < 0.5 then
-		xTarget = (self.xTargetOffset or 0) - (1/4)*(self.y + self.h/2) + 1/4 + 1/4
+		xTarget = (self.xTargetOffset or 0) + self.xTargetOffsetSelected - (1/4)*(self.y + self.h/2) + 1/4 + 1/4 + self.xTargetOffsetStageMultiplier*(self.object.stage or 0)
 		self.x = self.x + dt * (xTarget - self.x) * self.xSpeedMultiplier
 	elseif self.y + self.h/2 > 0.5 and self.y - 2*self.h/2 <= 1 then
-		xTarget = (self.xTargetOffset or 0) + (1/4)*(self.y + self.h/2) + 1/4
+		xTarget = (self.xTargetOffset or 0) + self.xTargetOffsetSelected + (1/4)*(self.y + self.h/2) + 1/4 + self.xTargetOffsetStageMultiplier*(self.object.stage or 0)
 		self.x = self.x + dt * (xTarget - self.x) * self.xSpeedMultiplier
 	elseif self.y + self.h/2 == 0.5 then
-		xTarget = (self.xTargetOffset or 0) + 1/4
+		xTarget = (self.xTargetOffset or 0) + self.xTargetOffsetSelected + 1/4 + self.xTargetOffsetStageMultiplier*(self.object.stage or 0)
 		self.x = self.x + dt * (xTarget - self.x) * self.xSpeedMultiplier
 	else
 		local limit = (self.xTargetOffset or 0) + self.xSpawn
