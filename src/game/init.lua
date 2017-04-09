@@ -14,7 +14,8 @@ game.formats = {
 	["bms"] = bms,
 	["osu"] = osu,
 	["lmx"] = lmx,
-	["lmp"] = lmp
+	["lmp"] = lmp,
+	["lmn"] = lmn
 }
 game.load = function()
 	local object = game.object

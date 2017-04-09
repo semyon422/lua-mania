@@ -157,17 +157,28 @@ Column.getCoord = function(self, hitObject, key)
 end
 
 Column.draw = function(self)
-	for hitObjectIndex = self.firstHitObjectIndex, #self.hitObjects do
+	for hitObjectIndex = self.firstHitObjectIndex, self.firstHitObjectIndex + 1000 do --#self.hitObjects do
 		local hitObject = self.hitObjects[hitObjectIndex]
 		if hitObject then
-			if self:getCoord(hitObject, "startTime") < 0 then
-				break
-			elseif self:getCoord(hitObject, "startTime") > 1 + hitObject.h and not hitObject.endTime or hitObject.endTime and self:getCoord(hitObject, "endTime") > 1 + hitObject.h then
-				hitObject:remove()
-				self.firstHitObjectIndex = hitObject.columnIndex
-			else
-				hitObject:draw()
-			end
+			-- if hitObject.startTimingPoint.velocity >= 0 then
+				if self:getCoord(hitObject, "startTime") < 0 then
+					break
+				elseif self:getCoord(hitObject, "startTime") > 1 + hitObject.h and not hitObject.endTime or hitObject.endTime and self:getCoord(hitObject, "endTime") > 1 + hitObject.h then
+					hitObject:remove()
+					self.firstHitObjectIndex = hitObject.columnIndex
+				else
+					hitObject:draw()
+				end
+			-- else
+				-- if self:getCoord(hitObject, "startTime") > 1 then
+					-- break
+				-- elseif self:getCoord(hitObject, "startTime") < 0 - hitObject.h and not hitObject.endTime or hitObject.endTime and self:getCoord(hitObject, "endTime") > 0 - hitObject.h then
+					-- hitObject:remove()
+					-- self.firstHitObjectIndex = hitObject.columnIndex
+				-- else
+					-- hitObject:draw()
+				-- end
+			-- end
 		end
 	end
 	for barlineIndex = self.firstBarlineIndex, #self.barlines do

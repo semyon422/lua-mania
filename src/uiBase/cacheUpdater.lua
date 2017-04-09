@@ -18,7 +18,7 @@ cacheUpdater.threadSource = [[
 	-- local status, value = pcall(loadstring(message))
 	
 	local newList = {}
-	local formats = {osu = true, bms = true, bme = true, lmx = true, lmp = true}
+	local formats = {osu = true, bms = true, bme = true, lmx = true, lmp = true, lmn = true}
 	local path = "res/Songs/"
 	local counter = 0
 	local stop = false
@@ -53,6 +53,8 @@ cacheUpdater.threadSource = [[
 			return lmx.Beatmap.genCache(filePath)
 		elseif fileType == "lmp" then
 			return lmp.Beatmap.genCache(filePath)
+		elseif fileType == "lmn" then
+			return lmn.Beatmap.genCache(filePath)
 		end
 	end
 	

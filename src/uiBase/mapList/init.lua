@@ -62,7 +62,6 @@ mapList.genList = function(self, cacheList)
 	if not self.groupedSortedList then
 		self.groupedSortedList = group(self.sourceList)
 	end
-	vardump(self.groupedSortedList)
 	-- local list = compileList(self.groupedSortedList, list)
 	local list = self.groupedSortedList
 	
