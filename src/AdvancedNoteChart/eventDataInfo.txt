@@ -1,0 +1,41 @@
+--noteProperties
+
+pressEdge
+unpressEdge
+
+press
+unpress
+	
+--events
+
+play
+	sound (string)
+	loop (bool)
+
+stop
+
+audio
+	audio (string)
+	offset (int)
+	volume (float)
+	pitch (float)
+
+auto
+	layer (int)
+	state (bool)
+
+visible
+	layer (int)
+	state (byte)
+
+	
+--examples
+
+someName	*play:someSound.ogg
+someName2	*hit:someName
+
+someName3	*play:loopSound.ogg,true
+someName4	*hold:someName3
+
+someName5	*audio:audio.mp3,0,0,1
+someName6	*audio:audio2.mp3,0,1,1

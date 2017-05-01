@@ -1,5 +1,6 @@
 require("lmfw")
 require("rglib")
+require("tweaks")
 
 mainConfig = configManager.Config:new():load("config.txt")
 

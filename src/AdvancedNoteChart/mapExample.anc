@@ -1,0 +1,49 @@
+--ancv1
+local init = function(filePath)
+
+local noteChart = AdvancedNoteChart:new()
+noteChart.filePath = filePath
+
+m = noteChart.metaData
+m.title = "Title"
+m.artist = "Artist"
+m.chartName = "ChartName"
+m.creator = "Creator"
+m.keyMode = 4
+m.audio = "audio.ogg"
+
+e = {}
+e.p1 = noteChart.event.Play:new("sound.ogg")
+
+
+TimingPoint = noteChart.TimingPoint:new()
+t = function(startTime, bpm, velocity, speed)
+	local timingPoint = TimingPoint:new()
+	
+	timingPoint.startTime = startTime
+	
+	table.insert(noteChart.timingData, timingPoint)
+end
+t(0, 220, 1, 1)
+
+Note = noteChart.Note:new()
+n = function(startTime, endTime, pressEdgeEvent)
+	local note = Note:new()
+	
+	note.startTime = startTime
+	note.endTime = endTime
+	
+	note.startTimingPoint = noteChart:getTimingPoint(startTime)
+	note.endTimingPoint = noteChart:getTimingPoint(endTime)
+	
+	note.event.pressEdge = pressEdgeEvent
+	
+	table.insert(noteChart.noteData, note)
+end
+
+n(100, nil, e.p1)
+n(200, 300, e.p1)
+
+return noteChart:load()
+
+return init
