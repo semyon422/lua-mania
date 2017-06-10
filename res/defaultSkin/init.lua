@@ -21,7 +21,7 @@ local hitScores = {
 	[0.75] = newImage(skin.path .. "vsrg/hitScore/3.png"),
 	[0.5] = newImage(skin.path .. "vsrg/hitScore/2.png"),
 	[0.25] = newImage(skin.path .. "vsrg/hitScore/1.png"),
-	[0] = newImage(skin.path .. "vsrg/hitScore/0.png")
+	[0] = newImage(skin.path .. "clearPixel.png")
 }
 
 local columnWidth = 50/640

@@ -1,0 +1,2 @@
+require("packagePath")
+require("src")
