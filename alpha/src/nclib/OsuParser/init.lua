@@ -1,18 +1,18 @@
 nclib.OsuParser = createClass(nclib.Parcer)
 local OsuParser = nclib.OsuParser
 
-require("nclib.OsuParser.HitObject")
-require("nclib.OsuParser.TimingPoint")
+require("nclib.OsuParser.NoteParser")
+require("nclib.OsuParser.TimingPointParser")
 
 OsuParser.parse = function(self)
-	self.metaData = {}
-	self.timingData = {}
-	self.noteData = {}
-	
-	
+	self:parseStage1()
 end
 
-OsuParser.load = function(self, cache)
+OsuParser.parseStage1 = function(self)
+	self.eventParsers = {}
+	self.timingPointParsers = {}
+	self.noteParsers = {}
+	
 	local file = love.filesystem.newFile(self.filePath)
 	file:open("r")
 	if not file then error(self.filePath) end
@@ -34,19 +34,28 @@ OsuParser.load = function(self, cache)
 		if line:startsWith("[") then
 			blockName = line:trim():sub(2, -2)
 		elseif blockName ~= "Events" and blockName ~= "TimingPoints" and blockName ~= "HitObjects" then
-			self:parseMetaDataLine(line)
+			self:parseStage1MetaDataLine(line)
 		elseif blockName == "Events" then
-			self:parseEventsLine(line)
+			self:parseStage1EventLine(line)
 		elseif blockName == "TimingPoints" then
-			self:parseTimingPointsLine(line)
+			self:parseStage1TimingPointLine(line)
 		elseif blockName == "HitObjects" then
-			self:parseHitObjectsLine(line)
+			self:parseStage1HitObjectLine(line)
 		end
 	end
-	self:processMetadata()
+	
+	local compareByStartTime = function(a, b) return a.startTime < b.startTime end
+	table.sort(self.timingPointParsers, compareByStartTime)
+	table.sort(self.noteParsers, compareByStartTime)
 end
 
-OsuParser.parseMetadataLine = function(self, line)
+OsuParser.parseStage2 = function(self)
+	for _, noteParser in ipairs(self.noteParsers) do
+		noteParser:parseStage2()
+	end
+end
+
+OsuParser.parseStage1MetadataLine = function(self, line)
 	local lineTable = line:trim():split(":")
 	local key = lineTable[1]:trim()
 	table.remove(lineTable, 1)
@@ -54,49 +63,55 @@ OsuParser.parseMetadataLine = function(self, line)
 	self.osuMetaData[key] = value
 end
 
-OsuParser.processMetadata = function(self)
-	for key, value in pairs(self.osuMetaData) do
-		if key == "AudioFilename" and value ~= "virtual" then
-			self.metaData.audioFileName = value
-		end
-	end
-end
-
-OsuParser.parseEventsLine = function(self, line)
-
-end
-
-OsuParser.parseTimingPointsLine = function(self, line)
-	-- local lineTable = line:split(",")
-	
-	-- self.offset = tonumber(lineTable[1])
-	-- self.beatLength = tonumber(lineTable[2])
-	-- self.timingSignature = tonumber(lineTable[3])
-	-- self.sampleSetId = tonumber(lineTable[4])
-	-- self.customSampleIndex = tonumber(lineTable[5])
-	-- self.sampleVolume = tonumber(lineTable[6])
-	-- self.timingChange = tonumber(lineTable[7])
-	-- self.kiaiTimeActive = tonumber(lineTable[8])
-	
-	-- self.startTime = self.offset
-	
-	-- if self.timingChange == 0 then
-		-- self.baseBeatLenght = self.beatLength
-		-- self.baseVelocity = -100 / self.baseBeatLenght
-		-- self.inherited = true
-	-- elseif self.timingChange == 1 then
-		-- self.baseVelocity = 1
-		-- self.inherited = false
-		-- if self.beatLength < 0 then
-			-- self.baseBeatLenght = self.beatLength
-			-- self.baseVelocity = -100 / self.baseBeatLenght
-			-- self.inherited = true
+-- OsuParser.processMetadata = function(self)
+	-- for key, value in pairs(self.osuMetaData) do
+		-- if key == "AudioFilename" and value ~= "virtual" then
+			-- self.metaData.audioFileName = value
 		-- end
 	-- end
-	
-	-- self.index = #self.beatmap.timingPoints + 1
+-- end
+
+OsuParser.parseStage1EventLine = function(self, line)
+
 end
 
-OsuParser.parseHitObjectsLine = function(self, line)
+OsuParser.parseStage1TimingPointLine = function(self, line)
+	-- local osuTimingPoint = {}
+	-- local timingPoint = {}
+	-- timingPoint.osuTimingPoint = osuTimingPoint
+	
+	-- local lineTable = line:split(",")
+	
+	-- osuTimingPoint.offset = tonumber(lineTable[1])
+	-- osuTimingPoint.beatLength = tonumber(lineTable[2])
+	-- osuTimingPoint.timingSignature = tonumber(lineTable[3])
+	-- osuTimingPoint.sampleSetId = tonumber(lineTable[4])
+	-- osuTimingPoint.customSampleIndex = tonumber(lineTable[5])
+	-- osuTimingPoint.sampleVolume = tonumber(lineTable[6])
+	-- osuTimingPoint.timingChange = tonumber(lineTable[7])
+	-- osuTimingPoint.kiaiTimeActive = tonumber(lineTable[8])
+	
+	-- timingPoint.startTime = osuTimingPoint.offset
+	
+	-- if osuTimingPoint.timingChange == 0 then
+		-- timingPoint.velocity = -100 / osuTimingPoint.beatLenght
+		-- timingPoint.inherited = true
+	-- elseif osuTimingPoint.timingChange == 1 then
+		-- timingPoint.beatLenght = osuTimingPoint.beatLength
+		-- timingPoint.inherited = false
+	-- end
+	-- table.insert(timingPoint.noteChart, timingPoint)
+end
 
+OsuParser.parseStage1HitObjectLine = function(self, line)
+	local note = self.noteChart.Note:new()
+	table.insert(self.noteChart.noteData, note)
+	
+	local noteParser = self.NoteParser:new()
+	table.insert(self.noteParsers, noteParser)
+	noteParser.osuParser = self
+	noteParser.note = note
+	noteParser.line = line
+	
+	noteParser:parseStage1()
 end
