@@ -15,25 +15,33 @@ string.trim = function(self)
 	return self:match("^%s*(.-)%s*$")
 end
 
-string.split = function(self, divider)
-	local position = 0
-	local output = {}
+-- string.split = function(self, divider)
+	-- local position = 0
+	-- local output = {}
 	
-	for endChar, startChar in function() return self:find(divider, position, true) end do
-		table.insert(output, self:sub(position, endChar - 1))
-		position = startChar + 1
-	end
-	table.insert(output, self:sub(position))
+	-- for endChar, startChar in function() return self:find(divider, position, true) end do
+		-- table.insert(output, self:sub(position, endChar - 1))
+		-- position = startChar + 1
+	-- end
+	-- table.insert(output, self:sub(position))
 	
-	return output
+	-- return output
+-- end
+
+string.split = function(self, separator)
+   local separator, fields = separator or ":", {}
+   local pattern = string.format("([^%s]+)", separator)
+   self:gsub(pattern, function(c) fields[#fields + 1] = c end)
+   
+   return fields
 end
 
 string.startsWith = function(self, subString)
-	return line:sub(1, #subString) == subString
+	return self:sub(1, #subString) == subString
 end
 
 string.endsWith = function(self, subString)
-	return line:sub(#self - #subString + 1, -1) == subString
+	return self:sub(#self - #subString + 1, -1) == subString
 end
 
 string.parse = function(self, startPos, endPos)

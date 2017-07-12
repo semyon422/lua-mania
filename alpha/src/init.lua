@@ -3,6 +3,8 @@ require("soul")
 
 soul.init()
 
+require("nclib")
+
 require("game")
 
 cs = soul.CS:new({
@@ -15,22 +17,10 @@ cs = soul.CS:new({
 	locate = "in"
 })
 
-dr = soul.ui.RectangleTextButton:new({
-	x = 0, y = 0, w = 0.1, h = 0.1,
-	mode = "line",
-	text = "click",
-	limit = 0.1,
-	layer = 1,
-	cs = cs,
-	rectangleColor = {255, 255, 255, 127},
-	action = function(self)
-		print(1)
-	end,
-	textAlign = {
-		x = "center", y = "center"
-	}
-})
-dr:activate()
+noteChart = nclib.BMSNoteChart:new()
 
+vsrg = game.VSRG:new()
+vsrg:setNoteChart()
+vsrg:activate()
 
 

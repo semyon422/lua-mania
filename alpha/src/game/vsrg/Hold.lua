@@ -1,4 +1,4 @@
-game.vsrg.Hold = createClass(game.vsrg.Note)
-local Hold = game.vsrg.Hold
+game.VSRG.Hold = createClass(game.VSRG.Note)
+local Hold = game.VSRG.Hold
 
 

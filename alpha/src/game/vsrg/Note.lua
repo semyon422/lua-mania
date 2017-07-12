@@ -1,12 +1,12 @@
-game.vsrg.Note = createClass()
-local Note = game.vsrg.Note
+game.VSRG.Note = createClass()
+local Note = game.VSRG.Note
 
 Note.next = function(self)
 	self.column.currentNote = self.column.noteData[self.index + 1]
 end
 
 Note.update = function(self)
-	local vsrg = self.column.layer.vsrg
+	local vsrg = self.vsrg
 	local currentTime = vsrg.currentTime
 	local deltaTime = self.startTime - currentTime -- TODO: divide by pitch
 	
@@ -63,7 +63,7 @@ Note.willDrawLately = function(self)
 end
 
 Note.activate = function(self)
-	local noteSkin = game.vsrg.noteSkin
+	local noteSkin = self.vsrg.noteSkin
 	
 	local x = noteSkin:get({key = "x", index = self.key})
 	local w = noteSkin:get({key = "w"})
@@ -87,5 +87,5 @@ Note.deactivate = function(self)
 end
 
 self.getY = function(self, time)
-	return 1 - (self.column.getVirtualTime(time) - self.column.vsrg.currentTime)/1000
+	return 1 - (self.column.getVirtualTime(time) - self.vsrg.currentTime)/1000
 end

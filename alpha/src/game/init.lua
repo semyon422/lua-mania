@@ -1,6 +1,7 @@
 game = {}
 
 -- require("game.gameState")
+require("game.vsrg")
 require("game.backgroundManager")
 background = game.backgroundManager.Background:new({
 	drawable = love.graphics.newImage("res/background.jpg")

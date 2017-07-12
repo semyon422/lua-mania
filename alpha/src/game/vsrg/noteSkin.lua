@@ -1,5 +1,5 @@
-game.vsrg.noteSkin = createClass()
-local noteSkin = game.vsrg.noteSkin
+game.VSRG.noteSkin = createClass()
+local noteSkin = game.VSRG.noteSkin
 
 noteSkin.cs = soul.CS:new()
 

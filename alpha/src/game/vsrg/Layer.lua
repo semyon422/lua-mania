@@ -1,5 +1,5 @@
-game.vsrg.Layer = createClass()
-local Layer = game.vsrg.Layer
+game.VSRG.Layer = createClass()
+local Layer = game.VSRG.Layer
 
 Layer.getVirtualTime = function(self, time)
 	--TODO: rewrite old function
@@ -9,9 +9,8 @@ end
 Layer.loadTimingData = function(self)
 	self.timingData = {}
 	for _, timingPoint in ipairs(game.noteChart.timingData) do
-		if timingPoint.layer = self.index then
-			local TimingPoint = createClass(timingPoint)
-			local timingPoint = TimingPoint:new()
+		if timingPoint.layer == self.index then
+			local timingPoint = createClass(timingPoint):new()
 			self.timingData[#self.timingData + 1] = timingPoint
 			
 			timingPoint.index = #self.timingData
@@ -36,7 +35,9 @@ Layer.loadColumns = function(self)
 	self.columns = {}
 	for index in pairs(game.noteChart.columns) do
 		self.columns[index] = game.Column:new({
-			index = index
+			index = index,
+			layer = self,
+			vsrg = self.vsrg
 		})
 		self.columns[index]:load()
 	end

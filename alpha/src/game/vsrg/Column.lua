@@ -1,11 +1,15 @@
-game.Column = createClass()
-local Column = game.Column
+game.VSRG.Column = createClass()
+local Column = game.VSRG.Column
 
 Column.loadNoteData = function(self)
 	self.noteData = {}
-	for _, note in ipairs(game.noteChart.noteData) do
-		if note.layer = self.index then
-			local note = createClass(note):new()
+	for _, note in ipairs(self.game.noteChart.noteData) do
+		if note.layer == self.layer.index and note.column == self.index then
+			local note = createClass(note):new({
+				column = self,
+				layer = self.layer,
+				vsrg = self.vsrg
+			})
 			self.noteData[#self.noteData + 1] = note
 			
 			note.index = #self.noteData
