@@ -1,5 +1,8 @@
-nclib.NoteChart = createClass()
-local NoteChart = nclib.NoteChart
+NoteChart = createClass()
+local NoteChart = NoteChart
+
+require("NoteChart.Parser")
+require("NoteChart.OsuParser")
 
 NoteChart.parse = function(self, path)
 	-- detect format
