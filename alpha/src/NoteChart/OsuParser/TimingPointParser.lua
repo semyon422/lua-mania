@@ -12,18 +12,14 @@ TimingPointParser.parseStage1 = function(self)
 	self.sampleVolume = tonumber(self.lineTable[6])
 	self.timingChange = tonumber(self.lineTable[7])
 	self.kiaiTimeActive = tonumber(self.lineTable[8])
+end
+
+-- TimingPointParser.parseStage2 = function(self) end
+
+TimingPointParser.parseFinal = function(self)
+	local timingPoint = self.noteChart.TimingPoint:new()
+	timingPoint.startTime = self.offset
+	timingPoint.velocity = 1
 	
-	-- if self.timingChange == 0 then
-		-- self.baseBeatLenght = self.beatLength
-		-- self.baseVelocity = -100 / self.baseBeatLenght
-		-- self.inherited = true
-	-- elseif self.timingChange == 1 then
-		-- self.baseVelocity = 1
-		-- self.inherited = false
-		-- if self.beatLength < 0 then
-			-- self.baseBeatLenght = self.beatLength
-			-- self.baseVelocity = -100 / self.baseBeatLenght
-			-- self.inherited = true
-		-- end
-	-- end
+	table.insert(self.noteChart.timingData, timingPoint)
 end

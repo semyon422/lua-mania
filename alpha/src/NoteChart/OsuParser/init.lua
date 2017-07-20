@@ -12,6 +12,7 @@ OsuParser.parse = function(self)
 	--compute barlines
 	self:parseStage1()
 	self:parseStage2()
+	self:parseFinal()
 end
 
 OsuParser.parseStage1 = function(self)
@@ -77,12 +78,25 @@ OsuParser.getSampleSetName = function(self)
 end
 
 OsuParser.parseStage2 = function(self)
-	for _, timingPointParser in ipairs(self.timingPointParsers) do
-		timingPoint:parseStage2()
-	end
+	-- for _, timingPointParser in ipairs(self.timingPointParsers) do
+		-- timingPoint:parseStage2()
+	-- end
 	for _, noteParser in ipairs(self.noteParsers) do
 		noteParser:parseStage2()
 	end
+end
+
+OsuParser.parseFinal = function(self)
+	for _, timingPointParser in ipairs(self.timingPointParsers) do
+		timingPoint:parseFinal()
+	end
+	for _, noteParser in ipairs(self.noteParsers) do
+		noteParser:parseFinal()
+	end
+	
+	local compareByStartTime = function(a, b) return a.startTime < b.startTime end
+	table.sort(self.noteChart.noteData, compareByStartTime)
+	table.sort(self.noteChart.timingData, compareByStartTime)
 end
 
 OsuParser.parseStage1MetadataLine = function(self, line)
