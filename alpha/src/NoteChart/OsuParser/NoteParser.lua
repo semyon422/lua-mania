@@ -1,5 +1,5 @@
-OsuParser.NoteParser = createClass()
-local NoteParser = OsuParser.NoteParser
+NoteChart.OsuParser.NoteParser = createClass()
+local NoteParser = NoteChart.OsuParser.NoteParser
 
 NoteParser.parseStage1 = function(self)
 	self.lineTable = self.line:split(",")
@@ -14,11 +14,11 @@ NoteParser.parseStage1 = function(self)
 		self.endTime = tonumber(self.additionLineTable[1])
 		table.remove(self.additionLineTable, 1)
 	end
-	self.additionSampleSetId = tonumber(addition[1])
-	self.additionAdditionalSampleSetId = tonumber(addition[2])
-	self.additionCustomSampleSetIndex = tonumber(addition[3])
-	self.additionHitSoundVolume = tonumber(addition[4])
-	self.additionCustomHitSound = addition[5]
+	self.additionSampleSetId = tonumber(self.additionLineTable[1])
+	self.additionAdditionalSampleSetId = tonumber(self.additionLineTable[2])
+	self.additionCustomSampleSetIndex = tonumber(self.additionLineTable[3])
+	self.additionHitSoundVolume = tonumber(self.additionLineTable[4])
+	self.additionCustomHitSound = self.additionLineTable[5]
 end
 
 NoteParser.parseStage2 = function(self)
@@ -28,7 +28,7 @@ NoteParser.parseStage2 = function(self)
 end
 
 NoteParser.parseFinal = function(self)
-	local note = self.noteChart.Note:new()
+	local note = self.osuParser.noteChart.Note:new()
 	note.columnIndex = self.columnIndex
 	note.startTime = self.startTime
 	note.endTime = self.endTime
@@ -36,12 +36,13 @@ NoteParser.parseFinal = function(self)
 	note.endTimingPoint = self.endTimingPoint
 	note.hitSoundFileNames = self.hitSoundFileNames
 	
-	table.insert(self.noteChart.noteData, note)
+	table.insert(self.osuParser.noteChart.noteData, note)
 end
 
 NoteParser.updateColumnIndex = function(self)
-	local interval = 512 / self.noteChart.keymode
-	for currentColumnIndex = 1, self.noteChart.keymode do
+	local keymode = self.osuParser.metaData.CircleSize
+	local interval = 512 / keymode
+	for currentColumnIndex = 1, keymode do
 		if self.x >= interval * (currentColumnIndex - 1) and self.x < currentColumnIndex * interval then
 			self.columnIndex = currentColumnIndex
 			break

@@ -16,6 +16,7 @@ OsuParser.parse = function(self)
 end
 
 OsuParser.parseStage1 = function(self)
+	self.metaData = {}
 	self.eventParsers = {}
 	self.timingPointParsers = {}
 	self.noteParsers = {}
@@ -58,7 +59,7 @@ end
 
 OsuParser.getTimingPointParser = function(self, time)
 	if not time then return end
-	for index = 1 #self.timingPointParsers do
+	for index = 1, #self.timingPointParsers do
 		local currentParser = self.timingPointParsers[index]
 		local nextParser = self.timingPointParsers[index + 1] or {offset = math.huge}
 		
@@ -88,18 +89,18 @@ end
 
 OsuParser.parseFinal = function(self)
 	for _, timingPointParser in ipairs(self.timingPointParsers) do
-		timingPoint:parseFinal()
+		timingPointParser:parseFinal()
 	end
 	for _, noteParser in ipairs(self.noteParsers) do
 		noteParser:parseFinal()
 	end
 	
 	local compareByStartTime = function(a, b) return a.startTime < b.startTime end
-	table.sort(self.noteChart.noteData, compareByStartTime)
 	table.sort(self.noteChart.timingData, compareByStartTime)
+	table.sort(self.noteChart.noteData, compareByStartTime)
 end
 
-OsuParser.parseStage1MetadataLine = function(self, line)
+OsuParser.parseStage1MetaDataLine = function(self, line)
 	local lineTable = line:trim():split(":")
 	local key = lineTable[1]:trim()
 	table.remove(lineTable, 1)
@@ -120,26 +121,18 @@ OsuParser.parseStage1EventLine = function(self, line)
 end
 
 OsuParser.parseStage1TimingPointLine = function(self, line)
-	local timingPoint = self.noteChart.TimingPoint:new()
-	table.insert(self.noteChart.timingData, timingPoint)
-	
 	local timingPointParser = self.TimingPointParser:new()
 	table.insert(self.timingPointParsers, timingPointParser)
 	timingPointParser.osuParser = self
-	timingPointParser.timingPoint = timingPoint
 	timingPointParser.line = line
 	
 	timingPointParser:parseStage1()
 end
 
 OsuParser.parseStage1HitObjectLine = function(self, line)
-	local note = self.noteChart.Note:new()
-	table.insert(self.noteChart.noteData, note)
-	
 	local noteParser = self.NoteParser:new()
 	table.insert(self.noteParsers, noteParser)
 	noteParser.osuParser = self
-	noteParser.note = note
 	noteParser.line = line
 	
 	noteParser:parseStage1()

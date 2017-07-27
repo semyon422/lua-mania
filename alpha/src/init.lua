@@ -3,7 +3,7 @@ require("soul")
 
 soul.init()
 
-require("nclib")
+require("NoteChart")
 
 require("game")
 
@@ -17,10 +17,15 @@ cs = soul.CS:new({
 	locate = "in"
 })
 
-noteChart = nclib.BMSNoteChart:new()
+noteChart = NoteChart:new()
+noteChart:parse("res/Songs/osu!/499185 Warak - REANIMATE/Warak - REANIMATE (Kuo Kyoka) [Avalon's 4K Hyper].osu")
 
-vsrg = game.VSRG:new()
-vsrg:setNoteChart()
-vsrg:activate()
+for k, v in ipairs(noteChart.noteData) do
+	print(k, v.startTime)
+end
+
+-- vsrg = game.VSRG:new()
+-- vsrg:setNoteChart()
+-- vsrg:activate()
 
 
